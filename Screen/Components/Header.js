@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Pressable,
@@ -10,7 +10,7 @@ import {
   CloseIcon,
   ArrowBackIcon,
 } from 'native-base';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 function MenuIcon() {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -35,6 +35,12 @@ function MenuIcon() {
   };
   const handleNavigateToUserProfileScreen = () => {
     navigation.navigate('UserProfile');
+  };
+  const handleNavigateToEditProfileScreen = () => {
+    navigation.navigate('EditProfile');
+  };
+  const handleNavigateToRecommendProfileScreen = () => {
+    navigation.navigate('RecommendProfile');
   };
 
   return (
@@ -70,8 +76,8 @@ function MenuIcon() {
         <Menu.Item onPress={handleNavigateToAboutScreen}>
           מי אנחנו? צור קשר
         </Menu.Item>
-        <Menu.Item onPress={() => setIsOpen(true)}>עריכת חשבון</Menu.Item>
-        <Menu.Item onPress={() => setIsOpen(true)}>המלץ לחברים</Menu.Item>
+        <Menu.Item onPress={handleNavigateToEditProfileScreen}>עריכת חשבון</Menu.Item>
+        <Menu.Item onPress={handleNavigateToRecommendProfileScreen}>המלץ לחברים</Menu.Item>
         {/** Add more items as needed */}
       </Menu>
     </Box>

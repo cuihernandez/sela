@@ -9,7 +9,7 @@ import {
   Image,
   View,
   Text,
-  ScrollView
+  ScrollView,
 } from 'native-base';
 import { Dimensions } from 'react-native';
 import Header from './Components/Header.js';
@@ -26,20 +26,22 @@ const UserProfileScreen = () => {
         px="3"
         py="3"
         w="100%"
-        alignItems="center"
         p={4}
         direction="row"
         justifyContent="space-between"
+        alignItems="flex-start"
         backgroundColor={'#560FC9'}
-        borderBottomRadius={'40'}>
-        <ArrowBackIcon color="white" size={4} />
-        <View width="70" height="70">
+        borderBottomRadius={'40'}
+        height={screenHeight * 14 / 100}>
+        <Box>
+          <ArrowBackIcon color="white" size={4} marginLeft="2" />
+        </Box>
+        <Center width="100" height="100">
           <Image
             source={require('../Image/edit.png')}
-            marginBottom={7}
-            height={(screenHeight * 8) / 100}
+            alt="edit image"
           />
-        </View>
+        </Center>
         <Box />
       </HStack>
       <Box
@@ -98,7 +100,7 @@ const UserProfileScreen = () => {
             </HStack>
           </Button>
         </HStack>
-        <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" height={(screenHeight * 47) / 100}>
+        <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" height={(screenHeight * 43) / 100}>
           <Text marginTop="3" marginRight="6" color="#8F80A7">חולה רשום</Text>
           <ScrollView h="80" margin="3">
             <DataComponent name={name} />

@@ -13,6 +13,8 @@ import TestimonialsScreens from './Screen/TestimonialsScreen';
 import AboutScreen from './Screen/AboutScreen';
 import RegisterPatientScreen from './Screen/RegisterPatientScreen';
 import UserProfileScreen from './Screen/UserProfileScreen';
+import EditProfileScreen from './Screen/EditProfileScreen';
+import RecommendScreen from './Screen/RecommendScreen';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -68,6 +70,16 @@ const App = () => {
           <Stack.Screen
             name="UserProfile"
             component={UserProfileScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfileScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="RecommendProfile"
+            component={RecommendScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
