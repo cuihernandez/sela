@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { Dimensions, Image, View, StyleSheet } from 'react-native';
-import { NativeBaseProvider, Text, Input, Button, HStack, Checkbox } from 'native-base';
+/* eslint-disable prettier/prettier */
+import React, {useState} from 'react';
+import {Dimensions, Image, View, StyleSheet} from 'react-native';
+import {
+  NativeBaseProvider,
+  Text,
+  Input,
+  Button,
+  HStack,
+  Checkbox,
+} from 'native-base';
+
+import {useNavigation} from '@react-navigation/native';
 
 const RegisterScreen = () => {
+  const navigation = useNavigation();
   const [name, onChangeName] = useState('');
   const [mam_name, onChangeMam] = useState('');
   const [email, onChangeEmail] = useState('');
-  const [isChecked, setChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
+  const handleNavigateToFrameScreen = () => {
+    navigation.navigate('Login'); // Navigate to the 'FrameScreen' page
+  };
   return (
     <NativeBaseProvider>
       <View style={styles.container}>
@@ -23,7 +37,7 @@ const RegisterScreen = () => {
             onChangeText={onChangeName}
             variant="unstyled"
             value={name}
-            placeholder='שם פרטי'
+            placeholder="שם פרטי"
           />
           <Text style={styles.text}>שם האם</Text>
           <Input
@@ -39,22 +53,28 @@ const RegisterScreen = () => {
             style={styles.input}
             variant="unstyled"
             placeholder="אמייל (אופציונלי)"
-            onChangeText={(onChangeEmail)}
-            value={email} />
-          <HStack space={10} justifyContent='center'>
-            <Checkbox style={styles.termstext}
+            onChangeText={onChangeEmail}
+            value={email}
+          />
+          <HStack space={10} justifyContent="center">
+            <Checkbox
+              style={styles.termstext}
               accessibilityLabel="checkbox"
-              defaultIsChecked
               shadow={2}
-              value={isChecked}
-              onValueChange={setChecked}
-            >
+              checked={isChecked}
+              onChange={setIsChecked}>
               תנאי שירות (Terms & Conditions)
             </Checkbox>
           </HStack>
 
           <HStack justifyContent="center">
-            <Button width='100%' colorScheme="purple" size="lg" rounded='lg' disabled={!isChecked}>
+            <Button
+              width="100%"
+              colorScheme="purple"
+              size="lg"
+              rounded="lg"
+              isDisabled={!isChecked}
+              onPress={handleNavigateToFrameScreen}>
               המשך
             </Button>
           </HStack>

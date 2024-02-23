@@ -1,23 +1,18 @@
-import {React, useState, useEffect} from 'react';
-import {View, Image, Text, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+/* eslint-disable prettier/prettier */
+import {React, useEffect} from 'react';
+import {View, Image, Text, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 const SplashScreen = () => {
   //State for AcitivityIndicator animation
+  const navigation = useNavigation();
 
-  const [animating, setAnimating] = useState(true);
   useEffect(() => {
-    setTimeout(() => {
-      setAnimating(false);
-      //Check if user_id is set or not
-      //If not then send for Authentication
-      //else send to Home Screen
-      AsyncStorage.getItem('user_id').then((value) =>
-        navigation.replace(
-          value === null ? 'Auth' : 'DrawerNavigationRoutes'
-        ),
-      );
+    const timer = setTimeout(() => {
+      navigation.navigate('Login'); // Navigate to the Register page after 5 seconds
     }, 5000);
-  }, []);
+
+    return () => clearTimeout(timer);
+  }, [navigation]);
   return (
     <View style={styles.container}>
       <Image
@@ -26,7 +21,10 @@ const SplashScreen = () => {
         resizeMode="cover"
       />
       <View style={styles.centeredContent}>
-        <Image source={require('../Image/splash_icon.png')} style={styles.icon} />
+        <Image
+          source={require('../Image/splash_icon.png')}
+          style={styles.icon}
+        />
         <Text style={styles.text}>סֶלָה</Text>
       </View>
     </View>
@@ -55,7 +53,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 24,
     marginTop: 20,
-    color:'#ffff00',
+    color: '#ffff00',
   },
 });
 
