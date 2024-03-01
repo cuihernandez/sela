@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import {React, useEffect} from 'react';
-import {View, Image, Text, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { React, useEffect } from 'react';
+import { View, Image, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 const SplashScreen = () => {
   //State for AcitivityIndicator animation
   const navigation = useNavigation();
@@ -20,13 +20,6 @@ const SplashScreen = () => {
         style={styles.backgroundImage}
         resizeMode="cover"
       />
-      <View style={styles.centeredContent}>
-        <Image
-          source={require('../Image/splash_icon.png')}
-          style={styles.icon}
-        />
-        <Text style={styles.text}>סֶלָה</Text>
-      </View>
     </View>
   );
 };

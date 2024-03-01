@@ -10,8 +10,9 @@ import {
   View,
   Text,
 } from 'native-base';
+import { TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 const FrameScreen1 = () => {
   const navigation = useNavigation();
   const handleNavigateToFrameScreen = () => {
@@ -30,16 +31,20 @@ const FrameScreen1 = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <ArrowBackIcon color="white" size={4} />
+        <TouchableOpacity onPress={navigation.goBack}>
+          <ArrowBackIcon color="white" size={4} />
+        </TouchableOpacity>
         <Text
           color="white"
           alignItems={'center'}
-          fontSize={'lg'}
-          width="1/2"
+          fontSize="20"
+          width="2/3"
           px="3"
           marginTop={'5'}>
           מומלץ לקרוא בדיבור:
         </Text>
+        <Box />
+        <Box />
         <Box />
       </HStack>
       <Box flex={1} alignItems="center">

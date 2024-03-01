@@ -15,76 +15,82 @@ import RegisterPatientScreen from './Screen/RegisterPatientScreen';
 import UserProfileScreen from './Screen/UserProfileScreen';
 import EditProfileScreen from './Screen/EditProfileScreen';
 import RecommendScreen from './Screen/RecommendScreen';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+// import ReduxProvider from './store';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
-    <NativeBaseProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {/* <Stack.Screen
-            name="Splash"
-            component={SplashScreen}
-            // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            // options={{headerShown: false}}
-          /> */}
-          <Stack.Screen
-            name="Frame1"
-            component={FrameScreen1}
-          // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Frame2"
-            component={FrameScreen2}
-          // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Frame3"
-            component={FrameScreen3}
-          // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Testimonials"
-            component={TestimonialsScreens}
-          // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="About"
-            component={AboutScreen}
-          // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="RegPatient"
-            component={RegisterPatientScreen}
-          // options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="UserProfile"
-            component={UserProfileScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="EditProfile"
-            component={EditProfileScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="RecommendProfile"
-            component={RecommendScreen}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </NativeBaseProvider>
+    <Provider store={store}>
+      <NativeBaseProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Splash"
+              component={SplashScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Frame1"
+              component={FrameScreen1}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Frame2"
+              component={FrameScreen2}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Frame3"
+              component={FrameScreen3}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Testimonials"
+              component={TestimonialsScreens}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="About"
+              component={AboutScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="RegPatient"
+              component={RegisterPatientScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="UserProfile"
+              component={UserProfileScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfileScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="RecommendProfile"
+              component={RecommendScreen}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </NativeBaseProvider>
+    </Provider>
+
   );
 };
 export default App;

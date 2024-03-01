@@ -8,7 +8,6 @@ import {
   Menu,
   HamburgerIcon,
   CloseIcon,
-  ArrowBackIcon,
 } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 function MenuIcon() {
@@ -16,7 +15,6 @@ function MenuIcon() {
 
   // Function to toggle the menu state
   const toggleMenu = () => {
-    console.log(!isOpen);
     setIsOpen(!isOpen);
   };
 
@@ -67,6 +65,7 @@ function MenuIcon() {
         <Menu.Item onPress={handleNavigateToRegisterPatientScreen}>
           רישום חולה לתפילה
         </Menu.Item>
+        {/* Nativate to the Register Patient Page */}
         <Menu.Item onPress={handleNavigateToUserProfileScreen}>
           נתוני תפילותיי ותרומותיי
         </Menu.Item>

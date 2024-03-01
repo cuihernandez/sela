@@ -1,9 +1,13 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import {ArrowBackIcon, Box, HStack, Image, View, Text} from 'native-base';
+import { ArrowBackIcon, Box, HStack, Image, View, Text } from 'native-base';
+import { TouchableOpacity } from 'react-native';
 import Header from './Components/Header.js';
+import { useNavigation } from '@react-navigation/native';
+
 
 const AboutScreen = () => {
+  const navigation = useNavigation();
   return (
     <>
       <Header />
@@ -17,7 +21,13 @@ const AboutScreen = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <ArrowBackIcon color="white" size={4} />
+        <TouchableOpacity onPress={navigation.goBack}>
+          <ArrowBackIcon color="white" size={4} />
+        </TouchableOpacity>
+
+        {/* </View> */}
+
+
         <Text
           color="white"
           alignItems={'center'}
@@ -34,6 +44,7 @@ const AboutScreen = () => {
             source={require('../Image/logo.png')}
             marginTop={3}
             marginBottom={7}
+            alt="log"
           />
         </View>
 

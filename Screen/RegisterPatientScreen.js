@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
-import {Dimensions, Image, View, StyleSheet} from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, Image, View, StyleSheet, TouchableOpacity } from 'react-native';
 import {
   ArrowBackIcon,
   Text,
@@ -9,13 +9,24 @@ import {
   Center,
   Box,
   HStack,
+  useToast,
 } from 'native-base';
+
 import Header from './Components/Header';
+import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
+import { useNavigation } from '@react-navigation/native';
 
-const RegisterScreen = () => {
+
+
+const RegisterPatientScreen = () => {
+  const toast = useToast();
+  const navigation = useNavigation();
   const buttontext = [10, 20, 50, 100, 200];
+  const [patientName, setPatientName] = useState('');
+  const [patientMotherName, setPatientMotherName] = useState('');
+  const [patientEmail, setPatientEmail] = useState('');
+  const [price, setPrice] = useState('');
   const [selectedButton, setSelectedButton] = useState(null);
-
   const handleButtonSelect = buttonNumber => {
     setSelectedButton(buttonNumber);
   };
@@ -25,9 +36,12 @@ const RegisterScreen = () => {
 
   const styles = StyleSheet.create({
     container: {
+      // alignContent: 'flex-end',
       backgroundColor: 'white',
       borderTopLeftRadius: (screenWidth * 5) / 100, // 5% of screen width
       borderTopRightRadius: (screenWidth * 5) / 100, // 5% of screen width
+      marginTop: (screenHeight * 16.5
+      ) / 100, // 1% of screen height
       padding: (screenWidth * 2) / 100, // 2% of screen width
     },
     backgroundImage: {
@@ -44,17 +58,43 @@ const RegisterScreen = () => {
     },
     input: {
       padding: (screenWidth * 1) / 100, // 1% of screen width
+      height: (screenHeight * 5) / 100,
       backgroundColor: '#F1E6FF',
       color: '#D6B7FF',
       borderRadius: (screenWidth * 5) / 100, // 1.5% of screen width
     },
     button: {
+      height: (screenHeight * 5) / 100,
       borderRadius: (screenWidth * 4) / 100, // 1.5% of screen width
       margin: (screenWidth * 0.75) / 100, // 0.75% of screen width
       padding: (screenWidth * 0.75) / 100, // 0.75% of screen width
     },
   });
 
+  const handleSubmit = () => {
+    console.log('The transaction value is:', price);
+    console.log('selected button number is:', selectedButton);
+
+    if (price === '') {
+      console.log('okay');
+      if (selectedButton == null) {
+        toast.show({
+          render: () => {
+            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              Please Enter the Donate Price!
+            </Box>;
+          },
+        });
+      }
+      else {
+
+      }
+    }
+    else {
+      console.log('no');
+
+    }
+  };
   return (
     <>
       <View>
@@ -63,22 +103,26 @@ const RegisterScreen = () => {
             source={require('../Image/reg_patient.png')}
             style={styles.backgroundImage}
             resizeMode="cover"
+            alt="background"
           />
           <Header />
           <Box
             position="relative"
             bg="#560FC9"
             marginBottom={(screenWidth * 4) / 100}>
-            <ArrowBackIcon
-              color="white"
-              marginTop={(screenWidth * 4) / 100}
-              marginLeft={(screenWidth * 6) / 100}
-            />
+            <TouchableOpacity onPress={navigation.goBack}>
+              <ArrowBackIcon
+                color="#ffffff"
+                marginTop={(screenWidth * 4) / 100}
+                marginLeft={(screenWidth * 6) / 100}
+              />
+            </TouchableOpacity>
             <Text
               textAlign="center"
               fontSize={(screenWidth * 9.5) / 100}
-              color="white"
-              fontWeight="bold">
+              color="#ffffff"
+              fontWeight="bold"
+            >
               רישום חולה לתפילה
             </Text>
           </Box>
@@ -86,41 +130,63 @@ const RegisterScreen = () => {
 
         <View style={styles.container}>
           <Box margin={(screenWidth * 3) / 100}>
-            <Text margin={(screenWidth * 2) / 100}>שם פרטי</Text>
+            <Text
+              marginRight={(screenWidth * 5) / 100}
+              marginBottom={(screenHeight * 1) / 100}
+              color="#1E0050">שם פרטי</Text>
             <Input
               variant="unstyled"
               placeholder="שם פרטי"
               style={styles.input}
+              value={patientName}
+              onChangeText={setPatientName}
             />
-            <Text margin={(screenWidth * 2) / 100}>שם האם</Text>
+            <Text
+              marginRight={(screenWidth * 5) / 100}
+              marginTop={(screenHeight * 2) / 100}
+              marginBottom={(screenHeight * 1) / 100}
+              color="#1E0050">שם האם</Text>
             <Input
               variant="unstyled"
               placeholder="שם האם"
               style={styles.input}
+              value={patientMotherName}
+              onChangeText={setPatientMotherName}
             />
-            <Text margin={(screenWidth * 2) / 100}>אימייל</Text>
+            <Text
+              marginRight={(screenWidth * 5) / 100}
+              marginTop={(screenHeight * 2) / 100}
+              marginBottom={(screenHeight * 1) / 100}
+              color="#1E0050">אימייל</Text>
             <Input
               variant="unstyled"
               placeholder="הזן אימייל"
               style={styles.input}
+              value={patientEmail}
+              onChangeText={setPatientEmail}
             />
           </Box>
 
           <View padding={(screenWidth * 1) / 100}>
-            <Text padding={(screenWidth * 2) / 100} textAlign="center">
+            <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
               בחר מחיר (שקלים)
             </Text>
             <View style={styles.buttongroup} justifyContent="space-evenly">
               {buttontext.map(buttonNumber => (
                 <Button
                   key={buttonNumber}
-                  variant="outline"
                   onPress={() => handleButtonSelect(buttonNumber)}
-                  colorScheme={
-                    selectedButton === buttonNumber ? 'purple' : 'white'
+                  backgroundColor={
+                    selectedButton === buttonNumber ? '#560FC9' : '#FFFFFF'
                   }
-                  size="sm"
+                  borderColor="#8F80A7"
+                  borderWidth={1}
+                  _text={{
+                    color: selectedButton === buttonNumber ? '#FFFFFF' : '#8F80A7',
+                  }}
+                  // size="sm"
                   width={(screenWidth * 12) / 100}
+                  height={(screenHeight * 6.5) / 100}
                   style={styles.button}>
                   {buttonNumber}
                 </Button>
@@ -128,14 +194,16 @@ const RegisterScreen = () => {
             </View>
             <View style={styles.buttongroup}>
               <Input
-                variant="rounded"
+                variant="unstyled"
                 style={styles.input}
                 placeholder="הזן סכום מותאם אישית"
                 width="50%"
+                value={price}
+                keyboardType="numeric"
+                onChangeText={setPrice}
               />
-              <Button style={styles.button} backgroundColor="#560FC9">
-                שמור צילום מסך
-              </Button>
+              {/* Screen Capture Button */}
+              <ScreenCaptureButton />
             </View>
             <Center padding={(screenWidth * 2) / 100}>
               <Button
@@ -143,12 +211,14 @@ const RegisterScreen = () => {
                 backgroundColor="#560FC9"
                 width="50%"
                 height={(screenHeight * 5.6) / 100}
-                _text={{fontSize: (screenWidth * 4) / 100}}>
+                _text={{ fontSize: (screenWidth * 4) / 100 }}
+                onPress={handleSubmit}
+              >
                 <HStack space="2" alignItems="center">
                   <Text color="white">בצע תשלום</Text>
                   <Image
                     source={require('../Image/bit.png')}
-                    alt="Image"
+                    alt="bit"
                     size={8} // Adjust the size as needed
                     ml={2} // Add margin to separate text and image
                   />
@@ -156,13 +226,13 @@ const RegisterScreen = () => {
               </Button>
             </Center>
             <Center padding={(screenWidth * 3) / 100}>
-              <Text>תנאי שירות(Terms & conditions)</Text>
+              <Text color="#1E0050">תנאי שירות(Terms & conditions)</Text>
             </Center>
           </View>
         </View>
-      </View>
+      </View >
     </>
   );
 };
 
-export default RegisterScreen;
+export default RegisterPatientScreen;

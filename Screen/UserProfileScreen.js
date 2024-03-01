@@ -11,14 +11,15 @@ import {
   Text,
   ScrollView,
 } from 'native-base';
-import { Dimensions } from 'react-native';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import Header from './Components/Header.js';
 import DataComponent from './Components/DataComponent.js';
-
+import { useNavigation } from '@react-navigation/native';
 const UserProfileScreen = () => {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const name = 'לִתְרוֹם';
+  const navigation = useNavigation();
   return (
     <>
       <Header />
@@ -34,7 +35,9 @@ const UserProfileScreen = () => {
         borderBottomRadius={'40'}
         height={screenHeight * 14 / 100}>
         <Box>
-          <ArrowBackIcon color="white" size={4} marginLeft="2" />
+          <TouchableOpacity onPress={navigation.goBack}>
+            <ArrowBackIcon color="white" size={4} marginLeft="2" />
+          </TouchableOpacity>
         </Box>
         <Center width="100" height="100">
           <Image
@@ -89,12 +92,10 @@ const UserProfileScreen = () => {
             borderRadius="2xl"
             margin="2"
             width={(screenWidth * 50) / 100}>
-            <HStack>
+            <HStack alignItems="center">
               <Text color="white">{'  '}שמור צילום מסך</Text>
               <Image
-                source={{
-                  uri: 'https://img.icons8.com/pastel-glyph/64/FFFFFF/download--v1.png',
-                }}
+                source={require('../Image/icon_download.png')}
                 alt="download"
               />
             </HStack>

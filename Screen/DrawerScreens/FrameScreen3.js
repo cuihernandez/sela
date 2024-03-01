@@ -11,9 +11,9 @@ import {
   View,
   Text,
 } from 'native-base';
+import { TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
-import {useNavigation} from '@react-navigation/native';
-
+import { useNavigation } from '@react-navigation/native';
 const FrameScreen1 = () => {
   const navigation = useNavigation();
   const handleNavigateToFrameScreen = () => {
@@ -32,11 +32,13 @@ const FrameScreen1 = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <ArrowBackIcon color="white" size={4} />
+        <TouchableOpacity onPress={navigation.goBack}>
+          <ArrowBackIcon color="white" size={4} />
+        </TouchableOpacity>
         <Text
           color="white"
           alignItems={'center'}
-          fontSize={'lg'}
+          fontSize="20"
           px="3"
           marginTop={'5'}>
           תודה
@@ -50,6 +52,7 @@ const FrameScreen1 = () => {
           height="150"
           marginTop={3}
           marginBottom={7}
+          alt="configration"
         />
         <View
           borderRadius="15"

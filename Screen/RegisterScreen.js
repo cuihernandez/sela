@@ -1,25 +1,96 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
-import {Dimensions, Image, View, StyleSheet} from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, Image, View, StyleSheet } from 'react-native';
 import {
+  Box,
+  Button,
+  Checkbox,
+  HStack,
+  Input,
   NativeBaseProvider,
   Text,
-  Input,
-  Button,
-  HStack,
-  Checkbox,
+  useToast,
+  FormControl,
+  WarningOutlineIcon,
 } from 'native-base';
-
-import {useNavigation} from '@react-navigation/native';
-
+import { useNavigation } from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { useDispatch, useSelector } from 'react-redux';
+// import { setUser } from '../store/userSlice';
+import { setUserData } from '../redux/actions/userAction';
+import { connect } from 'react-redux';
 const RegisterScreen = () => {
   const navigation = useNavigation();
-  const [name, onChangeName] = useState('');
-  const [mam_name, onChangeMam] = useState('');
-  const [email, onChangeEmail] = useState('');
-  const [isChecked, setIsChecked] = useState(true);
+  const [name, setName] = useState('');
+  const [mothername, setMotherName] = useState('');
+  const [email, setEmail] = useState('');
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const toast = useToast();
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const handleRegister = async () => {
+    console.log('Handle Register Button');
+    try {
+      const querySnapshot = await firestore().collection('users')
+        .where('name', '==', name)
+        .where('mothername', '==', mothername)
+        .where('email', '==', email)
+        .get();
+      if (querySnapshot.empty) {
+        const timestamp = Date.now();
+        const res = await firestore()
+          .collection('users')
+          .add({
+            name: name,
+            mothername: mothername,
+            email: email,
+            registertime: timestamp,
+          });
+        auth().signInAnonymously();
 
-  const handleNavigateToFrameScreen = () => {
+        const documentSnapshot = await res.get();
+        const userArrayID = res._documentPath._parts;
+        const userID = userArrayID[1];
+        const data = documentSnapshot.data();
+        if (documentSnapshot.exists) {
+          const payload = {
+            userID: userID,
+            name: data.name,
+            mothername: data.mothername,
+            email: data.email,
+          };
+          dispatch(setUserData(payload));
+        } else {
+          console.log('Document does not exist!');
+        }
+        handleNavigateToLoginScreen();
+        toast.show({
+          render: () => {
+            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              Register Success
+            </Box>;
+          },
+        });
+      }
+      else {
+        toast.show({
+          render: () => {
+            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              This User is already exist!
+            </Box>;
+          },
+        });
+      }
+    }
+    catch (error) {
+      console.log('error is:', error);
+    }
+
+  };
+
+  const handleNavigateToLoginScreen = () => {
     navigation.navigate('Login'); // Navigate to the 'FrameScreen' page
   };
   return (
@@ -31,50 +102,42 @@ const RegisterScreen = () => {
           resizeMode="cover"
         />
         <View style={styles.safearea}>
-          <Text style={styles.text}>שם פרטי</Text>
-          <Input
-            style={styles.input}
-            onChangeText={onChangeName}
-            variant="unstyled"
-            value={name}
-            placeholder="שם פרטי"
-          />
-          <Text style={styles.text}>שם האם</Text>
-          <Input
-            style={styles.input}
-            onChangeText={onChangeMam}
-            variant="unstyled"
-            value={mam_name}
-            placeholder="שם האם"
-          />
+          <FormControl isInvalid={'name' in errors}>
+            <Text style={styles.text}>שם פרטי</Text>
+            <Input placeholder="שם פרטי" value={name} onChangeText={setName} color="#D6B7FF" borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+            {'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
+          </FormControl>
+          <FormControl isInvalid={'motherName' in errors}>
+            <Text style={styles.text}>שם האם</Text>
+            <Input placeholder="שם האם" value={mothername} color="#D6B7FF" onChangeText={setMotherName} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+            {'motherName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.motherName}</FormControl.ErrorMessage>}
+          </FormControl>
 
-          <Text style={styles.text}>אמייל (אופציונלי)</Text>
-          <Input
-            style={styles.input}
-            variant="unstyled"
-            placeholder="אמייל (אופציונלי)"
-            onChangeText={onChangeEmail}
-            value={email}
-          />
+          <FormControl isInvalid={'email' in errors}>
+            <Text style={styles.text}>אמייל (אופציונלי)</Text>
+            <Input placeholder="אמייל" value={email} color="#D6B7FF" onChangeText={setEmail} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+            {'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
+          </FormControl>
           <HStack space={10} justifyContent="center">
             <Checkbox
               style={styles.termstext}
               accessibilityLabel="checkbox"
               shadow={2}
-              checked={isChecked}
-              onChange={setIsChecked}>
+              checked={isCheckboxChecked}
+              onChange={setIsCheckboxChecked}>
               תנאי שירות (Terms & Conditions)
             </Checkbox>
           </HStack>
 
           <HStack justifyContent="center">
             <Button
+              titel="register"
               width="100%"
-              colorScheme="purple"
+              backgroundColor="#560FC9"
               size="lg"
               rounded="lg"
-              isDisabled={!isChecked}
-              onPress={handleNavigateToFrameScreen}>
+              isDisabled={!isCheckboxChecked}
+              onPress={handleRegister}>
               המשך
             </Button>
           </HStack>
@@ -84,7 +147,8 @@ const RegisterScreen = () => {
   );
 };
 
-export default RegisterScreen;
+export default connect(null, { setUserData })(RegisterScreen);
+
 
 const styles = StyleSheet.create({
   container: {
@@ -108,19 +172,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'flex-end',
   },
-  input: {
-    padding: 10,
-    borderRadius: 27,
-    backgroundColor: '#F1E6FF',
-    color: '#D6B7FF',
-    paddingHorizontal: 10,
-  },
   text: {
     fontSize: 14,
     marginTop: 10,
     marginBottom: 10,
     marginRight: 20,
-    color: '#1E0050',
+    // color: '#1E0050',
   },
   termstext: {
     fontSize: 14,

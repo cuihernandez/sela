@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import { ArrowBackIcon, Avatar, Box, Center, HStack, Image, Link, View, Text } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
 import Header from './Components/Header.js';
 import avatar_facebook from '../Image/logos_facebook.png';
 import avatar_twitter from '../Image/logos_twitter.png';
@@ -12,6 +13,7 @@ import dot from '../Image/dot.png';
 import icon_copy from '../Image/icon_copy.png';
 const RecommendScreen = () => {
     const screenHeight = Dimensions.get('window').height;
+    const navigation = useNavigation();
     return (
         <>
             <Header />
@@ -26,7 +28,10 @@ const RecommendScreen = () => {
                 backgroundColor={'#560FC9'}
                 borderBottomRadius={'40'}
                 height={(screenHeight * 12) / 100}>
-                <ArrowBackIcon color="white" size={4} marginLeft="1" />
+                <TouchableOpacity onPress={navigation.goBack}>
+                    <ArrowBackIcon color="white" size={4} marginLeft="1" />
+                </TouchableOpacity>
+
                 <Center>
                     <Text
                         color="white"
@@ -43,7 +48,8 @@ const RecommendScreen = () => {
                 <View margin="10" padding="5">
                     <Link href="https://docs.nativebase.io/link" alignItems="center" justifyContent="space-around" backgroundColor="#F1E6FF">
                         <Text color="#1E0050" marginRight="4" marginLeft="4">www.hebrewsparys.co</Text>
-                        <Image source={icon_copy} />
+                        <Image source={icon_copy}
+                            alt="copy" />
                     </Link>
                 </View>
                 <HStack justifyContent="center" space={2}>
@@ -63,7 +69,7 @@ const RecommendScreen = () => {
                         <Image source={avatar_instagram} alt="avatar_instagram" />
                     </Avatar>
                     <Avatar bg="rgba(0, 0, 0, 0)">
-                        <Image source={dot} />
+                        <Image source={dot} alt="dot" />
                     </Avatar>
                 </HStack>
             </Box>

@@ -8,15 +8,19 @@ import {
   HStack,
   View,
   Text,
-  VStack,
 } from 'native-base';
 import Header from '../Components/Header';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+
 const FrameScreen1 = () => {
   const navigation = useNavigation();
   const handleNavigateToFrameScreen = () => {
     navigation.navigate('Frame2'); // Navigate to the 'FrameScreen' page
   };
+  const user = useSelector(state => state.user);
+  const name = user.name;
+  const mothername = user.mothername;
   return (
     <>
       <Header />
@@ -47,7 +51,7 @@ const FrameScreen1 = () => {
           padding="5">
           <Text color="#8F80A7">
             מִי שֶׁבֵּרַךְ אֲבוֹתֵינוּ אַבְרָהָם יִצְחָק וְיַעֲקֹב הוּא יְבָרֵךְ
-            את פלוני בן פלונית שכל משאלות ליבו יתגשמו לטובה ולברכה, בשמחה
+            את {name} בן {mothername}ת שכל משאלות ליבו יתגשמו לטובה ולברכה, בשמחה
             יקרב...
           </Text>
         </View>
