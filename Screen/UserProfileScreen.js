@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ArrowBackIcon,
   Box,
@@ -15,11 +15,55 @@ import { Dimensions, TouchableOpacity } from 'react-native';
 import Header from './Components/Header.js';
 import DataComponent from './Components/DataComponent.js';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
+import Const from '../Utils/Const.js';
+
 const UserProfileScreen = () => {
+
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
-  const name = 'לִתְרוֹם';
+  const { donorID } = Const();
+  const [amount, setAmount] = useState(0);
+  const [count, setCount] = useState(0);
   const navigation = useNavigation();
+  const donorNames = {};
+  const [uniqueDoneeNames, setUniqueDoneeNames] = useState([]);
+  useEffect(() => {
+    const getTotalTransactionAmount = async () => {
+      try {
+        const snapshot = await firestore()
+          .collection('transaction')
+          .where('donorID', '==', donorID)
+          .get();
+
+        let totalAmount = 0;
+        let count = 0;
+        snapshot.forEach((doc) => {
+          totalAmount += parseInt(doc.data().transactionAmount);
+          count++;
+        });
+
+        setAmount(totalAmount);
+        setCount(count);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    getTotalTransactionAmount();
+
+    firestore().collectionGroup('transaction').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // const donorName = doc.data();
+        const donorName = doc.data().doneeName;
+
+        console.log("donee Name:", donorName);
+        donorNames[donorName] = true;
+      });
+      console.log('unique donee name is :', donorNames);
+      setUniqueDoneeNames(Object.keys(donorNames));
+    });
+  }, []);
   return (
     <>
       <Header />
@@ -59,10 +103,10 @@ const UserProfileScreen = () => {
           </Center>
           <View flexDirection="row" justifyContent="space-between">
             <Text color="#560FC9" fontWeight="blod" fontSize="lg">
-              1000
+              {count}
             </Text>
             <Text color="#560FC9" fontWeight="bold" fontSize="lg">
-              $5000
+              ${amount}
             </Text>
           </View>
           <View flexDirection="row" justifyContent="space-between">
@@ -81,13 +125,16 @@ const UserProfileScreen = () => {
           flexDirection="row"
           justifyContent="center">
           <Button
+            id="credit add"
             backgroundColor="#560FC9"
             borderRadius="2xl"
             margin="2"
-            width={(screenWidth * 40) / 100}>
+            width={(screenWidth * 40) / 100}
+          >
             הוסף קרדיט לחולה
           </Button>
           <Button
+            id='btn_download'
             backgroundColor="#560FC9"
             borderRadius="2xl"
             margin="2"
@@ -104,16 +151,11 @@ const UserProfileScreen = () => {
         <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" height={(screenHeight * 43) / 100}>
           <Text marginTop="3" marginRight="6" color="#8F80A7">חולה רשום</Text>
           <ScrollView h="80" margin="3">
-            <DataComponent name={name} />
-            <DataComponent name={name} />
-            <DataComponent name={name} />
-            <DataComponent name={name} />
-            <DataComponent name={name} />
-            <DataComponent name={name} />
-            <DataComponent name={name} />
-            <DataComponent name={name} />
-          </ScrollView>
 
+            {uniqueDoneeNames.map((names, index) => (
+              <DataComponent key={index} name={names} />
+            ))}
+          </ScrollView>
         </View>
       </Box >
       <View alignItems="center" justifyContent="center" marginBottom="4">

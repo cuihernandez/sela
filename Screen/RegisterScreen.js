@@ -49,7 +49,6 @@ const RegisterScreen = () => {
             registertime: timestamp,
           });
         auth().signInAnonymously();
-
         const documentSnapshot = await res.get();
         const userArrayID = res._documentPath._parts;
         const userID = userArrayID[1];

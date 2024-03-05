@@ -49,32 +49,44 @@ const LoginScreen = () => {
   const handleNavigationToRegisterScreen = () => {
     navigation.navigate('Register');
   };
+
+  let userID = '';
   const handleSubmit = async () => {
     try {
       const querySnapshot = await firestore().collection('users')
         .where('mothername', '==', formData.mothername)
         .where('name', '==', formData.name)
         .get();
-      if (!querySnapshot.empty) {
+      if (querySnapshot.empty) {
+        toast.show({
+          render: () => {
+            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              This user does not exist!
+            </Box>;
+          },
+        });
+      }
+      else {
+        querySnapshot.forEach((doc) => {
+          // Access the document ID of the document that matches the query
+          const documentID = doc.id;
+          userID = documentID;
+          console.log('documentID is :', documentID);
+        });
         handleNavigateToFrameScreen();
         const payload = {
-          userID: user.userID,
+          userID: userID,
           name: formData.name,
           mothername: formData.mothername,
           email: formData.email,
         };
         dispatch(setUserData(payload));
       }
-      else {
-        toast.show({
-          render: () => {
-            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              This user does not exit!
-            </Box>;
-          },
-        });
-      }
-    } catch {
+
+    }
+    catch (err) {
+
+      console.log('Error is :', err);
       toast.show({
         render: () => {
           return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>

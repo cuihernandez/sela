@@ -10,12 +10,16 @@ import {
   Box,
   HStack,
   useToast,
+  FormControl,
+  WarningOutlineIcon,
 } from 'native-base';
-
+import { useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
+import { setTransaction } from '../redux/actions/transactionAction';
 import Header from './Components/Header';
 import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
-import { useNavigation } from '@react-navigation/native';
-
+import Const from '../Utils/Const';
 
 
 const RegisterPatientScreen = () => {
@@ -25,15 +29,20 @@ const RegisterPatientScreen = () => {
   const [patientName, setPatientName] = useState('');
   const [patientMotherName, setPatientMotherName] = useState('');
   const [patientEmail, setPatientEmail] = useState('');
+  const [nameError, setNameError] = useState(false);
+  const [motherNameError, setMotherNameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
   const [price, setPrice] = useState('');
   const [selectedButton, setSelectedButton] = useState(null);
   const handleButtonSelect = buttonNumber => {
     setSelectedButton(buttonNumber);
   };
-
+  const userID = useSelector(state => state.user.userID);
+  const trans = useSelector(state => state.transaction);
+  const { donorID, donorData } = Const();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
-
+  const dispatch = useDispatch();
   const styles = StyleSheet.create({
     container: {
       // alignContent: 'flex-end',
@@ -71,10 +80,34 @@ const RegisterPatientScreen = () => {
     },
   });
 
-  const handleSubmit = () => {
-    console.log('The transaction value is:', price);
-    console.log('selected button number is:', selectedButton);
+  const test = () => {
 
+    console.log('patient Name:', patientName, 'patient Mother name:', patientMotherName, 'patient email:', patientEmail);
+
+    console.log("Donor Data:", donorData, donorID);
+
+  }
+
+  const handleSubmit = async () => {
+
+    if (patientName.trim() === '') {
+      setNameError(true);
+    } else {
+      setNameError(false);
+    }
+
+    if (patientMotherName.trim() === '') {
+      setMotherNameError(true);
+    } else {
+      setMotherNameError(false);
+    }
+
+    if (patientEmail.trim() === '') {
+      setEmailError(true);
+    } else {
+      setEmailError(false);
+    }
+    const timestamp = Date(Date.now());
     if (price === '') {
       console.log('okay');
       if (selectedButton == null) {
@@ -87,12 +120,59 @@ const RegisterPatientScreen = () => {
         });
       }
       else {
-
+        const transactionData = {
+          donorID: userID,
+          date: timestamp,
+          doneeName: patientName,
+          doneeMotherName: patientMotherName,
+          doneeEmail: patientEmail,
+          transactionAmount: selectedButton
+        };
+        const res = await firestore()
+          .collection('transaction')
+          .add({
+            donorID: userID,
+            date: timestamp,
+            doneeName: patientName,
+            doneeMotherName: patientMotherName,
+            doneeEmail: patientEmail,
+            transactionAmount: selectedButton
+          });
+        dispatch(setTransaction(transactionData));
+        console.log('transactionInfo----', trans);
+        toast.show({
+          render: () => {
+            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              Payment Successfully!
+            </Box>;
+          },
+        });
       }
+
     }
     else {
-      console.log('no');
-
+      const transactionDatas = {
+        donorID: userID,
+        date: timestamp,
+        doneeName: patientName,
+        doneeMotherName: patientMotherName,
+        doneeEmail: patientEmail,
+        transactionAmount: price
+      };
+      const res = await firestore()
+        .collection('transaction')
+        .add({
+          transactionDatas
+        });
+      dispatch(setTransaction(transactionDatas));
+      console.log('transactionInfo', trans);
+      toast.show({
+        render: () => {
+          return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+            Payment Successfully!
+          </Box>;
+        },
+      });
     }
   };
   return (
@@ -130,43 +210,60 @@ const RegisterPatientScreen = () => {
 
         <View style={styles.container}>
           <Box margin={(screenWidth * 3) / 100}>
-            <Text
-              marginRight={(screenWidth * 5) / 100}
-              marginBottom={(screenHeight * 1) / 100}
-              color="#1E0050">שם פרטי</Text>
-            <Input
-              variant="unstyled"
-              placeholder="שם פרטי"
-              style={styles.input}
-              value={patientName}
-              onChangeText={setPatientName}
-            />
-            <Text
-              marginRight={(screenWidth * 5) / 100}
-              marginTop={(screenHeight * 2) / 100}
-              marginBottom={(screenHeight * 1) / 100}
-              color="#1E0050">שם האם</Text>
-            <Input
-              variant="unstyled"
-              placeholder="שם האם"
-              style={styles.input}
-              value={patientMotherName}
-              onChangeText={setPatientMotherName}
-            />
-            <Text
-              marginRight={(screenWidth * 5) / 100}
-              marginTop={(screenHeight * 2) / 100}
-              marginBottom={(screenHeight * 1) / 100}
-              color="#1E0050">אימייל</Text>
-            <Input
-              variant="unstyled"
-              placeholder="הזן אימייל"
-              style={styles.input}
-              value={patientEmail}
-              onChangeText={setPatientEmail}
-            />
+            <Center>
+              <FormControl isInvalid={nameError} w="100%" >
+                <Text
+                  marginRight={(screenWidth * 5) / 100}
+                  marginBottom={(screenHeight * 1) / 100}
+                  color="#1E0050">שם פרטי</Text>
+                <Input style={styles.input} variant={'unstyled'} placeholder="שם פרטי"
+                  value={patientName}
+                  onChangeText={setPatientName}
+                />
+                <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                  Please Enter Name
+                </FormControl.ErrorMessage>
+              </FormControl>
+            </Center>
+            <Center>
+              <FormControl isInvalid={motherNameError} w="100%" >
+                <Text
+                  marginRight={(screenWidth * 5) / 100}
+                  marginTop={(screenHeight * 2) / 100}
+                  marginBottom={(screenHeight * 1) / 100}
+                  color="#1E0050">שם האם</Text>
+                <Input
+                  style={styles.input}
+                  variant={'unstyled'}
+                  placeholder="שם האם"
+                  value={patientMotherName}
+                  onChangeText={setPatientMotherName}
+                />
+                <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                  Please Enter Mother Name
+                </FormControl.ErrorMessage>
+              </FormControl>
+            </Center>
+            <Center>
+              <FormControl isInvalid={emailError} w="100%" >
+                <Text
+                  marginRight={(screenWidth * 5) / 100}
+                  marginTop={(screenHeight * 2) / 100}
+                  marginBottom={(screenHeight * 1) / 100}
+                  color="#1E0050">אימייל</Text>
+                <Input
+                  style={styles.input}
+                  variant={'unstyled'}
+                  placeholder="הזן אימייל"
+                  value={patientEmail}
+                  onChangeText={setPatientEmail}
+                />
+                <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                  Pleae Enter Email
+                </FormControl.ErrorMessage>
+              </FormControl>
+            </Center>
           </Box>
-
           <View padding={(screenWidth * 1) / 100}>
             <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
               בחר מחיר (שקלים)
