@@ -1,23 +1,20 @@
 /* eslint-disable prettier/prettier */
 import { React, useState, useEffect } from 'react';
-import { ArrowBackIcon, Box, Button, Center, HStack, Image, Input, Text, View, ScrollView, FormControl, Modal } from 'native-base';
-import { TouchableOpacity, Dimensions } from 'react-native';
+import { ArrowBackIcon, AddIcon, Box, Button, Center, HStack, Image, Input, Text, View, ScrollView, FormControl, Modal } from 'native-base';
+import { TouchableOpacity, Dimensions, } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-import { firestore } from '@react-native-firebase/firestore';
 
 import Header from './Components/Header.js';
 import TestimonalsText from './Components/TestimonalsText.js';
 
 const TestimonialsScreens = () => {
   const navigation = useNavigation();
-
-  const screenWidth = Dimensions.get('window').width;
-  const screenHeight = Dimensions.get('window').height;
-
   const [name, setName] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [content, setContent] = useState([]);
+  const handleNavigateToFrame1Screen = () => {
+    navigation.navigate('Frame1');
+  };
   const handleInputChange = (text) => {
     setInputValue(text);
   };
@@ -55,7 +52,7 @@ const TestimonialsScreens = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <TouchableOpacity onPress={navigation.goBack}>
+        <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
           <ArrowBackIcon color="white" size={4} />
         </TouchableOpacity>
         <Text
@@ -69,7 +66,7 @@ const TestimonialsScreens = () => {
         <Box />
       </HStack>
       <Box flex={1} alignItems="center">
-        <ScrollView backgroundColor="amber.200">
+        <ScrollView >
           <View
             borderRadius="30"
             backgroundColor="#F1E6FF"
@@ -175,17 +172,9 @@ const TestimonialsScreens = () => {
           ))}
         </ScrollView>
         <View>
-          {/* <Input
-            placeholder="Enter value"
-            onChangeText={handleInputChange}
-            value={inputValue}
-          />
-          <Button onPress={handleButtonPress}>
-            <Text>Add to Array</Text>
-          </Button> */}
           {/* Plus Button */}
           <Center>
-            <Button onPress={() => setShowModal(true)}>+</Button>
+            <Button bgColor={'#560FC9'} borderRadius={50} marginBottom="10" onPress={() => setShowModal(true)}><AddIcon color={"white"} /></Button>
             <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
               <Modal.Content maxWidth="400px">
                 <Modal.CloseButton />

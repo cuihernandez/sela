@@ -28,6 +28,9 @@ const EditProfileScreen = () => {
     const [motherNameError, setMotherNameError] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const navigation = useNavigation();
+    const handleNavigateToFrame1Screen = () => {
+        navigation.navigate('Frame1');
+    };
     const ID = useSelector(state => state.user.userID);
     const userData = useSelector(state => state.user);
     const screenWidth = Dimensions.get('window').width;
@@ -96,7 +99,7 @@ const EditProfileScreen = () => {
                 borderBottomRadius={'40'}
                 height={screenHeight * 14 / 100}>
                 <Box>
-                    <TouchableOpacity onPress={navigation.goBack}>
+                    <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
                         <ArrowBackIcon color="white" size={4} marginLeft="2" />
                     </TouchableOpacity>
                 </Box>

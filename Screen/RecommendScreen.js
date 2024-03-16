@@ -14,6 +14,10 @@ import icon_copy from '../Image/icon_copy.png';
 const RecommendScreen = () => {
     const screenHeight = Dimensions.get('window').height;
     const navigation = useNavigation();
+    const handleNavigateToFrame1Screen = () => {
+        navigation.navigate('Frame1');
+    };
+
     return (
         <>
             <Header />
@@ -28,7 +32,7 @@ const RecommendScreen = () => {
                 backgroundColor={'#560FC9'}
                 borderBottomRadius={'40'}
                 height={(screenHeight * 12) / 100}>
-                <TouchableOpacity onPress={navigation.goBack}>
+                <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
                     <ArrowBackIcon color="white" size={4} marginLeft="1" />
                 </TouchableOpacity>
 
@@ -68,15 +72,8 @@ const RecommendScreen = () => {
                     <Avatar bg="#F1E6FF">
                         <Image source={avatar_instagram} alt="avatar_instagram" />
                     </Avatar>
-                    <Avatar bg="rgba(0, 0, 0, 0)">
-                        <Image source={dot} alt="dot" />
-                    </Avatar>
                 </HStack>
             </Box>
-
-            <View alignItems="center" justifyContent="center" marginBottom="4">
-                <Text color="#D6B7FF" margin="3">תנאי שירות</Text>
-            </View>
         </>
     );
 };

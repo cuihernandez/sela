@@ -19,10 +19,9 @@ import firestore from '@react-native-firebase/firestore';
 import { setTransaction } from '../redux/actions/transactionAction';
 import Header from './Components/Header';
 import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
-import Const from '../Utils/Const';
-
 
 const RegisterPatientScreen = () => {
+
   const toast = useToast();
   const navigation = useNavigation();
   const buttontext = [10, 20, 50, 100, 200];
@@ -33,24 +32,22 @@ const RegisterPatientScreen = () => {
   const [motherNameError, setMotherNameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [price, setPrice] = useState('');
-  const [selectedButton, setSelectedButton] = useState(null);
-  const handleButtonSelect = buttonNumber => {
-    setSelectedButton(buttonNumber);
-  };
   const userID = useSelector(state => state.user.userID);
   const trans = useSelector(state => state.transaction);
-  const { donorID, donorData } = Const();
+  const handleNavigateToFrame1Screen = () => {
+    navigation.navigate('Frame1');
+  };
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const dispatch = useDispatch();
+
   const styles = StyleSheet.create({
     container: {
-      // alignContent: 'flex-end',
+      alignContent: 'space-between',
       backgroundColor: 'white',
       borderTopLeftRadius: (screenWidth * 5) / 100, // 5% of screen width
       borderTopRightRadius: (screenWidth * 5) / 100, // 5% of screen width
-      marginTop: (screenHeight * 16.5
-      ) / 100, // 1% of screen height
+      marginTop: (screenHeight * 22) / 100, // 1% of screen height
       padding: (screenWidth * 2) / 100, // 2% of screen width
     },
     backgroundImage: {
@@ -69,7 +66,7 @@ const RegisterPatientScreen = () => {
       padding: (screenWidth * 1) / 100, // 1% of screen width
       height: (screenHeight * 5) / 100,
       backgroundColor: '#F1E6FF',
-      color: '#D6B7FF',
+      color: 'black',
       borderRadius: (screenWidth * 5) / 100, // 1.5% of screen width
     },
     button: {
@@ -80,28 +77,17 @@ const RegisterPatientScreen = () => {
     },
   });
 
-  const test = () => {
-
-    console.log('patient Name:', patientName, 'patient Mother name:', patientMotherName, 'patient email:', patientEmail);
-
-    console.log("Donor Data:", donorData, donorID);
-
-  }
-
   const handleSubmit = async () => {
-
     if (patientName.trim() === '') {
       setNameError(true);
     } else {
       setNameError(false);
     }
-
     if (patientMotherName.trim() === '') {
       setMotherNameError(true);
     } else {
       setMotherNameError(false);
     }
-
     if (patientEmail.trim() === '') {
       setEmailError(true);
     } else {
@@ -110,45 +96,13 @@ const RegisterPatientScreen = () => {
     const timestamp = Date(Date.now());
     if (price === '') {
       console.log('okay');
-      if (selectedButton == null) {
-        toast.show({
-          render: () => {
-            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              Please Enter the Donate Price!
-            </Box>;
-          },
-        });
-      }
-      else {
-        const transactionData = {
-          donorID: userID,
-          date: timestamp,
-          doneeName: patientName,
-          doneeMotherName: patientMotherName,
-          doneeEmail: patientEmail,
-          transactionAmount: selectedButton
-        };
-        const res = await firestore()
-          .collection('transaction')
-          .add({
-            donorID: userID,
-            date: timestamp,
-            doneeName: patientName,
-            doneeMotherName: patientMotherName,
-            doneeEmail: patientEmail,
-            transactionAmount: selectedButton
-          });
-        dispatch(setTransaction(transactionData));
-        console.log('transactionInfo----', trans);
-        toast.show({
-          render: () => {
-            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              Payment Successfully!
-            </Box>;
-          },
-        });
-      }
-
+      toast.show({
+        render: () => {
+          return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+            Please Enter the Donate Price!
+          </Box>;
+        },
+      });
     }
     else {
       const transactionDatas = {
@@ -157,12 +111,17 @@ const RegisterPatientScreen = () => {
         doneeName: patientName,
         doneeMotherName: patientMotherName,
         doneeEmail: patientEmail,
-        transactionAmount: price
+        transactionAmount: parseFloat(price)
       };
       const res = await firestore()
         .collection('transaction')
         .add({
-          transactionDatas
+          donorID: userID,
+          date: timestamp,
+          doneeName: patientName,
+          doneeMotherName: patientMotherName,
+          doneeEmail: patientEmail,
+          transactionAmount: parseFloat(price)
         });
       dispatch(setTransaction(transactionDatas));
       console.log('transactionInfo', trans);
@@ -190,7 +149,7 @@ const RegisterPatientScreen = () => {
             position="relative"
             bg="#560FC9"
             marginBottom={(screenWidth * 4) / 100}>
-            <TouchableOpacity onPress={navigation.goBack}>
+            <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
               <ArrowBackIcon
                 color="#ffffff"
                 marginTop={(screenWidth * 4) / 100}
@@ -266,34 +225,15 @@ const RegisterPatientScreen = () => {
           </Box>
           <View padding={(screenWidth * 1) / 100}>
             <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
-              בחר מחיר (שקלים)
+              וריבעת ףסכ
+              וחלשתו טיבב
+              ךסמ םוליצ
             </Text>
-            <View style={styles.buttongroup} justifyContent="space-evenly">
-              {buttontext.map(buttonNumber => (
-                <Button
-                  key={buttonNumber}
-                  onPress={() => handleButtonSelect(buttonNumber)}
-                  backgroundColor={
-                    selectedButton === buttonNumber ? '#560FC9' : '#FFFFFF'
-                  }
-                  borderColor="#8F80A7"
-                  borderWidth={1}
-                  _text={{
-                    color: selectedButton === buttonNumber ? '#FFFFFF' : '#8F80A7',
-                  }}
-                  // size="sm"
-                  width={(screenWidth * 12) / 100}
-                  height={(screenHeight * 6.5) / 100}
-                  style={styles.button}>
-                  {buttonNumber}
-                </Button>
-              ))}
-            </View>
             <View style={styles.buttongroup}>
               <Input
                 variant="unstyled"
                 style={styles.input}
-                placeholder="הזן סכום מותאם אישית"
+                placeholder="ןזהוכסם"
                 width="50%"
                 value={price}
                 keyboardType="numeric"
@@ -312,7 +252,7 @@ const RegisterPatientScreen = () => {
                 onPress={handleSubmit}
               >
                 <HStack space="2" alignItems="center">
-                  <Text color="white">בצע תשלום</Text>
+                  <Text color="white">רימשה</Text>
                   <Image
                     source={require('../Image/bit.png')}
                     alt="bit"

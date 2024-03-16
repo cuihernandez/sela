@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import { React, useEffect, useState } from 'react';
 import {
   ArrowForwardIcon,
   Box,
@@ -12,6 +12,7 @@ import {
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 
 const FrameScreen1 = () => {
   const navigation = useNavigation();
@@ -21,6 +22,26 @@ const FrameScreen1 = () => {
   const user = useSelector(state => state.user);
   const name = user.name;
   const mothername = user.mothername;
+  const [firstText, setFirstText] = useState('');
+  const [secondText, setSecondText] = useState(''); `sltion
+  `
+  useEffect(() => {
+    const getText = async () => {
+      try {
+        const snapshot = await firestore()
+          .collection('notice')
+          .get();
+        const res = snapshot.docs;
+        setFirstText(res[0].data().text);
+        setSecondText(res[1].data().text);
+      }
+      catch (error) {
+        console.error('This is error:', error)
+      }
+    }
+    getText();
+  }
+    , [])
   return (
     <>
       <Header />
@@ -50,9 +71,7 @@ const FrameScreen1 = () => {
           margin="10"
           padding="5">
           <Text color="#8F80A7">
-            מִי שֶׁבֵּרַךְ אֲבוֹתֵינוּ אַבְרָהָם יִצְחָק וְיַעֲקֹב הוּא יְבָרֵךְ
-            את {name} בן {mothername}ת שכל משאלות ליבו יתגשמו לטובה ולברכה, בשמחה
-            יקרב...
+            {firstText}{name} בן {mothername} {secondText}
           </Text>
         </View>
       </Box>

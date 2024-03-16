@@ -1,18 +1,38 @@
 /* eslint-disable prettier/prettier */
-import { React, useEffect } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { React, useEffect, useState } from 'react';
+import { View, Image, StyleSheet, BackHandler } from 'react-native';
+import { Center, Modal, Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 const SplashScreen = () => {
   //State for AcitivityIndicator animation
+  const [showModal, setShowModal] = useState(false);
   const navigation = useNavigation();
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.navigate('Login'); // Navigate to the Register page after 5 seconds
-    }, 5000);
-
-    return () => clearTimeout(timer);
+    const getText = async () => {
+      try {
+        const snapshot = await firestore()
+          .collection('mobileStatus')
+          .get();
+        const res = snapshot.docs;
+        const mobileStatus = res[0]._data.status;
+        console.log('The mobile status is', mobileStatus)
+        if (mobileStatus === true) {
+          navigation.navigate('Login');
+        }
+        else {
+          setShowModal(true);
+        }
+      }
+      catch (error) {
+        console.error('This is error:', error)
+      }
+    }
+    getText();
   }, [navigation]);
+  const handleCloseApp = () => {
+    BackHandler.exitApp(); // Exit the app
+  };
   return (
     <View style={styles.container}>
       <Image
@@ -20,6 +40,24 @@ const SplashScreen = () => {
         style={styles.backgroundImage}
         resizeMode="cover"
       />
+      {showModal && (
+        <Center>
+          <Modal isOpen={showModal}>
+            <Modal.Content maxWidth="350" maxH="212">
+              <Modal.CloseButton />
+              <Modal.Header>Today is Holiday!</Modal.Header>
+              <Modal.Body>
+                Our Sela Company don't work on Holiday!
+              </Modal.Body>
+              <Modal.Footer>
+                <Center>
+                  <Button onPress={handleCloseApp}>Close App</Button>
+                </Center>
+              </Modal.Footer>
+            </Modal.Content>
+          </Modal>
+        </Center>
+      )}
     </View>
   );
 };

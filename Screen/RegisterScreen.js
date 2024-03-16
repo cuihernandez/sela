@@ -16,8 +16,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { useDispatch, useSelector } from 'react-redux';
-// import { setUser } from '../store/userSlice';
+import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/actions/userAction';
 import { connect } from 'react-redux';
 const RegisterScreen = () => {
@@ -29,7 +28,7 @@ const RegisterScreen = () => {
   const toast = useToast();
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+
   const handleRegister = async () => {
     console.log('Handle Register Button');
     try {
@@ -103,18 +102,18 @@ const RegisterScreen = () => {
         <View style={styles.safearea}>
           <FormControl isInvalid={'name' in errors}>
             <Text style={styles.text}>שם פרטי</Text>
-            <Input placeholder="שם פרטי" value={name} onChangeText={setName} color="#D6B7FF" borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+            <Input placeholder="שם פרטי" value={name} onChangeText={setName} color="black" borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
             {'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
           </FormControl>
           <FormControl isInvalid={'motherName' in errors}>
             <Text style={styles.text}>שם האם</Text>
-            <Input placeholder="שם האם" value={mothername} color="#D6B7FF" onChangeText={setMotherName} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+            <Input placeholder="שם האם" value={mothername} color="black" onChangeText={setMotherName} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
             {'motherName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.motherName}</FormControl.ErrorMessage>}
           </FormControl>
 
           <FormControl isInvalid={'email' in errors}>
             <Text style={styles.text}>אמייל (אופציונלי)</Text>
-            <Input placeholder="אמייל" value={email} color="#D6B7FF" onChangeText={setEmail} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+            <Input placeholder="אמייל" value={email} color="black" onChangeText={setEmail} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
             {'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
           </FormControl>
           <HStack space={10} justifyContent="center">
