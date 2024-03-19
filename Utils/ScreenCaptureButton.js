@@ -2,14 +2,14 @@
 import React from 'react';
 import { captureScreen } from 'react-native-view-shot';
 import RNFS from 'react-native-fs';
-import { Button, useToast, Box, HStack, Image, Text } from 'native-base';
+import { Button, useToast, Box, HStack, Image, Text, } from 'native-base';
 import { Dimensions, PermissionsAndroid, Platform, StyleSheet } from 'react-native';
 
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 
-const CaptureScreen = () => {
+const CaptureScreen = (props) => {
     const toast = useToast();
     const captureAndSaveScreen = async () => {
         try {
@@ -86,14 +86,17 @@ const CaptureScreen = () => {
 
     return <Button style={styles.button} onPress={captureAndSaveScreen}>
         <HStack alignItems="center">
-            <Text color="#ffffff" marginRight="2">
-                שמור צילום מסך
+            <Text color="#ffffff">
+                {props.text}
             </Text>
             <Image
-                source={require('../Image/icon_download.png')}
+                source={require('../Image/icons8-download-64.png')}
                 alignItems="center"
                 alt="download"
+                style={{ width: 26, height: 26 }}
+                resizeMode="contain"
             />
+            {/* <img width="64" height="64" src="https://img.icons8.com/pastel-glyph/64/000000/download--v1.png" alt="download--v1" /> */}
         </HStack>
 
     </Button>;
@@ -105,9 +108,8 @@ const styles = StyleSheet.create({
 
     button: {
         height: (screenHeight * 5) / 100,
-        borderRadius: (screenWidth * 4) / 100, // 1.5% of screen width
-        margin: (screenWidth * 0.75) / 100, // 0.75% of screen width
-        padding: (screenWidth * 0.75) / 100, // 0.75% of screen width
+        borderRadius: (screenHeight * 1.5) / 100,
+        margin: 2, // 0.75% of screen width
         backgroundColor: '#560FC9',
     },
 });

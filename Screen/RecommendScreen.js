@@ -50,28 +50,38 @@ const RecommendScreen = () => {
             </HStack>
             <Box flex={1} alignItems="center">
                 <View margin="10" padding="5">
-                    <Link href="https://docs.nativebase.io/link" alignItems="center" justifyContent="space-around" backgroundColor="#F1E6FF">
+                    <Link href="#" alignItems="center" justifyContent="space-around" backgroundColor="#F1E6FF">
                         <Text color="#1E0050" marginRight="4" marginLeft="4">www.hebrewsparys.co</Text>
                         <Image source={icon_copy}
                             alt="copy" />
                     </Link>
                 </View>
                 <HStack justifyContent="center" space={2}>
-                    <Avatar bg="#F1E6FF">
-                        <Image source={avatar_gmail} alt="avatar_gmail" />
-                    </Avatar>
-                    <Avatar bg="#F1E6FF">
-                        <Image source={avatar_facebook} alt="avatar_facebook" />
-                    </Avatar>
-                    <Avatar bg="#F1E6FF">
-                        <Image source={avatar_twitter} alt="avatar_twitter" />
-                    </Avatar>
-                    <Avatar bg="#F1E6FF">
-                        <Image source={avatar_whatsapp} alt="avatar_whatsapp" />
-                    </Avatar>
-                    <Avatar bg="#F1E6FF">
-                        <Image source={avatar_instagram} alt="avatar_instagram" />
-                    </Avatar>
+                    <Link href='https://mail.google.com/'>
+                        <Avatar bg="#F1E6FF">
+                            <Image source={avatar_gmail} alt="avatar_gmail" />
+                        </Avatar>
+                    </Link>
+                    <Link href='https://www.facebook.com/'>
+                        <Avatar bg="#F1E6FF">
+                            <Image source={avatar_facebook} alt="avatar_facebook" />
+                        </Avatar>
+                    </Link>
+                    <Link href='https://twitter.com'>
+                        <Avatar bg="#F1E6FF">
+                            <Image source={avatar_twitter} alt="avatar_twitter" />
+                        </Avatar>
+                    </Link>
+                    <Link href='https://www.whatsapp.com/'>
+                        <Avatar bg="#F1E6FF">
+                            <Image source={avatar_whatsapp} alt="avatar_whatsapp" />
+                        </Avatar>
+                    </Link>
+                    <Link href='https://instagram.google.com/'>
+                        <Avatar bg="#F1E6FF">
+                            <Image source={avatar_instagram} alt="avatar_instagram" />
+                        </Avatar>
+                    </Link>
                 </HStack>
             </Box>
         </>

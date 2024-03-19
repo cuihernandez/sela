@@ -12,6 +12,7 @@ import {
   useToast,
   FormControl,
   WarningOutlineIcon,
+  ScrollView
 } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -24,7 +25,6 @@ const RegisterPatientScreen = () => {
 
   const toast = useToast();
   const navigation = useNavigation();
-  const buttontext = [10, 20, 50, 100, 200];
   const [patientName, setPatientName] = useState('');
   const [patientMotherName, setPatientMotherName] = useState('');
   const [patientEmail, setPatientEmail] = useState('');
@@ -42,13 +42,16 @@ const RegisterPatientScreen = () => {
   const dispatch = useDispatch();
 
   const styles = StyleSheet.create({
+    scrollContainer: {
+      flex: 1,
+    },
     container: {
-      alignContent: 'space-between',
       backgroundColor: 'white',
       borderTopLeftRadius: (screenWidth * 5) / 100, // 5% of screen width
       borderTopRightRadius: (screenWidth * 5) / 100, // 5% of screen width
-      marginTop: (screenHeight * 22) / 100, // 1% of screen height
+      // marginTop: (screenHeight * 22) / 100, // 1% of screen height
       padding: (screenWidth * 2) / 100, // 2% of screen width
+
     },
     backgroundImage: {
       width: screenWidth,
@@ -58,8 +61,9 @@ const RegisterPatientScreen = () => {
       justifyContent: 'center',
     },
     buttongroup: {
+      alignItems: 'center',
       flexDirection: 'row',
-      justifyContent: 'center',
+      justifyContent: 'space-around',
       padding: (screenWidth * 1) / 100, // 1% of screen width
     },
     input: {
@@ -136,138 +140,144 @@ const RegisterPatientScreen = () => {
   };
   return (
     <>
-      <View>
-        <View>
-          <Image
-            source={require('../Image/reg_patient.png')}
-            style={styles.backgroundImage}
-            resizeMode="cover"
-            alt="background"
-          />
-          <Header />
-          <Box
-            position="relative"
-            bg="#560FC9"
-            marginBottom={(screenWidth * 4) / 100}>
-            <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-              <ArrowBackIcon
-                color="#ffffff"
-                marginTop={(screenWidth * 4) / 100}
-                marginLeft={(screenWidth * 6) / 100}
-              />
-            </TouchableOpacity>
-            <Text
-              textAlign="center"
-              fontSize={(screenWidth * 9.5) / 100}
-              color="#ffffff"
-              fontWeight="bold"
-            >
-              רישום חולה לתפילה
-            </Text>
-          </Box>
-        </View>
+      <View
+        style={{ flex: 1 }}
+      >
+        <Image
+          source={require('../Image/reg_patient.png')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
+          alt="background"
+        />
 
-        <View style={styles.container}>
-          <Box margin={(screenWidth * 3) / 100}>
-            <Center>
-              <FormControl isInvalid={nameError} w="100%" >
-                <Text
-                  marginRight={(screenWidth * 5) / 100}
-                  marginBottom={(screenHeight * 1) / 100}
-                  color="#1E0050">שם פרטי</Text>
-                <Input style={styles.input} variant={'unstyled'} placeholder="שם פרטי"
-                  value={patientName}
-                  onChangeText={setPatientName}
+        <ScrollView style={styles.scrollContainer} contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
+          {/* <View style={{ flex: 1, justifyContent: 'space-between' }}> */}
+          <Box>
+            <Header />
+            <Box
+              position="relative"
+              bg="#560FC9"
+              marginBottom={(screenWidth * 4) / 100}>
+              <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
+                <ArrowBackIcon
+                  color="#ffffff"
+                  marginTop={(screenWidth * 4) / 100}
+                  marginLeft={(screenWidth * 6) / 100}
                 />
-                <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                  Please Enter Name
-                </FormControl.ErrorMessage>
-              </FormControl>
-            </Center>
-            <Center>
-              <FormControl isInvalid={motherNameError} w="100%" >
-                <Text
-                  marginRight={(screenWidth * 5) / 100}
-                  marginTop={(screenHeight * 2) / 100}
-                  marginBottom={(screenHeight * 1) / 100}
-                  color="#1E0050">שם האם</Text>
-                <Input
-                  style={styles.input}
-                  variant={'unstyled'}
-                  placeholder="שם האם"
-                  value={patientMotherName}
-                  onChangeText={setPatientMotherName}
-                />
-                <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                  Please Enter Mother Name
-                </FormControl.ErrorMessage>
-              </FormControl>
-            </Center>
-            <Center>
-              <FormControl isInvalid={emailError} w="100%" >
-                <Text
-                  marginRight={(screenWidth * 5) / 100}
-                  marginTop={(screenHeight * 2) / 100}
-                  marginBottom={(screenHeight * 1) / 100}
-                  color="#1E0050">אימייל</Text>
-                <Input
-                  style={styles.input}
-                  variant={'unstyled'}
-                  placeholder="הזן אימייל"
-                  value={patientEmail}
-                  onChangeText={setPatientEmail}
-                />
-                <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                  Pleae Enter Email
-                </FormControl.ErrorMessage>
-              </FormControl>
-            </Center>
-          </Box>
-          <View padding={(screenWidth * 1) / 100}>
-            <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
-              וריבעת ףסכ
-              וחלשתו טיבב
-              ךסמ םוליצ
-            </Text>
-            <View style={styles.buttongroup}>
-              <Input
-                variant="unstyled"
-                style={styles.input}
-                placeholder="ןזהוכסם"
-                width="50%"
-                value={price}
-                keyboardType="numeric"
-                onChangeText={setPrice}
-              />
-              {/* Screen Capture Button */}
-              <ScreenCaptureButton />
-            </View>
-            <Center padding={(screenWidth * 2) / 100}>
-              <Button
-                style={styles.button}
-                backgroundColor="#560FC9"
-                width="50%"
-                height={(screenHeight * 5.6) / 100}
-                _text={{ fontSize: (screenWidth * 4) / 100 }}
-                onPress={handleSubmit}
+              </TouchableOpacity>
+              <Text
+                textAlign="center"
+                fontSize={(screenWidth * 9.5) / 100}
+                color="#ffffff"
+                fontWeight="bold"
               >
-                <HStack space="2" alignItems="center">
-                  <Text color="white">רימשה</Text>
-                  <Image
-                    source={require('../Image/bit.png')}
-                    alt="bit"
-                    size={8} // Adjust the size as needed
-                    ml={2} // Add margin to separate text and image
+                רישום חולה לתפילה
+              </Text>
+            </Box>
+          </Box>
+
+          <Box style={styles.container}>
+            <Box margin={(screenWidth * 3) / 100}>
+              <Center>
+                <FormControl isInvalid={nameError} w="100%" >
+                  <Text
+                    marginRight={(screenWidth * 5) / 100}
+                    marginBottom={(screenHeight * 1) / 100}
+                    color="#1E0050">שם פרטי</Text>
+                  <Input style={styles.input} variant={'unstyled'} placeholder="שם פרטי"
+                    value={patientName}
+                    onChangeText={setPatientName}
                   />
-                </HStack>
-              </Button>
-            </Center>
-            <Center padding={(screenWidth * 3) / 100}>
-              <Text color="#1E0050">תנאי שירות(Terms & conditions)</Text>
-            </Center>
-          </View>
-        </View>
-      </View >
+                  <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                    Please Enter Name
+                  </FormControl.ErrorMessage>
+                </FormControl>
+              </Center>
+              <Center>
+                <FormControl isInvalid={motherNameError} w="100%" >
+                  <Text
+                    marginRight={(screenWidth * 5) / 100}
+                    marginTop={(screenHeight * 2) / 100}
+                    marginBottom={(screenHeight * 1) / 100}
+                    color="#1E0050">שם האם</Text>
+                  <Input
+                    style={styles.input}
+                    variant={'unstyled'}
+                    placeholder="שם האם"
+                    value={patientMotherName}
+                    onChangeText={setPatientMotherName}
+                  />
+                  <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                    Please Enter Mother Name
+                  </FormControl.ErrorMessage>
+                </FormControl>
+              </Center>
+              <Center>
+                <FormControl isInvalid={emailError} w="100%" >
+                  <Text
+                    marginRight={(screenWidth * 5) / 100}
+                    marginTop={(screenHeight * 2) / 100}
+                    marginBottom={(screenHeight * 1) / 100}
+                    color="#1E0050">אימייל</Text>
+                  <Input
+                    style={styles.input}
+                    variant={'unstyled'}
+                    placeholder="הזן אימייל"
+                    value={patientEmail}
+                    onChangeText={setPatientEmail}
+                  />
+                  <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                    Pleae Enter Email
+                  </FormControl.ErrorMessage>
+                </FormControl>
+              </Center>
+            </Box>
+            <Box padding={(screenWidth * 1) / 100}>
+              <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
+                וריבעת ףסכ
+                וחלשתו טיבב
+                ךסמ םוליצ
+              </Text>
+              <Box style={styles.buttongroup}>
+                <Input
+                  variant="unstyled"
+                  style={styles.input}
+                  placeholder="ןזהוכסם"
+                  width="50%"
+                  value={price}
+                  keyboardType="numeric"
+                  onChangeText={setPrice}
+                />
+                {/* Screen Capture Button */}
+                <ScreenCaptureButton text=' שמור צילום מסך' />
+              </Box>
+              <Center padding={(screenWidth * 2) / 100}>
+                <Button
+                  style={styles.button}
+                  backgroundColor="#560FC9"
+                  width="50%"
+                  height={(screenHeight * 5.6) / 100}
+                  _text={{ fontSize: (screenWidth * 4) / 100 }}
+                  onPress={handleSubmit}
+                >
+                  <HStack space="2" alignItems="center">
+                    <Text color="white">רימשה</Text>
+                    <Image
+                      source={require('../Image/bit.png')}
+                      alt="bit"
+                      size={8} // Adjust the size as needed
+                      ml={2} // Add margin to separate text and image
+                    />
+                  </HStack>
+                </Button>
+              </Center>
+            </Box>
+          </Box>
+          {/* </View> */}
+        </ScrollView>
+
+      </View>
+
     </>
   );
 };

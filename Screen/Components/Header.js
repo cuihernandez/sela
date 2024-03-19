@@ -97,7 +97,6 @@ export default () => {
           .get();
         const count = snapshot.size;
         setTotalLoggedNumber(count);
-        console.log("Logged Number is :", count);
       }
       catch (error) {
         console.error("");

@@ -13,16 +13,29 @@ import {
   ScrollView,
   Center
 } from 'native-base';
+import { useSelector, useDispatch } from 'react-redux';
+import { setPearls } from '../../redux/actions/pearlsActions';
 import { TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 const FrameScreen1 = () => {
+  const dispatch = useDispatch();
   const [texts, setTexts] = useState([]);
+  const array = useSelector(state => state.pearls);
   const navigation = useNavigation();
   const handleNavigateToFrameScreen = () => {
     navigation.navigate('Frame1'); // Navigate to the 'FrameScreen' page
   };
+
+  const handleNextName = () => {
+    console.log('texts value is :--', texts[1]._data)
+    let nextIndex = array.currentIndex;
+    nextIndex = array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
+    dispatch(setPearls({ pearlsData: texts, currentIndex: nextIndex }))
+    handleNavigateToFrameScreen();
+  };
+
   useEffect(() => {
     const getText = async () => {
       try {
@@ -38,7 +51,7 @@ const FrameScreen1 = () => {
     }
     getText();
   }
-    , [])
+    , [texts])
   return (
     <>
       <Header />
@@ -75,22 +88,19 @@ const FrameScreen1 = () => {
           alt="configration"
         />
         <ScrollView width={'80%'}>
-          {texts.map((item) => (
-            <Center>
-              <View
-                borderRadius="15"
-                backgroundColor="#F1E6FF"
-                margin="2"
-                padding="5"
-                width='4/5'
-              >
-                <Text color="#8F80A7">
-                  {item._data.text}
-                </Text>
-              </View>
-            </Center>
-
-          ))}
+          <Center >
+            <View
+              borderRadius="15"
+              backgroundColor="#F1E6FF"
+              margin="2"
+              padding="5"
+              width='4/5'
+            >
+              <Text color="#8F80A7">
+                {texts.length > 0 && array.currentIndex >= 0 && texts[array.currentIndex]?._data.text}
+              </Text>
+            </View>
+          </Center>
         </ScrollView>
 
 
@@ -102,7 +112,7 @@ const FrameScreen1 = () => {
           borderRadius={15}
           marginRight="10"
           padding="2"
-          onPress={handleNavigateToFrameScreen}>
+          onPress={handleNextName}>
           <Flex direction="row" alignItems="center" justifyContent="center">
             <Text color="white" fontSize="16">
               {'  '}

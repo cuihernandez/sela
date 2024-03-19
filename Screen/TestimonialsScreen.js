@@ -1,14 +1,16 @@
 /* eslint-disable prettier/prettier */
 import { React, useState, useEffect } from 'react';
 import { ArrowBackIcon, AddIcon, Box, Button, Center, HStack, Image, Input, Text, View, ScrollView, FormControl, Modal } from 'native-base';
-import { TouchableOpacity, Dimensions, } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import firestore from '@react-native-firebase/firestore';
+import { useSelector } from 'react-redux';
 import Header from './Components/Header.js';
 import TestimonalsText from './Components/TestimonalsText.js';
 
 const TestimonialsScreens = () => {
   const navigation = useNavigation();
+  const user = useSelector(state => state.user);
   const [name, setName] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [content, setContent] = useState([]);
@@ -20,20 +22,39 @@ const TestimonialsScreens = () => {
   };
   const [showModal, setShowModal] = useState(false);
 
-  const handleButtonPress = () => {
+  const saveTestimonialToFirestore = async () => {
+
+    const res = await firestore()
+      .collection('testimonials')
+      .add(
+        {
+          userID: user.userID,
+          name: name,
+          text: inputValue,
+        }
+      )
+
+  }
+  const handleSave = () => {
     setShowModal(false);
-    let newContent = {
-      name,
-      text: inputValue,
-    };
-    setContent(previousContent => [
-      ...previousContent,
-      newContent,
-    ]);
-    setInputValue(''); // Clear input after pushing value
+    saveTestimonialToFirestore();
+
   };
 
   useEffect(() => {
+    const getText = async () => {
+      try {
+        const snapshot = await firestore()
+          .collection('testimonials')
+          .get();
+        const res = snapshot.docs;
+        setContent(res);
+      }
+      catch (error) {
+        console.error('This is error:', error)
+      }
+    }
+    getText();
     // Logic to handle array content change
     // For example, you can map over arrayContent here
     // and render Text components for each item
@@ -66,109 +87,10 @@ const TestimonialsScreens = () => {
         <Box />
       </HStack>
       <Box flex={1} alignItems="center">
-        <ScrollView >
-          <View
-            borderRadius="30"
-            backgroundColor="#F1E6FF"
-            marginLeft={10}
-            marginRight={10}
-            marginTop={10}>
-            <Image
-              marginLeft={2}
-              source={require('../Image/bi_quote.png')}
-              resizeMode="cover"
-              alt="quote"
-            />
-            <View
-              borderRadius="30"
-              backgroundColor="#F1E6FF"
-              marginLeft="2"
-              marginRight="2"
-              marginBottom="2"
-              paddingLeft="2"
-              paddingRight="2"
-              paddingBottom="3">
-              <Text color="#560FC9" fontSize="16" marginBottom={1}>
-                פרטים
-              </Text>
-              <Text color="#8F80A7">
-                י שמח לעזור ע"י תפילה ומרגיש ממש טוב לדעת שבכל יום ניתנת צדקה בשמי
-                לנזקקים - תודה לחברת סלה
-              </Text>
-              <Text color="#560FC9" fontSize="16" marginRight="3">
-                פלוני אלמוני
-              </Text>
-            </View>
-          </View>
-          <View
-            borderRadius="30"
-            backgroundColor="#F1E6FF"
-            marginLeft={10}
-            marginRight={10}
-            marginTop={10}>
-            <Image
-              marginLeft={2}
-              source={require('../Image/bi_quote.png')}
-              resizeMode="cover"
-              alt="quote"
-            />
-            <View
-              borderRadius="30"
-              backgroundColor="#F1E6FF"
-              marginLeft="2"
-              marginRight="2"
-              marginBottom="2"
-              paddingLeft="2"
-              paddingRight="2"
-              paddingBottom="3">
-              <Text color="#560FC9" fontSize="16" marginBottom={1}>
-                פרטים
-              </Text>
-              <Text color="#8F80A7">
-                י שמח לעזור ע"י תפילה ומרגיש ממש טוב לדעת שבכל יום ניתנת צדקה בשמי
-                לנזקקים - תודה לחברת סלה
-              </Text>
-              <Text color="#560FC9" fontSize="16" marginRight="3">
-                פלוני אלמוני
-              </Text>
-            </View>
-          </View>
-          <View
-            borderRadius="30"
-            backgroundColor="#F1E6FF"
-            marginLeft={10}
-            marginRight={10}
-            marginTop={10}>
-            <Image
-              marginLeft={2}
-              source={require('../Image/bi_quote.png')}
-              resizeMode="cover"
-              alt="quote"
-            />
-            <View
-              borderRadius="30"
-              backgroundColor="#F1E6FF"
-              marginLeft="2"
-              marginRight="2"
-              marginBottom="2"
-              paddingLeft="2"
-              paddingRight="2"
-              paddingBottom="3">
-              <Text color="#560FC9" fontSize="16" marginBottom={1}>
-                פרטים
-              </Text>
-              <Text color="#8F80A7">
-                י שמח לעזור ע"י תפילה ומרגיש ממש טוב לדעת שבכל יום ניתנת צדקה בשמי
-                לנזקקים - תודה לחברת סלה
-              </Text>
-              <Text color="#560FC9" fontSize="16" marginRight="3" >
-                פלוני אלמוני
-              </Text>
-            </View>
-          </View>
+        <ScrollView width='100%'>
           {/* Render array content */}
           {content.map((item, index) => (
-            <TestimonalsText key={index} text={item.text} name={item.name} />
+            <TestimonalsText key={index} text={item._data.text} name={item._data.name} />
           ))}
         </ScrollView>
         <View>
@@ -204,8 +126,8 @@ const TestimonialsScreens = () => {
                     }}>
                       Cancel
                     </Button>
-                    <Button onPress={handleButtonPress}>
-                      Saved
+                    <Button onPress={handleSave}>
+                      Save
                     </Button>
                   </Button.Group>
                 </Modal.Footer>

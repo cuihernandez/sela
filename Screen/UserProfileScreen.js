@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import Const from '../Utils/Const.js';
+import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
 
 const UserProfileScreen = () => {
 
@@ -35,7 +36,7 @@ const UserProfileScreen = () => {
   const userID = useSelector(state => state.user.userID);
   useEffect(() => {
     const getTotalTransactionAmount = async () => {
-      console.log('User ID is:', userID, donorID);
+      // console.log('User ID is:', userID, donorID);
       try {
         const snapshot = await firestore()
           .collection('transaction')
@@ -61,7 +62,7 @@ const UserProfileScreen = () => {
       const completeCount = res.map(snap => snap._data.completeCount);
       const count = completeCount[0];
       setValue(count);
-      console.log('The userID is :', donorID);
+      // console.log('The userID is :', donorID);
 
     }
     getID();
@@ -73,7 +74,7 @@ const UserProfileScreen = () => {
       const data = res.docs;
       const all = data.map(snap => snap._data.doneeName);
       setUniqueDoneeNames(...uniqueDoneeNames, all);
-      console.log('The data is :', all);
+      // console.log('The data is :', all);
     };
     getTotalName();
 
@@ -116,7 +117,7 @@ const UserProfileScreen = () => {
             </Text>
           </Center>
           <View flexDirection="row" justifyContent="space-between">
-            <Text color="#560FC9" fontWeight="blod" fontSize="lg">
+            <Text color="#560FC9" fontWeight="bold" fontSize="lg">
               {value}
             </Text>
             <Text color="#560FC9" fontWeight="bold" fontSize="lg">
@@ -137,52 +138,34 @@ const UserProfileScreen = () => {
         </Center>
         <HStack
           flexDirection="row"
-          justifyContent="center">
+          justifyContent='space-around'
+          alignItems={'center'}
+          margin='2'
+        >
           <Button
             id="credit add"
-            backgroundColor="#560FC9"
-            borderRadius="2xl"
-            margin="2"
-            width={(screenWidth * 40) / 100}
+            style={{
+              width: screenWidth * 35 / 100, height: screenHeight * 5 / 100, margin: 2, borderRadius: screenHeight * 1.5 / 100
+              , backgroundColor: '#560FC9', alignItems: 'center'
+            }}
           >
-            הוסף קרדיט לחולה
+            <Text color='white' fontSize={'sm'}>
+              הוסף קרדיט לחולה
+            </Text>
           </Button>
-          <Button
-            id='btn_download'
-            backgroundColor="#560FC9"
-            borderRadius="2xl"
-            margin="2"
-            width={(screenWidth * 50) / 100}>
-            <HStack alignItems="center">
-              <Text color="white">{'  '}שמור צילום מסך</Text>
-              <Image
-                source={require('../Image/icon_download.png')}
-                alt="download"
-              />
-            </HStack>
-          </Button>
+          <ScreenCaptureButton
+            text='שמור צילום מסך'
+          />
         </HStack>
         <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" height={(screenHeight * 43) / 100}>
           <Text marginTop="3" marginRight="6" color="#8F80A7">חולה רשום</Text>
           <ScrollView h="80" margin="3">
-
-            {/* {uniqueDoneeNames.map((names, index) => (
-              <DataComponent key={index} name={names} />
-            ))} */}
             {uniqueDoneeNames && Array.isArray(uniqueDoneeNames) && uniqueDoneeNames.map((names, index) => (
               <DataComponent key={index} name={names} />
             ))}
           </ScrollView>
         </View>
       </Box >
-      <View alignItems="center" justifyContent="center" marginBottom="4">
-        <Button
-          backgroundColor="#560FC9"
-          borderRadius="2xl"
-          margin="2"
-          width={(screenWidth * 90) / 100}
-        >עדכן</Button>
-      </View>
     </>
   );
 };

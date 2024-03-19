@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     ArrowBackIcon,
     Box,
@@ -81,9 +81,14 @@ const EditProfileScreen = () => {
         }
 
     };
-    const test = () => {
-        console.log("ID is:", ID, "user data:", userData);
+    const user = useSelector(state => state.user);
+    useEffect(() => {
+        setName(user.name);
+        setMotherName(user.mothername);
+        setEmail(user.email);
     }
+        , [user.name, user.mothername, user.email]
+    )
     return (
         <>
             <Header />
@@ -114,21 +119,21 @@ const EditProfileScreen = () => {
             <View margin="5" marginTop="10" flex="1">
                 <FormControl isInvalid={nameError} w="100%" >
                     <Text marginRight="4" color="#560FC9">שם פרטי</Text>
-                    <Input placeholder="לוק" backgroundColor="#F1E6FF" onChangeText={setName} value={name} />
+                    <Input placeholder="Please enter your name" backgroundColor="#F1E6FF" onChangeText={setName} value={name} />
                     <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                         Please Enter Name
                     </FormControl.ErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={motherNameError} w="100%" >
                     <Text marginRight="4" color="#560FC9">שם האם</Text>
-                    <Input placeholder="מרי" backgroundColor="#F1E6FF" onChangeText={setMotherName} value={mothername} />
+                    <Input placeholder="Please enter your mother name" backgroundColor="#F1E6FF" onChangeText={setMotherName} value={mothername} />
                     <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                         Please Enter Mother Name
                     </FormControl.ErrorMessage>
                 </FormControl>
                 <Text marginRight="4" color="#560FC9">אמייל(אופציונלי)</Text>
                 <FormControl isInvalid={emailError} w="100%" >
-                    <Input placeholder="nexaluscube@gmail.com" backgroundColor="#F1E6FF" onChangeText={setEmail} value={email} color="#1E0050" />
+                    <Input placeholder="Please enter your email" backgroundColor="#F1E6FF" onChangeText={setEmail} value={email} color="#1E0050" />
                     <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                         Please Enter Email
                     </FormControl.ErrorMessage>

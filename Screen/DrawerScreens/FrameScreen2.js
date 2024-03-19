@@ -12,22 +12,24 @@ import {
   ScrollView
 } from 'native-base';
 import { TouchableOpacity } from 'react-native';
+import { setPsalms } from '../../redux/actions/psalmsAction.js';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
-const FrameScreen1 = () => {
+import { useSelector, useDispatch } from 'react-redux';
+const FrameScreen2 = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [texts, setTexts] = useState([]);
+  const array = useSelector(state => state.psalms);
+  const userID = useSelector(state => state.user.userID);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const handleNavigateToFrame1Screen = () => {
     navigation.navigate('Frame1');
   };
-  const [texts, setTexts] = useState([]);
-  const userID = useSelector(state => state.user.userID);
-  let docID = '';
-  let cout = 0;
   const handleNavigateToFrameScreen = async () => {
     try {
-      console.log("userId", userID);
+      navigation.navigate('Frame3');
       const snapshot = await firestore()
         .collection('userData')
         .where('userID', '==', userID)
@@ -51,9 +53,7 @@ const FrameScreen1 = () => {
         const completeCount = snapshotData.map(snap => snap._data.completeCount);
         snapshots.forEach((doc) => {
           docID = doc.id;
-          console.log('doc.id is:', doc.id);
         });
-        console.log('document id is :', docID);
 
         //increase the value of the complete count
         cout = completeCount[0] + 1;
@@ -68,23 +68,32 @@ const FrameScreen1 = () => {
             console.log('User updated!', docID);
           });
       }
-      navigation.navigate('Frame3');
     } catch (error) {
       console.error('Error:', error);
     }
   };
+  const handleNextName = () => {
+    let nextIndex = array.currentIndex;
+    nextIndex = array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
+    setCurrentIndex(nextIndex);
+    dispatch(setPsalms({ arrayData: texts, currentIndex: nextIndex }))
+    handleNavigateToFrameScreen();
+  };
 
+  let docID = '';
+  let cout = 0;
   useEffect(() => {
     const getText = async () => {
       try {
         const snapshot = await firestore()
           .collection('psalms')
           .get();
+        let array = [];
         const res = snapshot.docs;
-        setTexts(res);
-        res.map((item) => {
-          console.log('stlion:', item._data.text)
+        res.map((doc) => {
+          array.push(doc._data.text);
         })
+        setTexts(array);
       }
       catch (error) {
         console.error('This is error:', error)
@@ -127,19 +136,15 @@ const FrameScreen1 = () => {
           פרק ב
         </Text>
         <ScrollView width={'80%'}>
-          {texts.map((item) => (
-            <View
-              borderRadius="15"
-              backgroundColor="#F1E6FF"
-              margin="10"
-              marginBottom="2"
-              marginTop="2"
-              padding="5">
-              <Text color="#8F80A7">
-                {item._data.text}
-              </Text>
-            </View>
-          ))}
+          <View
+            margin="10"
+            marginBottom="2"
+            marginTop="2"
+            padding="5">
+            <Text color="#8F80A7">
+              {texts[array.currentIndex]}
+            </Text>
+          </View>
         </ScrollView>
       </Box>
       <HStack alignItems={'center'} marginBottom="20" justifyContent="flex-end">
@@ -149,7 +154,7 @@ const FrameScreen1 = () => {
           borderRadius={15}
           marginRight="10"
           padding="2"
-          onPress={handleNavigateToFrameScreen}>
+          onPress={handleNextName}>
           <Flex direction="row" alignItems="center" justifyContent="center">
             <Text color="white" fontSize="16">
               {'  '}
@@ -162,4 +167,4 @@ const FrameScreen1 = () => {
     </>
   );
 };
-export default FrameScreen1;
+export default FrameScreen2;

@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { Dimensions, Image, View, StyleSheet } from 'react-native';
+import { Dimensions, Image, StyleSheet } from 'react-native';
 import {
+  View,
   Box,
   Button,
   Checkbox,
@@ -12,6 +13,7 @@ import {
   useToast,
   FormControl,
   WarningOutlineIcon,
+  ScrollView
 } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -100,48 +102,51 @@ const RegisterScreen = () => {
           resizeMode="cover"
         />
         <View style={styles.safearea}>
-          <FormControl isInvalid={'name' in errors}>
-            <Text style={styles.text}>שם פרטי</Text>
-            <Input placeholder="שם פרטי" value={name} onChangeText={setName} color="black" borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
-            {'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
-          </FormControl>
-          <FormControl isInvalid={'motherName' in errors}>
-            <Text style={styles.text}>שם האם</Text>
-            <Input placeholder="שם האם" value={mothername} color="black" onChangeText={setMotherName} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
-            {'motherName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.motherName}</FormControl.ErrorMessage>}
-          </FormControl>
+          <ScrollView width="100%">
+            <FormControl isInvalid={'name' in errors}>
+              <Text style={styles.text}>שם פרטי</Text>
+              <Input placeholder="שם פרטי" value={name} onChangeText={setName} color="black" borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+              {'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
+            </FormControl>
+            <FormControl isInvalid={'motherName' in errors}>
+              <Text style={styles.text}>שם האם</Text>
+              <Input placeholder="שם האם" value={mothername} color="black" onChangeText={setMotherName} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+              {'motherName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.motherName}</FormControl.ErrorMessage>}
+            </FormControl>
 
-          <FormControl isInvalid={'email' in errors}>
-            <Text style={styles.text}>אמייל (אופציונלי)</Text>
-            <Input placeholder="אמייל" value={email} color="black" onChangeText={setEmail} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
-            {'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
-          </FormControl>
-          <HStack space={10} justifyContent="center">
-            <Checkbox
-              style={styles.termstext}
-              accessibilityLabel="checkbox"
-              shadow={2}
-              checked={isCheckboxChecked}
-              onChange={setIsCheckboxChecked}>
-              תנאי שירות (Terms & Conditions)
-            </Checkbox>
-          </HStack>
+            <FormControl isInvalid={'email' in errors}>
+              <Text style={styles.text}>אמייל (אופציונלי)</Text>
+              <Input placeholder="אמייל" value={email} color="black" onChangeText={setEmail} borderRadius={20} backgroundColor="#F1E6FF" variant="unstyled" />
+              {'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
+            </FormControl>
+            <HStack space={10} justifyContent="center">
+              <Checkbox
+                style={styles.termstext}
+                accessibilityLabel="checkbox"
+                shadow={2}
+                checked={isCheckboxChecked}
+                onChange={setIsCheckboxChecked}>
+                תנאי שירות (Terms & Conditions)
+              </Checkbox>
+            </HStack>
 
-          <HStack justifyContent="center">
-            <Button
-              titel="register"
-              width="100%"
-              backgroundColor="#560FC9"
-              size="lg"
-              rounded="lg"
-              isDisabled={!isCheckboxChecked}
-              onPress={handleRegister}>
-              המשך
-            </Button>
-          </HStack>
+            <HStack justifyContent="center">
+              <Button
+                titel="register"
+                width="100%"
+                backgroundColor="#560FC9"
+                size="lg"
+                rounded="lg"
+                isDisabled={!isCheckboxChecked}
+                onPress={handleRegister}>
+                המשך
+              </Button>
+            </HStack>
+          </ScrollView>
+
         </View>
       </View>
-    </NativeBaseProvider>
+    </NativeBaseProvider >
   );
 };
 
