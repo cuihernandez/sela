@@ -7,17 +7,18 @@ import {
   Text,
 } from 'native-base';
 
-function DataComponent(props) {
+function DataComponent({ name, onNavigate }) {
   return (
     <View margin="1" marginBottom="0" backgroundColor="white" flexDirection="row" padding="2" justifyContent="space-between">
       <Button backgroundColor="#560FC9"
         borderRadius="2xl"
-        size="sm">
+        size="sm"
+        onPress={onNavigate}
+      >
         <Text color="white" fontSize="md" title="donate">לִתְרוֹם</Text>
       </Button>
-      <View flexDirection="row" justifyContent="flex-end" alignItems="center">
-        <Text color="#8F80A7">{props.name}</Text>
-        <Checkbox borderRadius="5" margin="2" accessibilityLabel="This is  checkbox" aria-label="checkBox" />
+      <View flexDirection="row" justifyContent="flex-end" alignItems="center" marginRight={3}>
+        <Text color="#8F80A7">{name}</Text>
       </View>
     </View>
   );

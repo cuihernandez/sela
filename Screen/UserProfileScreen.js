@@ -18,22 +18,19 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import Const from '../Utils/Const.js';
-import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
 
 const UserProfileScreen = () => {
 
-  const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const { donorID } = Const();
   const [amount, setAmount] = useState(0);
   const navigation = useNavigation();
   const [value, setValue] = useState(0);
   const [uniqueDoneeNames, setUniqueDoneeNames] = useState([]);
-
+  const userID = useSelector(state => state.user.userID);
   const handleNavigateToFrame1Screen = () => {
     navigation.navigate('Frame1');
   };
-  const userID = useSelector(state => state.user.userID);
   useEffect(() => {
     const getTotalTransactionAmount = async () => {
       // console.log('User ID is:', userID, donorID);
@@ -72,13 +69,19 @@ const UserProfileScreen = () => {
         .where('donorID', '==', userID)
         .get();
       const data = res.docs;
-      const all = data.map(snap => snap._data.doneeName);
-      setUniqueDoneeNames(...uniqueDoneeNames, all);
+
+      const all = data.map(snap => ({
+        name: snap.data().doneeName,
+        motherName: snap.data().doneeMotherName, // Assuming you have this field
+        email: snap.data().doneeEmail // Assuming you have this field
+      }));
+      const uniqueNames = Array.from(new Map(all.map(item => [item['name'], item])).values());
+      setUniqueDoneeNames(uniqueNames);
       // console.log('The data is :', all);
     };
     getTotalName();
 
-  }, []);
+  }, [userID]);
   return (
     <>
       <Header />
@@ -136,32 +139,22 @@ const UserProfileScreen = () => {
         <Center>
           <Text> יש להעביר כסף ולהעלות צילום מסך</Text>
         </Center>
-        <HStack
-          flexDirection="row"
-          justifyContent='space-around'
-          alignItems={'center'}
-          margin='2'
-        >
-          <Button
-            id="credit add"
-            style={{
-              width: screenWidth * 35 / 100, height: screenHeight * 5 / 100, margin: 2, borderRadius: screenHeight * 1.5 / 100
-              , backgroundColor: '#560FC9', alignItems: 'center'
-            }}
-          >
-            <Text color='white' fontSize={'sm'}>
-              הוסף קרדיט לחולה
-            </Text>
-          </Button>
-          <ScreenCaptureButton
-            text='שמור צילום מסך'
-          />
-        </HStack>
-        <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" height={(screenHeight * 43) / 100}>
+        <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" height={(screenHeight * 55) / 100}>
           <Text marginTop="3" marginRight="6" color="#8F80A7">חולה רשום</Text>
           <ScrollView h="80" margin="3">
-            {uniqueDoneeNames && Array.isArray(uniqueDoneeNames) && uniqueDoneeNames.map((names, index) => (
-              <DataComponent key={index} name={names} />
+            {/* {uniqueDoneeNames && Array.isArray(uniqueDoneeNames) && uniqueDoneeNames.map((names, index) => (
+              <DataComponent key={index} name={names} onNavigate={() => navigation.navigate('RegPatient', { doneeName: names })} />
+            ))} */}
+            {uniqueDoneeNames.map((donee, index) => (
+              <DataComponent
+                key={index}
+                name={donee.name}
+                onNavigate={() => navigation.navigate('RegPatient', {
+                  doneeName: donee.name,
+                  doneeMotherName: donee.motherName,
+                  doneeEmail: donee.email
+                })}
+              />
             ))}
           </ScrollView>
         </View>

@@ -3,11 +3,14 @@ import React from 'react';
 import { captureScreen } from 'react-native-view-shot';
 import RNFS from 'react-native-fs';
 import { Button, useToast, Box, HStack, Image, Text, } from 'native-base';
-import { Dimensions, PermissionsAndroid, Platform, StyleSheet } from 'react-native';
-
+import { Dimensions, PermissionsAndroid, Platform, StyleSheet, Linking } from 'react-native';
+import { Share } from 'react-native'
+// import ViewShot from 'react-native-view-shot';
+// import Mailer from 'react-native-mail';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
+
 
 const CaptureScreen = (props) => {
     const toast = useToast();
@@ -60,9 +63,25 @@ const CaptureScreen = (props) => {
                     </Box>;
                 },
             });
+            sendEmailWithScreenshot(filePath);
 
         } catch (error) {
             console.error('Error saving screenshot:', error);
+        }
+    };
+    const sendEmailWithScreenshot = async (filePath) => {
+        const shareOptions = {
+            title: 'Send screenshot via email',
+            subject: 'Screenshot',
+            message: 'Attached is the screenshot captured from the app.',
+            url: `file://${filePath}`,
+            type: 'image/jpg',
+        };
+
+        try {
+            await Share.open(shareOptions);
+        } catch (error) {
+            console.log('Error while sharing:', error);
         }
     };
 
@@ -83,7 +102,6 @@ const CaptureScreen = (props) => {
             return false;
         }
     };
-
     return <Button style={styles.button} onPress={captureAndSaveScreen}>
         <HStack alignItems="center">
             <Text color="#ffffff">
@@ -96,7 +114,6 @@ const CaptureScreen = (props) => {
                 style={{ width: 26, height: 26 }}
                 resizeMode="contain"
             />
-            {/* <img width="64" height="64" src="https://img.icons8.com/pastel-glyph/64/000000/download--v1.png" alt="download--v1" /> */}
         </HStack>
 
     </Button>;

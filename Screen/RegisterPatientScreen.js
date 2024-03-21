@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dimensions, Image, View, StyleSheet, TouchableOpacity } from 'react-native';
 import {
   ArrowBackIcon,
@@ -17,12 +17,12 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import { useRoute } from '@react-navigation/native';
 import { setTransaction } from '../redux/actions/transactionAction';
 import Header from './Components/Header';
 import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
 
 const RegisterPatientScreen = () => {
-
   const toast = useToast();
   const navigation = useNavigation();
   const [patientName, setPatientName] = useState('');
@@ -136,8 +136,40 @@ const RegisterPatientScreen = () => {
           </Box>;
         },
       });
+      setPatientName('');
+      setPatientMotherName('');
+      setPatientEmail('');
+      setPrice('');
     }
   };
+  const route = useRoute();
+
+  useEffect(() => {
+    if (route.params) {
+      const { doneeName, doneeMotherName, doneeEmail } = route.params;
+
+      if (typeof doneeName === 'undefined') {
+        setPatientName('');
+      } else {
+        setPatientName(doneeName);
+      }
+
+      if (typeof doneeMotherName === 'undefined') {
+        setPatientMotherName('');
+      } else {
+        setPatientMotherName(doneeMotherName);
+      }
+
+      if (typeof doneeEmail === 'undefined') {
+        setPatientEmail('');
+      } else {
+        setPatientEmail(doneeEmail);
+      }
+    } else {
+      console.log('Route params are undefined');
+    }
+  }, [route.params, setPatientName, setPatientMotherName, setPatientEmail]);
+
   return (
     <>
       <View
@@ -149,9 +181,7 @@ const RegisterPatientScreen = () => {
           resizeMode="cover"
           alt="background"
         />
-
         <ScrollView style={styles.scrollContainer} contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
-          {/* <View style={{ flex: 1, justifyContent: 'space-between' }}> */}
           <Box>
             <Header />
             <Box
@@ -234,9 +264,7 @@ const RegisterPatientScreen = () => {
             </Box>
             <Box padding={(screenWidth * 1) / 100}>
               <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
-                וריבעת ףסכ
-                וחלשתו טיבב
-                ךסמ םוליצ
+                כל שקל שתתרמו יזכה את החולה בחמש תפילות
               </Text>
               <Box style={styles.buttongroup}>
                 <Input
@@ -261,7 +289,9 @@ const RegisterPatientScreen = () => {
                   onPress={handleSubmit}
                 >
                   <HStack space="2" alignItems="center">
-                    <Text color="white">רימשה</Text>
+                    <Text color="white">
+                      המשך
+                    </Text>
                     <Image
                       source={require('../Image/bit.png')}
                       alt="bit"
