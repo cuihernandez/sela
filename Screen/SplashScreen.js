@@ -15,12 +15,20 @@ const SplashScreen = () => {
           .collection('mobileStatus')
           .get();
         const res = snapshot.docs;
-        const mobileStatus = res[0]._data.status;
-        console.log('The mobile status is', mobileStatus)
-        if (mobileStatus === true) {
+        let array = [];
+        const snapShot = res.map((doc) => {
+          console.log(doc.data().time);
+          array.push(doc.data().time)
+        })
+        // console.log("------", array[0])
+
+        const currentTime = new Date();
+        if (currentTime > array[0] || array[1] > currentTime) {
+          // console.log("false")
           navigation.navigate('Login');
         }
         else {
+          // console.log('true');
           setShowModal(true);
         }
       }
