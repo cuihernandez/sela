@@ -1,6 +1,13 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
-import { Dimensions, Image, View, StyleSheet } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  Dimensions,
+  Image,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
 import {
   NativeBaseProvider,
   Box,
@@ -12,12 +19,15 @@ import {
   useToast,
 } from 'native-base';
 
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUserData } from '../redux/actions/userAction';
-const LoginScreen = () => {
+import {useDispatch, useSelector} from 'react-redux';
+import {setUserData} from '../redux/actions/userAction';
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+const LoginScreen = () => {
   const navigation = useNavigation();
   const user = useSelector(state => state.user);
   const [formData, setFormData] = useState({
@@ -33,7 +43,6 @@ const LoginScreen = () => {
     });
   }, [user.name, user.mothername, user.email]);
   const handleInputChange = (valueName, value) => {
-
     setFormData({
       ...formData,
       [valueName]: value,
@@ -51,7 +60,8 @@ const LoginScreen = () => {
   };
   const handleSubmit = async () => {
     try {
-      const querySnapshot = await firestore().collection('users')
+      const querySnapshot = await firestore()
+        .collection('users')
         .where('mothername', '==', formData.mothername)
         .where('name', '==', formData.name)
         .get();
@@ -64,22 +74,25 @@ const LoginScreen = () => {
           email: formData.email,
         };
         dispatch(setUserData(payload));
-      }
-      else {
+      } else {
         toast.show({
           render: () => {
-            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              This user does not exit!
-            </Box>;
+            return (
+              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+                This user does not exit!
+              </Box>
+            );
           },
         });
       }
     } catch {
       toast.show({
         render: () => {
-          return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-            Please Fill Inputs Again!
-          </Box>;
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              Please Fill Inputs Again!
+            </Box>
+          );
         },
       });
     }
@@ -87,75 +100,80 @@ const LoginScreen = () => {
 
   return (
     <NativeBaseProvider>
-      <View style={styles.container}>
-        <Image
-          source={require('../Image/bg_reg.png')}
-          style={styles.backgroundImage}
-          resizeMode="cover"
-          alt="background"
-        />
-        <View style={styles.safearea}>
-          <Text style={styles.text}>שם פרטי</Text>
-          <Input
-            style={styles.input}
-            onChangeText={(text) => handleInputChange('name', text)}
-            variant="unstyled"
-            value={formData.name}
-            placeholder="שם פרטי"
-          />
-          <Text style={styles.text}>שם האם</Text>
-          <Input
-            style={styles.input}
-            onChangeText={(text) => handleInputChange('mothername', text)}
-            variant="unstyled"
-            value={formData.mothername}
-            placeholder="שם האם"
-          />
+      <SafeAreaView>
+        <ScrollView>
+          <View style={styles.container}>
+            <Image
+              source={require('../Image/bg_reg.png')}
+              style={styles.backgroundImage}
+              resizeMode="cover"
+              alt="background"
+            />
+            <View style={styles.safearea}>
+              <ScrollView>
+                <Text style={styles.text}>שם פרטי</Text>
+                <Input
+                  style={styles.input}
+                  onChangeText={text => handleInputChange('name', text)}
+                  variant="unstyled"
+                  value={formData.name}
+                  placeholder="שם פרטי"
+                />
+                <Text style={styles.text}>שם האם</Text>
+                <Input
+                  style={styles.input}
+                  onChangeText={text => handleInputChange('mothername', text)}
+                  variant="unstyled"
+                  value={formData.mothername}
+                  placeholder="שם האם"
+                />
 
-          <Text style={styles.text}>אמייל (אופציונלי)</Text>
-          <Input
-            style={styles.input}
-            variant="unstyled"
-            placeholder="אמייל (אופציונלי)"
-            onChangeText={(text) => handleInputChange('email', text)}
-            value={formData.email}
-          />
+                <Text style={styles.text}>אמייל (אופציונלי)</Text>
+                <Input
+                  style={styles.input}
+                  variant="unstyled"
+                  placeholder="אמייל (אופציונלי)"
+                  onChangeText={text => handleInputChange('email', text)}
+                  value={formData.email}
+                />
 
-          <HStack justifyContent="center" marginTop="10">
-            <Button
-              width="100%"
-              backgroundColor="#560FC9"
-              size="lg"
-              rounded="lg"
-              onPressIn={handleSubmit}
-            >
-              המשך
-            </Button>
-          </HStack>
-          <HStack justifyContent="center" alignItems="center">
-            <Text
-              fontSize="md"
-              color="coolGray.600"
-              _dark={{
-                color: 'warmGray.200',
-              }}>
-              I'm a new user.
-            </Text>
-            <Link
-              style={styles.signup}
-              _text={{
-                fontSize: 'md',
-                fontWeight: '500',
-                color: 'indigo.500',
-              }}
-              alignSelf="flex-end"
-              mt="1"
-              onPress={handleNavigationToRegisterScreen}>
-              sign up
-            </Link>
-          </HStack>
-        </View>
-      </View>
+                <HStack justifyContent="center" marginTop="10">
+                  <Button
+                    width="100%"
+                    backgroundColor="#560FC9"
+                    size="lg"
+                    rounded="lg"
+                    onPressIn={handleSubmit}>
+                    המשך
+                  </Button>
+                </HStack>
+                <HStack justifyContent="center" alignItems="center">
+                  <Text
+                    fontSize="md"
+                    color="coolGray.600"
+                    _dark={{
+                      color: 'warmGray.200',
+                    }}>
+                    I'm a new user.
+                  </Text>
+                  <Link
+                    style={styles.signup}
+                    _text={{
+                      fontSize: 'md',
+                      fontWeight: '500',
+                      color: 'indigo.500',
+                    }}
+                    alignSelf="flex-end"
+                    mt="1"
+                    onPress={handleNavigationToRegisterScreen}>
+                    sign up
+                  </Link>
+                </HStack>
+              </ScrollView>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </NativeBaseProvider>
   );
 };
@@ -164,7 +182,7 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: screenHeight,
   },
   backgroundImage: {
     width: Dimensions.get('window').width,

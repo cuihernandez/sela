@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Pressable,
@@ -9,7 +9,7 @@ import {
   HamburgerIcon,
   CloseIcon,
 } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 function MenuIcon() {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -75,8 +75,12 @@ function MenuIcon() {
         <Menu.Item onPress={handleNavigateToAboutScreen}>
           מי אנחנו? צור קשר
         </Menu.Item>
-        <Menu.Item onPress={handleNavigateToEditProfileScreen}>עריכת חשבון</Menu.Item>
-        <Menu.Item onPress={handleNavigateToRecommendProfileScreen}>המלץ לחברים</Menu.Item>
+        <Menu.Item onPress={handleNavigateToEditProfileScreen}>
+          עריכת חשבון
+        </Menu.Item>
+        <Menu.Item onPress={handleNavigateToRecommendProfileScreen}>
+          המלץ לחברים
+        </Menu.Item>
         {/** Add more items as needed */}
       </Menu>
     </Box>

@@ -1,6 +1,12 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
-import { Dimensions, Image, View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  Dimensions,
+  Image,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import {
   ArrowBackIcon,
   Text,
@@ -10,38 +16,51 @@ import {
   Box,
   HStack,
   useToast,
+  ScrollView,
 } from 'native-base';
 
 import Header from './Components/Header';
 import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
-
-
-const RegisterPatientScreen = () => {
+const RegisterPatientScreen = ({navigation, route}) => {
   const toast = useToast();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const buttontext = [10, 20, 50, 100, 200];
-  const [patientName, setPatientName] = useState('');
-  const [patientMotherName, setPatientMotherName] = useState('');
+  const [patientName, setPatientName] = useState(route.params.name || '');
+  const [patientMotherName, setPatientMotherName] = useState(
+    route.params.motherName || '',
+  );
   const [patientEmail, setPatientEmail] = useState('');
   const [price, setPrice] = useState('');
   const [selectedButton, setSelectedButton] = useState(null);
+  const [submitClicked, setSubmitClicked] = useState(false);
+
+  const handleSubmitClick = () => {
+    setSubmitClicked(true);
+    setPatientName('');
+    setPatientMotherName('');
+    setPrice('');
+    setSelectedButton(null);
+  };
+
   const handleButtonSelect = buttonNumber => {
     setSelectedButton(buttonNumber);
   };
+
+  useEffect(() => {
+    console.log({route});
+  }, []);
 
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
 
   const styles = StyleSheet.create({
     container: {
-      // alignContent: 'flex-end',
       backgroundColor: 'white',
       borderTopLeftRadius: (screenWidth * 5) / 100, // 5% of screen width
       borderTopRightRadius: (screenWidth * 5) / 100, // 5% of screen width
-      marginTop: (screenHeight * 16.5
-      ) / 100, // 1% of screen height
+      marginTop: (screenHeight * 16.5) / 100, // 1% of screen height
       padding: (screenWidth * 2) / 100, // 2% of screen width
     },
     backgroundImage: {
@@ -80,23 +99,21 @@ const RegisterPatientScreen = () => {
       if (selectedButton == null) {
         toast.show({
           render: () => {
-            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              Please Enter the Donate Price!
-            </Box>;
+            return (
+              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+                Please Enter the Donate Price!
+              </Box>
+            );
           },
         });
+      } else {
       }
-      else {
-
-      }
-    }
-    else {
+    } else {
       console.log('no');
-
     }
   };
   return (
-    <>
+    <ScrollView>
       <View>
         <View>
           <Image
@@ -121,8 +138,7 @@ const RegisterPatientScreen = () => {
               textAlign="center"
               fontSize={(screenWidth * 9.5) / 100}
               color="#ffffff"
-              fontWeight="bold"
-            >
+              fontWeight="bold">
               רישום חולה לתפילה
             </Text>
           </Box>
@@ -133,7 +149,9 @@ const RegisterPatientScreen = () => {
             <Text
               marginRight={(screenWidth * 5) / 100}
               marginBottom={(screenHeight * 1) / 100}
-              color="#1E0050">שם פרטי</Text>
+              color="#1E0050">
+              שם פרטי
+            </Text>
             <Input
               variant="unstyled"
               placeholder="שם פרטי"
@@ -145,7 +163,9 @@ const RegisterPatientScreen = () => {
               marginRight={(screenWidth * 5) / 100}
               marginTop={(screenHeight * 2) / 100}
               marginBottom={(screenHeight * 1) / 100}
-              color="#1E0050">שם האם</Text>
+              color="#1E0050">
+              שם האם
+            </Text>
             <Input
               variant="unstyled"
               placeholder="שם האם"
@@ -157,7 +177,9 @@ const RegisterPatientScreen = () => {
               marginRight={(screenWidth * 5) / 100}
               marginTop={(screenHeight * 2) / 100}
               marginBottom={(screenHeight * 1) / 100}
-              color="#1E0050">אימייל</Text>
+              color="#1E0050">
+              אימייל
+            </Text>
             <Input
               variant="unstyled"
               placeholder="הזן אימייל"
@@ -168,8 +190,11 @@ const RegisterPatientScreen = () => {
           </Box>
 
           <View padding={(screenWidth * 1) / 100}>
-            <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
-              בחר מחיר (שקלים)
+            <Text
+              padding={(screenWidth * 2) / 100}
+              textAlign="center"
+              color="#1E0050">
+              כל שקל שתתרמו יזכה את החולה בחמש תפילות
             </Text>
             <View style={styles.buttongroup} justifyContent="space-evenly">
               {buttontext.map(buttonNumber => (
@@ -182,7 +207,8 @@ const RegisterPatientScreen = () => {
                   borderColor="#8F80A7"
                   borderWidth={1}
                   _text={{
-                    color: selectedButton === buttonNumber ? '#FFFFFF' : '#8F80A7',
+                    color:
+                      selectedButton === buttonNumber ? '#FFFFFF' : '#8F80A7',
                   }}
                   // size="sm"
                   width={(screenWidth * 12) / 100}
@@ -211,11 +237,12 @@ const RegisterPatientScreen = () => {
                 backgroundColor="#560FC9"
                 width="50%"
                 height={(screenHeight * 5.6) / 100}
-                _text={{ fontSize: (screenWidth * 4) / 100 }}
-                onPress={handleSubmit}
-              >
+                _text={{fontSize: (screenWidth * 4) / 100}}
+                onPress={() =>
+                  submitClicked ? handleSubmit() : handleSubmitClick()
+                }>
                 <HStack space="2" alignItems="center">
-                  <Text color="white">בצע תשלום</Text>
+                  <Text color="white">המשך</Text>
                   <Image
                     source={require('../Image/bit.png')}
                     alt="bit"
@@ -230,8 +257,8 @@ const RegisterPatientScreen = () => {
             </Center>
           </View>
         </View>
-      </View >
-    </>
+      </View>
+    </ScrollView>
   );
 };
 
