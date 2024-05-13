@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "195049554939",
+    "project_id": "sela-238dc",
+    "storage_bucket": "sela-238dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195049554939:android:178e412da41a791124815e",
+        "android_client_info": {
+          "package_name": "com.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1c70h7XrUU2QR5dEd4X2BFiohvVx_U5c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
