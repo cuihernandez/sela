@@ -8,6 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 
 const AboutScreen = () => {
   const navigation = useNavigation();
+  const handleNavigateToFrame1Screen = () => {
+    navigation.navigate('Frame1');
+  };
   return (
     <>
       <Header />
@@ -21,20 +24,16 @@ const AboutScreen = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <TouchableOpacity onPress={navigation.goBack}>
+        <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
           <ArrowBackIcon color="white" size={4} />
         </TouchableOpacity>
-
-        {/* </View> */}
-
-
         <Text
           color="white"
           alignItems={'center'}
           fontSize={'lg'}
           px="3"
           marginTop={'5'}>
-          תודה
+          נילעו
         </Text>
         <Box />
       </HStack>
@@ -64,10 +63,6 @@ const AboutScreen = () => {
           </Text>
         </View>
       </Box>
-      <View alignItems="center" justifyContent="center" marginBottom="4">
-        <Text>תנאי שירות</Text>
-        <Text margin="3">רישיונות קוד פתוח</Text>
-      </View>
     </>
   );
 };

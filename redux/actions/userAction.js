@@ -2,13 +2,10 @@
 
 import { SET_USER_DATA, UPDATE_USER_DATA, UPDATE_NAME, UPDATE_MOTHER_NAME, UPDATE_EMAIL } from './types';
 // Action Creators
-export const setUserData = (data) => {
-    return (
-        {
-            type: SET_USER_DATA,
-            payload: data,
-        });
-};
+export const setUserData = (data) => ({
+    type: SET_USER_DATA,
+    payload: data,
+});
 export const updateUserData = (data) => ({
     type: UPDATE_USER_DATA,
     payload: data,

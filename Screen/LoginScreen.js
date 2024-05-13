@@ -1,13 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {
-  Dimensions,
-  Image,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-} from 'react-native';
+import {Dimensions, Image, StyleSheet} from 'react-native';
 import {
   NativeBaseProvider,
   Box,
@@ -17,8 +10,9 @@ import {
   Button,
   HStack,
   useToast,
+  View,
 } from 'native-base';
-
+import {ScrollView} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
@@ -58,6 +52,8 @@ const LoginScreen = () => {
   const handleNavigationToRegisterScreen = () => {
     navigation.navigate('Register');
   };
+
+  let userID = '';
   const handleSubmit = async () => {
     try {
       const querySnapshot = await firestore()
@@ -65,27 +61,34 @@ const LoginScreen = () => {
         .where('mothername', '==', formData.mothername)
         .where('name', '==', formData.name)
         .get();
-      if (!querySnapshot.empty) {
+      if (querySnapshot.empty) {
+        toast.show({
+          render: () => {
+            return (
+              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+                This user does not exist!
+              </Box>
+            );
+          },
+        });
+      } else {
+        querySnapshot.forEach(doc => {
+          // Access the document ID of the document that matches the query
+          const documentID = doc.id;
+          userID = documentID;
+          console.log('documentID is :', documentID);
+        });
         handleNavigateToFrameScreen();
         const payload = {
-          userID: user.userID,
+          userID: userID,
           name: formData.name,
           mothername: formData.mothername,
           email: formData.email,
         };
         dispatch(setUserData(payload));
-      } else {
-        toast.show({
-          render: () => {
-            return (
-              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-                This user does not exit!
-              </Box>
-            );
-          },
-        });
       }
-    } catch {
+    } catch (err) {
+      console.log('Error is :', err);
       toast.show({
         render: () => {
           return (
@@ -100,80 +103,76 @@ const LoginScreen = () => {
 
   return (
     <NativeBaseProvider>
-      <SafeAreaView>
-        <ScrollView>
-          <View style={styles.container}>
-            <Image
-              source={require('../Image/bg_reg.png')}
-              style={styles.backgroundImage}
-              resizeMode="cover"
-              alt="background"
+      <View style={styles.container}>
+        <Image
+          source={require('../Image/bg_reg.png')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
+          alt="background"
+        />
+        <View style={styles.safearea}>
+          <ScrollView width="100%">
+            <Text style={styles.text}>שם פרטי</Text>
+            <Input
+              style={styles.input}
+              onChangeText={text => handleInputChange('name', text)}
+              variant="unstyled"
+              value={formData.name}
+              placeholder="שם פרטי"
             />
-            <View style={styles.safearea}>
-              <ScrollView>
-                <Text style={styles.text}>שם פרטי</Text>
-                <Input
-                  style={styles.input}
-                  onChangeText={text => handleInputChange('name', text)}
-                  variant="unstyled"
-                  value={formData.name}
-                  placeholder="שם פרטי"
-                />
-                <Text style={styles.text}>שם האם</Text>
-                <Input
-                  style={styles.input}
-                  onChangeText={text => handleInputChange('mothername', text)}
-                  variant="unstyled"
-                  value={formData.mothername}
-                  placeholder="שם האם"
-                />
+            <Text style={styles.text}>שם האם</Text>
+            <Input
+              style={styles.input}
+              onChangeText={text => handleInputChange('mothername', text)}
+              variant="unstyled"
+              value={formData.mothername}
+              placeholder="שם האם"
+            />
 
-                <Text style={styles.text}>אמייל (אופציונלי)</Text>
-                <Input
-                  style={styles.input}
-                  variant="unstyled"
-                  placeholder="אמייל (אופציונלי)"
-                  onChangeText={text => handleInputChange('email', text)}
-                  value={formData.email}
-                />
+            <Text style={styles.text}>אמייל (אופציונלי)</Text>
+            <Input
+              style={styles.input}
+              variant="unstyled"
+              placeholder="אמייל (אופציונלי)"
+              onChangeText={text => handleInputChange('email', text)}
+              value={formData.email}
+            />
 
-                <HStack justifyContent="center" marginTop="10">
-                  <Button
-                    width="100%"
-                    backgroundColor="#560FC9"
-                    size="lg"
-                    rounded="lg"
-                    onPressIn={handleSubmit}>
-                    המשך
-                  </Button>
-                </HStack>
-                <HStack justifyContent="center" alignItems="center">
-                  <Text
-                    fontSize="md"
-                    color="coolGray.600"
-                    _dark={{
-                      color: 'warmGray.200',
-                    }}>
-                    I'm a new user.
-                  </Text>
-                  <Link
-                    style={styles.signup}
-                    _text={{
-                      fontSize: 'md',
-                      fontWeight: '500',
-                      color: 'indigo.500',
-                    }}
-                    alignSelf="flex-end"
-                    mt="1"
-                    onPress={handleNavigationToRegisterScreen}>
-                    sign up
-                  </Link>
-                </HStack>
-              </ScrollView>
-            </View>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+            <HStack justifyContent="center" marginTop="10">
+              <Button
+                width="100%"
+                backgroundColor="#560FC9"
+                size="lg"
+                rounded="lg"
+                onPressIn={handleSubmit}>
+                המשך
+              </Button>
+            </HStack>
+            <HStack justifyContent="center" alignItems="center">
+              <Text
+                fontSize="md"
+                color="coolGray.600"
+                _dark={{
+                  color: 'warmGray.200',
+                }}>
+                I'm a new user.
+              </Text>
+              <Link
+                style={styles.signup}
+                _text={{
+                  fontSize: 'md',
+                  fontWeight: '500',
+                  color: 'indigo.500',
+                }}
+                alignSelf="flex-end"
+                mt="1"
+                onPress={handleNavigationToRegisterScreen}>
+                sign up
+              </Link>
+            </HStack>
+          </ScrollView>
+        </View>
+      </View>
     </NativeBaseProvider>
   );
 };
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 27,
     backgroundColor: '#F1E6FF',
-    color: '#D6B7FF',
+    color: 'black',
     paddingHorizontal: 10,
   },
   text: {

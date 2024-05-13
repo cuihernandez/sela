@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import { React, useState, useEffect } from 'react';
 import {
   ArrowForwardIcon,
   ArrowBackIcon,
@@ -10,15 +10,48 @@ import {
   Image,
   View,
   Text,
+  ScrollView,
+  Center
 } from 'native-base';
+import { useSelector, useDispatch } from 'react-redux';
+import { setPearls } from '../../redux/actions/pearlsActions';
 import { TouchableOpacity } from 'react-native';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 const FrameScreen1 = () => {
+  const dispatch = useDispatch();
+  const [texts, setTexts] = useState([]);
+  const array = useSelector(state => state.pearls);
   const navigation = useNavigation();
   const handleNavigateToFrameScreen = () => {
     navigation.navigate('Frame1'); // Navigate to the 'FrameScreen' page
   };
+
+  const handleNextName = () => {
+    console.log('texts value is :--', texts[1]._data)
+    let nextIndex = array.currentIndex;
+    nextIndex = array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
+    dispatch(setPearls({ pearlsData: texts, currentIndex: nextIndex }))
+    handleNavigateToFrameScreen();
+  };
+
+  useEffect(() => {
+    const getText = async () => {
+      try {
+        const snapshot = await firestore()
+          .collection('pearls')
+          .get();
+        const res = snapshot.docs;
+        setTexts(res);
+      }
+      catch (error) {
+        console.error('This is error:', error)
+      }
+    }
+    getText();
+  }
+    , [texts])
   return (
     <>
       <Header />
@@ -54,16 +87,23 @@ const FrameScreen1 = () => {
           marginBottom={7}
           alt="configration"
         />
-        <View
-          borderRadius="15"
-          backgroundColor="#F1E6FF"
-          margin="10"
-          padding="5">
-          <Text color="#8F80A7">
-            כל החושד בכשרים ננגע בגופו - הימנעו מחשדות כלפי אנשים ושפטו כל אדם
-            לכף זכות
-          </Text>
-        </View>
+        <ScrollView width={'80%'}>
+          <Center >
+            <View
+              borderRadius="15"
+              backgroundColor="#F1E6FF"
+              margin="2"
+              padding="5"
+              width='4/5'
+            >
+              <Text color="#8F80A7">
+                {texts.length > 0 && array.currentIndex >= 0 && texts[array.currentIndex]?._data.text}
+              </Text>
+            </View>
+          </Center>
+        </ScrollView>
+
+
       </Box>
       <HStack alignItems={'center'} marginBottom="20" justifyContent="flex-end">
         <Button
@@ -72,7 +112,7 @@ const FrameScreen1 = () => {
           borderRadius={15}
           marginRight="10"
           padding="2"
-          onPress={handleNavigateToFrameScreen}>
+          onPress={handleNextName}>
           <Flex direction="row" alignItems="center" justifyContent="center">
             <Text color="white" fontSize="16">
               {'  '}

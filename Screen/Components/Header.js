@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Pressable,
@@ -10,8 +10,11 @@ import {
   CloseIcon,
 } from 'native-base';
 import {useNavigation} from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
+
 function MenuIcon() {
   const [isOpen, setIsOpen] = useState(true);
+  // const [totalLoggedNumber, setTotalLoggedNumber] = useState(0);
 
   // Function to toggle the menu state
   const toggleMenu = () => {
@@ -88,6 +91,19 @@ function MenuIcon() {
 }
 
 export default () => {
+  const [totalLoggedNumber, setTotalLoggedNumber] = useState(0);
+  useEffect(() => {
+    const getTotalLoggedNumber = async () => {
+      try {
+        const snapshot = await firestore().collection('users').get();
+        const count = snapshot.size;
+        setTotalLoggedNumber(count);
+      } catch (error) {
+        console.error('');
+      }
+    };
+    getTotalLoggedNumber();
+  }, []);
   return (
     <Box>
       {/* <StatusBar bg="#3700B3" barStyle="light-content" />
@@ -101,7 +117,7 @@ export default () => {
         w="100%">
         <MenuIcon />
         <Text color="white" fontSize={14}>
-          סך הכל 1000 מתפללים
+          סך הכל {totalLoggedNumber} מתפללים
         </Text>
       </HStack>
     </Box>

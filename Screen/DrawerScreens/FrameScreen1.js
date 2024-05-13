@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import { React, useEffect, useState } from 'react';
 import {
   ArrowForwardIcon,
   Box,
@@ -11,16 +11,52 @@ import {
 } from 'native-base';
 import Header from '../Components/Header';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 
 const FrameScreen1 = () => {
   const navigation = useNavigation();
-  const handleNavigateToFrameScreen = () => {
-    navigation.navigate('Frame2'); // Navigate to the 'FrameScreen' page
+  const [nameArray, setNameArray] = useState([]);
+  const [motherNameArray, setMotherNameArray] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleNextName = () => {
+    const nextIndex = currentIndex + 1 >= nameArray.length ? 0 : currentIndex + 1;
+    setCurrentIndex(nextIndex);
+    navigation.navigate('Frame2');
   };
-  const user = useSelector(state => state.user);
-  const name = user.name;
-  const mothername = user.mothername;
+  const [firstText, setFirstText] = useState('');
+  const [secondText, setSecondText] = useState('');
+
+  useEffect(() => {
+    const getText = async () => {
+      try {
+        const snapshot = await firestore()
+          .collection('notice')
+          .get();
+
+        const snapshot1 = await firestore()
+          .collection('transaction')
+          .get();
+        const res = snapshot.docs;
+        const res1 = snapshot1.docs;
+        let array_name = [];
+        let array_mothername = [];
+        res1.map((doc) => {
+          array_name.push(doc.data().doneeName);
+          array_mothername.push(doc.data().doneeMotherName)
+        })
+        setNameArray(array_name);
+        setMotherNameArray(array_mothername);
+        setFirstText(res[0].data().text);
+        setSecondText(res[1].data().text);
+      }
+      catch (error) {
+        console.error('This is error:', error)
+      }
+    }
+    getText();
+  }
+    , [])
   return (
     <>
       <Header />
@@ -50,9 +86,7 @@ const FrameScreen1 = () => {
           margin="10"
           padding="5">
           <Text color="#8F80A7">
-            מִי שֶׁבֵּרַךְ אֲבוֹתֵינוּ אַבְרָהָם יִצְחָק וְיַעֲקֹב הוּא יְבָרֵךְ
-            את {name} בן {mothername}ת שכל משאלות ליבו יתגשמו לטובה ולברכה, בשמחה
-            יקרב...
+            {firstText} {nameArray[currentIndex]} בן {motherNameArray[currentIndex]} {secondText}
           </Text>
         </View>
       </Box>
@@ -63,7 +97,7 @@ const FrameScreen1 = () => {
           borderRadius={15}
           marginRight="10"
           padding="2"
-          onPress={handleNavigateToFrameScreen}>
+          onPress={handleNextName}>
           <Flex direction="row" alignItems="center" justifyContent="center">
             <Text color="white" fontSize="16">
               {'  '}
