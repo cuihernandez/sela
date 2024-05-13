@@ -64,7 +64,4 @@ yarn-error.log
 
 # testing
 /coverage
-<<<<<<< HEAD
 .vscode
-=======
->>>>>>> 4553a74679c19c96a3ec3c6e5029a35f2ace1d0b
