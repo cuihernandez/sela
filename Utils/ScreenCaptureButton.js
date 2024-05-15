@@ -176,5 +176,7 @@ const styles = StyleSheet.create({
     margin: (screenWidth * 0.75) / 100, // 0.75% of screen width
     padding: (screenWidth * 0.75) / 100, // 0.75% of screen width
     backgroundColor: '#560FC9',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 });

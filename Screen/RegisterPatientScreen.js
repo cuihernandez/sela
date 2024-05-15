@@ -26,7 +26,6 @@ import firestore from '@react-native-firebase/firestore';
 import {useRoute} from '@react-navigation/native';
 import {setTransaction} from '../redux/actions/transactionAction';
 import Header from './Components/Header';
-import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
 
 const RegisterPatientScreen = () => {
   const toast = useToast();
@@ -47,6 +46,7 @@ const RegisterPatientScreen = () => {
     setPatientName('');
     setPatientMotherName('');
     setPrice('');
+    setPatientEmail('');
     setSelectedButton(null);
   };
 
@@ -321,8 +321,6 @@ const RegisterPatientScreen = () => {
                   keyboardType="numeric"
                   onChangeText={setPrice}
                 />
-                {/* Screen Capture Button */}
-                <ScreenCaptureButton text=" שמור צילום מסך" />
               </Box>
               <Center padding={(screenWidth * 2) / 100}>
                 <Button
@@ -332,7 +330,8 @@ const RegisterPatientScreen = () => {
                   height={(screenHeight * 5.6) / 100}
                   _text={{fontSize: (screenWidth * 4) / 100}}
                   onPress={() =>
-                    submitClicked ? handleSubmit() : handleSubmitClick()
+                    // submitClicked ? handleSubmit() : handleSubmitClick()
+                    navigation.navigate("Payment")
                   }>
                   <HStack space="2" alignItems="center">
                     <Text color="white">המשך</Text>
