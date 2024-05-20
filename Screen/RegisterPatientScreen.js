@@ -19,6 +19,7 @@ import {
   FormControl,
   WarningOutlineIcon,
   ScrollView,
+  Spinner,
 } from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -26,6 +27,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useRoute} from '@react-navigation/native';
 import {setTransaction} from '../redux/actions/transactionAction';
 import Header from './Components/Header';
+import {createPayment} from '../Utils/YaadpayService';
 
 const RegisterPatientScreen = () => {
   const toast = useToast();
@@ -37,6 +39,7 @@ const RegisterPatientScreen = () => {
   const [motherNameError, setMotherNameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [price, setPrice] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [selectedButton, setSelectedButton] = useState(null);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -106,68 +109,88 @@ const RegisterPatientScreen = () => {
     },
   });
 
+  useEffect(() => {
+    console.log({userID});
+  }, [userID]);
+
   const handleSubmit = async () => {
-    if (patientName.trim() === '') {
-      setNameError(true);
-    } else {
-      setNameError(false);
-    }
-    if (patientMotherName.trim() === '') {
-      setMotherNameError(true);
-    } else {
-      setMotherNameError(false);
-    }
-    if (patientEmail.trim() === '') {
-      setEmailError(true);
-    } else {
-      setEmailError(false);
-    }
-    const timestamp = Date(Date.now());
-    if (price === '') {
-      console.log('okay');
-      toast.show({
-        render: () => {
-          return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              Please Enter the Donate Price!
-            </Box>
-          );
-        },
-      });
-    } else {
-      const transactionDatas = {
-        donorID: userID,
-        date: timestamp,
-        doneeName: patientName,
-        doneeMotherName: patientMotherName,
-        doneeEmail: patientEmail,
-        transactionAmount: parseFloat(price),
-      };
-      const res = await firestore()
-        .collection('transaction')
-        .add({
+    setLoading(true);
+    try {
+      if (patientName.trim() === '') {
+        setNameError(true);
+      } else {
+        setNameError(false);
+      }
+      if (patientMotherName.trim() === '') {
+        setMotherNameError(true);
+      } else {
+        setMotherNameError(false);
+      }
+      if (patientEmail.trim() === '') {
+        setEmailError(true);
+      } else {
+        setEmailError(false);
+      }
+      const timestamp = Date(Date.now());
+      if (price === '') {
+        console.log('okay');
+        return toast.show({
+          render: () => {
+            return (
+              <Box
+                bg="red.500"
+                color={'white'}
+                px="2"
+                py="1"
+                rounded="sm"
+                mb={5}>
+                <Text color={'white'}>Please Enter the Donate Price!</Text>
+              </Box>
+            );
+          },
+        });
+      } else {
+        const transactionDatas = {
           donorID: userID,
           date: timestamp,
           doneeName: patientName,
           doneeMotherName: patientMotherName,
           doneeEmail: patientEmail,
           transactionAmount: parseFloat(price),
-        });
-      dispatch(setTransaction(transactionDatas));
-      console.log('transactionInfo', trans);
-      toast.show({
-        render: () => {
-          return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              Payment Successfully!
-            </Box>
-          );
-        },
+        };
+        const res = await firestore()
+          .collection('transaction')
+          .add({
+            donorID: userID,
+            date: timestamp,
+            doneeName: patientName,
+            doneeMotherName: patientMotherName,
+            doneeEmail: patientEmail,
+            transactionAmount: parseFloat(price),
+          });
+        dispatch(setTransaction(transactionDatas));
+        console.log('transactionInfo', trans);
+        setPatientName('');
+        setPatientMotherName('');
+        setPatientEmail('');
+        setPrice('');
+      }
+
+      const response = await createPayment({
+        userId: userID,
+        amount: price,
+        clientLName: patientName,
+        clientName: patientName,
+        email: patientEmail,
       });
-      setPatientName('');
-      setPatientMotherName('');
-      setPatientEmail('');
-      setPrice('');
+      const paymentUrl = response.paymentUrl;
+      // const paymentUrl=`https://icom.yaad.net/p/?action=APISign&What=VERIFY&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Id=12788352&CCode=0&Amount=10&ACode=0012345&Order=12345678910&Fild1=Israel%20Isareli&Fild2=test%40yaad.net&Fild3=&Sign=f7c8f8e89a0463cf0a5b258033af4c662236b601361c7c44e4d3e98f8ddb8e7d&Bank=6&Payments=1&UserId=203269535&Brand=2&Issuer=2&L4digit=0000&street=levanon%203&city=netanya&zip=42361&cell=098610338&Coin=1&Tmonth=03&Tyear=2020&errMsg=%20(0)&Hesh=32`
+
+      if (paymentUrl) navigation.navigate('Payment', {paymentUrl});
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
   const route = useRoute();
@@ -181,7 +204,6 @@ const RegisterPatientScreen = () => {
       } else {
         setPatientName(doneeName);
       }
-
       if (typeof doneeMotherName === 'undefined') {
         setPatientMotherName('');
       } else {
@@ -197,6 +219,19 @@ const RegisterPatientScreen = () => {
       console.log('Route params are undefined');
     }
   }, [route.params, setPatientName, setPatientMotherName, setPatientEmail]);
+
+  useEffect(() => {
+    if (route.params?.paymentStatus === 'success')
+      toast.show({
+        render: () => {
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              <Text color={'white'}>Payment Successful!</Text>
+            </Box>
+          );
+        },
+      });
+  }, [route.params?.paymentStatus]);
 
   return (
     <>
@@ -325,16 +360,20 @@ const RegisterPatientScreen = () => {
               <Center padding={(screenWidth * 2) / 100}>
                 <Button
                   style={styles.button}
+                  disabled={loading}
                   backgroundColor="#560FC9"
                   width="50%"
                   height={(screenHeight * 5.6) / 100}
                   _text={{fontSize: (screenWidth * 4) / 100}}
                   onPress={() =>
-                    // submitClicked ? handleSubmit() : handleSubmitClick()
-                    navigation.navigate("Payment")
+                    submitClicked ? handleSubmit() : setSubmitClicked(true)
                   }>
                   <HStack space="2" alignItems="center">
-                    <Text color="white">המשך</Text>
+                    {!loading ? (
+                      <Text color="white">המשך</Text>
+                    ) : (
+                      <Spinner color={'white'} />
+                    )}
                     <Image
                       source={require('../Image/bit.png')}
                       alt="bit"

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { React, useEffect, useState } from 'react';
+import {React, useEffect, useState} from 'react';
 import {
   ArrowForwardIcon,
   Box,
@@ -10,7 +10,7 @@ import {
   Text,
 } from 'native-base';
 import Header from '../Components/Header';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 
 const FrameScreen1 = () => {
@@ -20,7 +20,8 @@ const FrameScreen1 = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNextName = () => {
-    const nextIndex = currentIndex + 1 >= nameArray.length ? 0 : currentIndex + 1;
+    const nextIndex =
+      currentIndex + 1 >= nameArray.length ? 0 : currentIndex + 1;
     setCurrentIndex(nextIndex);
     navigation.navigate('Frame2');
   };
@@ -30,33 +31,28 @@ const FrameScreen1 = () => {
   useEffect(() => {
     const getText = async () => {
       try {
-        const snapshot = await firestore()
-          .collection('notice')
-          .get();
+        const snapshot = await firestore().collection('notice').get();
 
-        const snapshot1 = await firestore()
-          .collection('transaction')
-          .get();
+        const snapshot1 = await firestore().collection('transaction').get();
         const res = snapshot.docs;
         const res1 = snapshot1.docs;
         let array_name = [];
         let array_mothername = [];
-        res1.map((doc) => {
+        res1.map(doc => {
           array_name.push(doc.data().doneeName);
-          array_mothername.push(doc.data().doneeMotherName)
-        })
+          array_mothername.push(doc.data().doneeMotherName);
+        });
+        console.log('RESPONSE: ', res1);
         setNameArray(array_name);
         setMotherNameArray(array_mothername);
         setFirstText(res[0].data().text);
         setSecondText(res[1].data().text);
+      } catch (error) {
+        console.error('This is error:', error);
       }
-      catch (error) {
-        console.error('This is error:', error)
-      }
-    }
+    };
     getText();
-  }
-    , [])
+  }, []);
   return (
     <>
       <Header />
@@ -86,7 +82,8 @@ const FrameScreen1 = () => {
           margin="10"
           padding="5">
           <Text color="#8F80A7">
-            {firstText} {nameArray[currentIndex]} בן {motherNameArray[currentIndex]} {secondText}
+            {firstText} {nameArray[currentIndex]} בן{' '}
+            {motherNameArray[currentIndex]} {secondText}
           </Text>
         </View>
       </Box>

@@ -19,6 +19,7 @@ import {Provider} from 'react-redux';
 import store from './redux/store';
 import SuccessScreen from './Screen/SuccessScreen';
 import PaymentScreen from './Screen/PaymentScreen';
+import StudentsScreen from './Screen/StudentsScreen';
 // import ReduxProvider from './store';
 const Stack = createNativeStackNavigator();
 
@@ -34,7 +35,7 @@ const linking = {
 const App = () => {
   return (
     <Provider store={store}>
-      <NativeBaseProvider>
+      <NativeBaseProvider isSSR={false}>
         <NavigationContainer linking={linking}>
           <Stack.Navigator>
             <Stack.Screen
@@ -97,8 +98,21 @@ const App = () => {
               component={RecommendScreen}
               options={{headerShown: false}}
             />
-            <Stack.Screen name="Payment" component={PaymentScreen} />
-            <Stack.Screen name="Success" component={SuccessScreen} />
+            <Stack.Screen
+              name="Payment"
+              component={PaymentScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Success"
+              component={SuccessScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Students"
+              component={StudentsScreen}
+              options={{headerTitle: 'תלמידים'}}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </NativeBaseProvider>

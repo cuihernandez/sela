@@ -1,5 +1,10 @@
 import React from 'react';
+import {Text, View} from 'react-native';
 
 export default function SuccessScreen() {
-  return <div>SuccessScreen</div>;
+  return (
+    <View>
+      <Text>SuccessScreen</Text>
+    </View>
+  );
 }

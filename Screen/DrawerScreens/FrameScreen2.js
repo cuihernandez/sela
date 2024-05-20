@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   ArrowForwardIcon,
   ArrowBackIcon,
@@ -9,14 +9,14 @@ import {
   HStack,
   View,
   Text,
-  ScrollView
+  ScrollView,
 } from 'native-base';
-import { TouchableOpacity } from 'react-native';
-import { setPsalms } from '../../redux/actions/psalmsAction.js';
+import {TouchableOpacity} from 'react-native';
+import {setPsalms} from '../../redux/actions/psalmsAction.js';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../Components/Header';
-import { useNavigation } from '@react-navigation/native';
-import { useSelector, useDispatch } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {useSelector, useDispatch} from 'react-redux';
 const FrameScreen2 = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -34,35 +34,36 @@ const FrameScreen2 = () => {
         .collection('userData')
         .where('userID', '==', userID)
         .get();
-      snapshot.forEach((doc) => { doc.data().completeCount });
+      snapshot.forEach(doc => {
+        doc.data().completeCount;
+      });
       if (snapshot.empty) {
-        await firestore()
-          .collection('userData')
-          .add({
-            userID: userID,
-            completeCount: 1,
-          });
-      }
-      else {
+        await firestore().collection('userData').add({
+          userID: userID,
+          completeCount: 1,
+        });
+      } else {
         const snapshots = await firestore()
           .collection('userData')
           .where('userID', '==', userID)
           .get();
         //retrieve the value of documentID that the userID is userID
         const snapshotData = snapshots.docs;
-        const completeCount = snapshotData.map(snap => snap._data.completeCount);
-        snapshots.forEach((doc) => {
+        const completeCount = snapshotData.map(
+          snap => snap._data.completeCount,
+        );
+        snapshots.forEach(doc => {
           docID = doc.id;
         });
 
         //increase the value of the complete count
-        cout = completeCount[0] + 1;
+        count = completeCount[0] + 1;
         // update the value of the complete count
         await firestore()
           .collection('userData')
           .doc(docID)
           .update({
-            completeCount: cout,
+            completeCount: count,
           })
           .then(() => {
             console.log('User updated!', docID);
@@ -74,34 +75,39 @@ const FrameScreen2 = () => {
   };
   const handleNextName = () => {
     let nextIndex = array.currentIndex;
-    nextIndex = array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
+    nextIndex =
+      array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
     setCurrentIndex(nextIndex);
-    dispatch(setPsalms({ arrayData: texts, currentIndex: nextIndex }))
+    dispatch(setPsalms({arrayData: texts, currentIndex: nextIndex}));
     handleNavigateToFrameScreen();
   };
 
   let docID = '';
-  let cout = 0;
+  let count = 0;
   useEffect(() => {
     const getText = async () => {
       try {
-        const snapshot = await firestore()
-          .collection('psalms')
-          .get();
+        const snapshot = await firestore().collection('psalms').get();
         let array = [];
         const res = snapshot.docs;
-        res.map((doc) => {
+        res.map(doc => {
           array.push(doc._data.text);
-        })
+        });
         setTexts(array);
+      } catch (error) {
+        console.error('This is error:', error);
       }
-      catch (error) {
-        console.error('This is error:', error)
-      }
-    }
+    };
     getText();
-  }
-    , [])
+  }, []);
+
+  useEffect(() => {
+    console.log('texts[array.currentIndex]: ', texts[array.currentIndex], {
+      texts,
+      array,
+    });
+  });
+
   return (
     <>
       <Header />
@@ -136,14 +142,8 @@ const FrameScreen2 = () => {
           פרק ב
         </Text>
         <ScrollView width={'80%'}>
-          <View
-            margin="10"
-            marginBottom="2"
-            marginTop="2"
-            padding="5">
-            <Text color="#8F80A7">
-              {texts[array.currentIndex]}
-            </Text>
+          <View margin="10" marginBottom="2" marginTop="2" padding="5">
+            <Text color="#8F80A7">{texts[array.currentIndex]}</Text>
           </View>
         </ScrollView>
       </Box>
