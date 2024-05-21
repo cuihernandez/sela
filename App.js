@@ -111,7 +111,7 @@ const App = () => {
             <Stack.Screen
               name="Students"
               component={StudentsScreen}
-              options={{headerTitle: 'תלמידים'}}
+              options={{headerTitle: 'תלמידים', headerShown: false}}
             />
           </Stack.Navigator>
         </NavigationContainer>

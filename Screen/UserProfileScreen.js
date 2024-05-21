@@ -19,8 +19,9 @@ import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import Const from '../Utils/Const.js';
 
+const screenHeight = Dimensions.get('window').height;
+
 const UserProfileScreen = () => {
-  const screenHeight = Dimensions.get('window').height;
   const {donorID} = Const();
   const [amount, setAmount] = useState(0);
   const navigation = useNavigation();
