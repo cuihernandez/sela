@@ -138,9 +138,9 @@ const FrameScreen2 = () => {
         <Box />
       </HStack>
       <Box flex={1} alignItems="center">
-        <Text color="black" fontSize={20} marginTop={3}>
+        {/* <Text color="black" fontSize={20} marginTop={3}>
           פרק ב
-        </Text>
+        </Text> */}
         <ScrollView width={'80%'}>
           <View margin="10" marginBottom="2" marginTop="2" padding="5">
             <Text color="#8F80A7">{texts[array.currentIndex]}</Text>
