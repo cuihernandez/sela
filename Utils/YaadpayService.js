@@ -19,11 +19,16 @@ export const createPayment = async ({
     //     Authorization: `Bearer YOUR_API_KEY`, // Replace with your YaadPay API key
     //   },
     // });
-    const response = await axios.get(
-      `https://icom.yaad.net/p/?action=APISign&What=SIGN&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Order=12345678910&Info=test-api&Amount=${amount}&UTF8=True&UTF8out=True&UserId=${203269535}&street=levanon+3&city=netanya&zip=42361&phone=${
-        phone || '098610338'
-      }&cell=050555555555&Tash=2&FixTash=False&ShowEngTashText=False&Coin=1&Postpone=False&J5=False&Sign=True&MoreData=True&sendemail=True&Pritim=True&PageLang=HEB&tmp=1`,
-    );
+
+    const url = `https://icom.yaad.net/p/?action=APISign&What=SIGN&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Order=12345678910&Info=test-api&Amount=10&UTF8=True&UTF8out=True&UserId=203269535&ClientName=Israel&ClientLName=Isareli&street=levanon+3&city=netanya&zip=42361&phone=098610338&cell=050555555555&email=test@yaad.net&Tash=2&FixTash=False&ShowEngTashText=False&Coin=1&Postpone=False&J5=False&Sign=True&MoreData=True&sendemail=True&SendHesh=True&heshDesc=[0~Item 1~1~8][0~Item 2~2~1]&Pritim=True&PageLang=HEB&tmp=1`;
+
+    const response = await axios.get(url);
+
+    // const response = await axios.get(
+    //   `https://icom.yaad.net/p/?action=APISign&What=SIGN&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Order=12345678910&Info=test-api&Amount=${amount}&UTF8=True&UTF8out=True&UserId=${203269535}&street=levanon+3&city=netanya&zip=42361&phone=${
+    //     phone || '098610338'
+    //   }&cell=050555555555&Tash=2&FixTash=False&ShowEngTashText=False&Coin=1&Postpone=False&J5=False&Sign=True&MoreData=True&sendemail=True&Pritim=True&PageLang=HEB&tmp=1`,
+    // );
 
     // &SendHesh=True&heshDesc=[0~Item 1~1~8][0~Item 2~2~1]
 
