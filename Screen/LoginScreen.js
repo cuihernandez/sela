@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
-import { Dimensions, Image, StyleSheet } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {Dimensions, Image, StyleSheet} from 'react-native';
 import {
   NativeBaseProvider,
   Box,
@@ -10,15 +10,18 @@ import {
   Button,
   HStack,
   useToast,
-  View
+  View,
 } from 'native-base';
-import { ScrollView } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
+import {ScrollView} from 'native-base';
+import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUserData } from '../redux/actions/userAction';
-const LoginScreen = () => {
+import {useDispatch, useSelector} from 'react-redux';
+import {setUserData} from '../redux/actions/userAction';
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+const LoginScreen = () => {
   const navigation = useNavigation();
   const user = useSelector(state => state.user);
   const [formData, setFormData] = useState({
@@ -34,7 +37,6 @@ const LoginScreen = () => {
     });
   }, [user.name, user.mothername, user.email]);
   const handleInputChange = (valueName, value) => {
-
     setFormData({
       ...formData,
       [valueName]: value,
@@ -54,21 +56,23 @@ const LoginScreen = () => {
   let userID = '';
   const handleSubmit = async () => {
     try {
-      const querySnapshot = await firestore().collection('users')
+      const querySnapshot = await firestore()
+        .collection('users')
         .where('mothername', '==', formData.mothername)
         .where('name', '==', formData.name)
         .get();
       if (querySnapshot.empty) {
         toast.show({
           render: () => {
-            return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              This user does not exist!
-            </Box>;
+            return (
+              <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+                This user does not exist!
+              </Box>
+            );
           },
         });
-      }
-      else {
-        querySnapshot.forEach((doc) => {
+      } else {
+        querySnapshot.forEach(doc => {
           // Access the document ID of the document that matches the query
           const documentID = doc.id;
           userID = documentID;
@@ -83,16 +87,15 @@ const LoginScreen = () => {
         };
         dispatch(setUserData(payload));
       }
-
-    }
-    catch (err) {
-
+    } catch (err) {
       console.log('Error is :', err);
       toast.show({
         render: () => {
-          return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-            Please Fill Inputs Again!
-          </Box>;
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              Please Fill Inputs Again!
+            </Box>
+          );
         },
       });
     }
@@ -109,11 +112,10 @@ const LoginScreen = () => {
         />
         <View style={styles.safearea}>
           <ScrollView width="100%">
-
             <Text style={styles.text}>שם פרטי</Text>
             <Input
               style={styles.input}
-              onChangeText={(text) => handleInputChange('name', text)}
+              onChangeText={text => handleInputChange('name', text)}
               variant="unstyled"
               value={formData.name}
               placeholder="שם פרטי"
@@ -121,7 +123,7 @@ const LoginScreen = () => {
             <Text style={styles.text}>שם האם</Text>
             <Input
               style={styles.input}
-              onChangeText={(text) => handleInputChange('mothername', text)}
+              onChangeText={text => handleInputChange('mothername', text)}
               variant="unstyled"
               value={formData.mothername}
               placeholder="שם האם"
@@ -132,7 +134,7 @@ const LoginScreen = () => {
               style={styles.input}
               variant="unstyled"
               placeholder="אמייל (אופציונלי)"
-              onChangeText={(text) => handleInputChange('email', text)}
+              onChangeText={text => handleInputChange('email', text)}
               value={formData.email}
             />
 
@@ -142,8 +144,7 @@ const LoginScreen = () => {
                 backgroundColor="#560FC9"
                 size="lg"
                 rounded="lg"
-                onPressIn={handleSubmit}
-              >
+                onPressIn={handleSubmit}>
                 המשך
               </Button>
             </HStack>
@@ -172,7 +173,7 @@ const LoginScreen = () => {
           </ScrollView>
         </View>
       </View>
-    </NativeBaseProvider >
+    </NativeBaseProvider>
   );
 };
 
@@ -180,7 +181,7 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: screenHeight,
   },
   backgroundImage: {
     width: Dimensions.get('window').width,

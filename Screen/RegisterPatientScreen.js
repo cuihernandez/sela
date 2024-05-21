@@ -1,6 +1,12 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
-import { Dimensions, Image, View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  Dimensions,
+  Image,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import {
   ArrowBackIcon,
   Text,
@@ -12,17 +18,17 @@ import {
   useToast,
   FormControl,
   WarningOutlineIcon,
-  ScrollView
+  ScrollView,
 } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
-import { useSelector, useDispatch } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {useSelector, useDispatch} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
-import { useRoute } from '@react-navigation/native';
-import { setTransaction } from '../redux/actions/transactionAction';
+import {useRoute} from '@react-navigation/native';
+import {setTransaction} from '../redux/actions/transactionAction';
 import Header from './Components/Header';
 import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
 
-const RegisterPatientScreen = () => {
+const RegisterPatientScreen = ({navigation, route}) => {
   const toast = useToast();
   const navigation = useNavigation();
   const [patientName, setPatientName] = useState('');
@@ -51,7 +57,6 @@ const RegisterPatientScreen = () => {
       borderTopRightRadius: (screenWidth * 5) / 100, // 5% of screen width
       // marginTop: (screenHeight * 22) / 100, // 1% of screen height
       padding: (screenWidth * 2) / 100, // 2% of screen width
-
     },
     backgroundImage: {
       width: screenWidth,
@@ -102,20 +107,21 @@ const RegisterPatientScreen = () => {
       console.log('okay');
       toast.show({
         render: () => {
-          return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-            Please Enter the Donate Price!
-          </Box>;
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              Please Enter the Donate Price!
+            </Box>
+          );
         },
       });
-    }
-    else {
+    } else {
       const transactionDatas = {
         donorID: userID,
         date: timestamp,
         doneeName: patientName,
         doneeMotherName: patientMotherName,
         doneeEmail: patientEmail,
-        transactionAmount: parseFloat(price)
+        transactionAmount: parseFloat(price),
       };
       const res = await firestore()
         .collection('transaction')
@@ -125,15 +131,17 @@ const RegisterPatientScreen = () => {
           doneeName: patientName,
           doneeMotherName: patientMotherName,
           doneeEmail: patientEmail,
-          transactionAmount: parseFloat(price)
+          transactionAmount: parseFloat(price),
         });
       dispatch(setTransaction(transactionDatas));
       console.log('transactionInfo', trans);
       toast.show({
         render: () => {
-          return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-            Payment Successfully!
-          </Box>;
+          return (
+            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+              Payment Successfully!
+            </Box>
+          );
         },
       });
       setPatientName('');
@@ -146,7 +154,7 @@ const RegisterPatientScreen = () => {
 
   useEffect(() => {
     if (route.params) {
-      const { doneeName, doneeMotherName, doneeEmail } = route.params;
+      const {doneeName, doneeMotherName, doneeEmail} = route.params;
 
       if (typeof doneeName === 'undefined') {
         setPatientName('');
@@ -172,16 +180,19 @@ const RegisterPatientScreen = () => {
 
   return (
     <>
-      <View
-        style={{ flex: 1 }}
-      >
+      <View style={{flex: 1}}>
         <Image
           source={require('../Image/reg_patient.png')}
           style={styles.backgroundImage}
           resizeMode="cover"
           alt="background"
         />
-        <ScrollView style={styles.scrollContainer} contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'space-between',
+          }}>
           <Box>
             <Header />
             <Box
@@ -199,8 +210,7 @@ const RegisterPatientScreen = () => {
                 textAlign="center"
                 fontSize={(screenWidth * 9.5) / 100}
                 color="#ffffff"
-                fontWeight="bold"
-              >
+                fontWeight="bold">
                 רישום חולה לתפילה
               </Text>
             </Box>
@@ -209,27 +219,35 @@ const RegisterPatientScreen = () => {
           <Box style={styles.container}>
             <Box margin={(screenWidth * 3) / 100}>
               <Center>
-                <FormControl isInvalid={nameError} w="100%" >
+                <FormControl isInvalid={nameError} w="100%">
                   <Text
                     marginRight={(screenWidth * 5) / 100}
                     marginBottom={(screenHeight * 1) / 100}
-                    color="#1E0050">שם פרטי</Text>
-                  <Input style={styles.input} variant={'unstyled'} placeholder="שם פרטי"
+                    color="#1E0050">
+                    שם פרטי
+                  </Text>
+                  <Input
+                    style={styles.input}
+                    variant={'unstyled'}
+                    placeholder="שם פרטי"
                     value={patientName}
                     onChangeText={setPatientName}
                   />
-                  <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                  <FormControl.ErrorMessage
+                    leftIcon={<WarningOutlineIcon size="xs" />}>
                     Please Enter Name
                   </FormControl.ErrorMessage>
                 </FormControl>
               </Center>
               <Center>
-                <FormControl isInvalid={motherNameError} w="100%" >
+                <FormControl isInvalid={motherNameError} w="100%">
                   <Text
                     marginRight={(screenWidth * 5) / 100}
                     marginTop={(screenHeight * 2) / 100}
                     marginBottom={(screenHeight * 1) / 100}
-                    color="#1E0050">שם האם</Text>
+                    color="#1E0050">
+                    שם האם
+                  </Text>
                   <Input
                     style={styles.input}
                     variant={'unstyled'}
@@ -237,18 +255,21 @@ const RegisterPatientScreen = () => {
                     value={patientMotherName}
                     onChangeText={setPatientMotherName}
                   />
-                  <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                  <FormControl.ErrorMessage
+                    leftIcon={<WarningOutlineIcon size="xs" />}>
                     Please Enter Mother Name
                   </FormControl.ErrorMessage>
                 </FormControl>
               </Center>
               <Center>
-                <FormControl isInvalid={emailError} w="100%" >
+                <FormControl isInvalid={emailError} w="100%">
                   <Text
                     marginRight={(screenWidth * 5) / 100}
                     marginTop={(screenHeight * 2) / 100}
                     marginBottom={(screenHeight * 1) / 100}
-                    color="#1E0050">אימייל</Text>
+                    color="#1E0050">
+                    אימייל
+                  </Text>
                   <Input
                     style={styles.input}
                     variant={'unstyled'}
@@ -256,14 +277,18 @@ const RegisterPatientScreen = () => {
                     value={patientEmail}
                     onChangeText={setPatientEmail}
                   />
-                  <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                  <FormControl.ErrorMessage
+                    leftIcon={<WarningOutlineIcon size="xs" />}>
                     Pleae Enter Email
                   </FormControl.ErrorMessage>
                 </FormControl>
               </Center>
             </Box>
             <Box padding={(screenWidth * 1) / 100}>
-              <Text padding={(screenWidth * 2) / 100} textAlign="center" color="#1E0050">
+              <Text
+                padding={(screenWidth * 2) / 100}
+                textAlign="center"
+                color="#1E0050">
                 כל שקל שתתרמו יזכה את החולה בחמש תפילות
               </Text>
               <Box style={styles.buttongroup}>
@@ -277,7 +302,7 @@ const RegisterPatientScreen = () => {
                   onChangeText={setPrice}
                 />
                 {/* Screen Capture Button */}
-                <ScreenCaptureButton text=' שמור צילום מסך' />
+                <ScreenCaptureButton text=" שמור צילום מסך" />
               </Box>
               <Center padding={(screenWidth * 2) / 100}>
                 <Button
@@ -285,13 +310,10 @@ const RegisterPatientScreen = () => {
                   backgroundColor="#560FC9"
                   width="50%"
                   height={(screenHeight * 5.6) / 100}
-                  _text={{ fontSize: (screenWidth * 4) / 100 }}
-                  onPress={handleSubmit}
-                >
+                  _text={{fontSize: (screenWidth * 4) / 100}}
+                  onPress={handleSubmit}>
                   <HStack space="2" alignItems="center">
-                    <Text color="white">
-                      המשך
-                    </Text>
+                    <Text color="white">המשך</Text>
                     <Image
                       source={require('../Image/bit.png')}
                       alt="bit"
@@ -305,9 +327,7 @@ const RegisterPatientScreen = () => {
           </Box>
           {/* </View> */}
         </ScrollView>
-
       </View>
-
     </>
   );
 };

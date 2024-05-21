@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Pressable,
@@ -9,7 +9,7 @@ import {
   HamburgerIcon,
   CloseIcon,
 } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 
 function MenuIcon() {
@@ -43,7 +43,6 @@ function MenuIcon() {
   const handleNavigateToRecommendProfileScreen = () => {
     navigation.navigate('RecommendProfile');
   };
-
 
   return (
     <Box h="80%">
@@ -79,8 +78,12 @@ function MenuIcon() {
         <Menu.Item onPress={handleNavigateToAboutScreen}>
           מי אנחנו? צור קשר
         </Menu.Item>
-        <Menu.Item onPress={handleNavigateToEditProfileScreen}>עריכת חשבון</Menu.Item>
-        <Menu.Item onPress={handleNavigateToRecommendProfileScreen}>המלץ לחברים</Menu.Item>
+        <Menu.Item onPress={handleNavigateToEditProfileScreen}>
+          עריכת חשבון
+        </Menu.Item>
+        <Menu.Item onPress={handleNavigateToRecommendProfileScreen}>
+          המלץ לחברים
+        </Menu.Item>
         {/** Add more items as needed */}
       </Menu>
     </Box>
@@ -92,20 +95,15 @@ export default () => {
   useEffect(() => {
     const getTotalLoggedNumber = async () => {
       try {
-        const snapshot = await firestore()
-          .collection('users')
-          .get();
+        const snapshot = await firestore().collection('users').get();
         const count = snapshot.size;
         setTotalLoggedNumber(count);
-      }
-      catch (error) {
-        console.error("");
+      } catch (error) {
+        console.error('');
       }
     };
     getTotalLoggedNumber();
-  }, []
-
-  );
+  }, []);
   return (
     <Box>
       {/* <StatusBar bg="#3700B3" barStyle="light-content" />
