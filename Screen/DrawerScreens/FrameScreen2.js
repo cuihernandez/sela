@@ -11,12 +11,13 @@ import {
   Text,
   ScrollView,
 } from 'native-base';
-import {TouchableOpacity} from 'react-native';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import {setPsalms} from '../../redux/actions/psalmsAction.js';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../Components/Header';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
+
 const FrameScreen2 = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -24,9 +25,12 @@ const FrameScreen2 = () => {
   const array = useSelector(state => state.psalms);
   const userID = useSelector(state => state.user.userID);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
+
   const handleNavigateToFrame1Screen = () => {
     navigation.navigate('Frame1');
   };
+
   const handleNavigateToFrameScreen = async () => {
     try {
       navigation.navigate('Frame3');
@@ -87,6 +91,7 @@ const FrameScreen2 = () => {
   useEffect(() => {
     const getText = async () => {
       try {
+        setLoading(true);
         const snapshot = await firestore().collection('psalms').get();
         let array = [];
         const res = snapshot.docs;
@@ -96,6 +101,8 @@ const FrameScreen2 = () => {
         setTexts(array);
       } catch (error) {
         console.error('This is error:', error);
+      } finally {
+        setLoading(false);
       }
     };
     getText();
@@ -143,7 +150,13 @@ const FrameScreen2 = () => {
         </Text> */}
         <ScrollView width={'80%'}>
           <View margin="10" marginBottom="2" marginTop="2" padding="5">
-            <Text color="#8F80A7">{texts[array.currentIndex]}</Text>
+            {loading ? (
+              <ActivityIndicator color={'#560FC9'} />
+            ) : (
+              <Text color="#8F80A7" fontSize={24}>
+                {texts[array.currentIndex]}
+              </Text>
+            )}
           </View>
         </ScrollView>
       </Box>

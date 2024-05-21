@@ -23,6 +23,7 @@ import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserData} from '../redux/actions/userAction';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -66,16 +67,24 @@ const LoginScreen = () => {
         .where('name', '==', formData.name)
         .get();
       console.log({querySnapshotEMPTY: querySnapshot.empty});
+
       if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        console.log('Document data:', doc.data());
+
+        const uid = doc.id;
+
         console.log('NOT EMPTY', querySnapshot);
         handleNavigateToFrameScreen();
         const payload = {
-          userID: user.userID,
+          userID: uid,
           name: formData.name,
           mothername: formData.mothername,
           email: formData.email,
         };
         dispatch(setUserData(payload));
+        console.log('USER_ID: ', uid);
+        // await AsyncStorage.setItem('userId', user.userID);
       } else {
         toast.show({
           render: () => {
@@ -87,7 +96,8 @@ const LoginScreen = () => {
           },
         });
       }
-    } catch {
+    } catch (error) {
+      console.error('LOGIN: ', error);
       toast.show({
         render: () => {
           return (
@@ -171,6 +181,12 @@ const LoginScreen = () => {
                     sign up
                   </Link>
                 </HStack>
+                <Button
+                  onPress={() => navigation.navigate('Students')}
+                  variant={'link'}
+                  style={{paddingVertical: 10}}>
+                  <Text color={'#560FC9'}>Sponsor a Student</Text>
+                </Button>
               </ScrollView>
             </View>
           </View>

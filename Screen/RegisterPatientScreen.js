@@ -28,8 +28,50 @@ import {useRoute} from '@react-navigation/native';
 import {setTransaction} from '../redux/actions/transactionAction';
 import Header from './Components/Header';
 import {createPayment} from '../Utils/YaadpayService';
+import {loadUser} from '../redux/reducers/auth';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const BASE62_CHARS =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+const base62Encode = num => {
+  let encoded = '';
+  while (num > 0) {
+    encoded = BASE62_CHARS[num % 62] + encoded;
+    num = Math.floor(num / 62);
+  }
+  return encoded.padStart(9, '0'); // Ensure it is 9 characters long
+};
+
+const base62Decode = str => {
+  let decoded = 0;
+  for (let i = 0; i < str.length; i++) {
+    decoded = decoded * 62 + BASE62_CHARS.indexOf(str[i]);
+  }
+  return decoded;
+};
+
+const firebaseDocIdToNumber = docId => {
+  let num = 0;
+  for (let i = 0; i < docId.length; i++) {
+    num = num * 62 + BASE62_CHARS.indexOf(docId[i]);
+  }
+  return num;
+};
+
+const numberToFirebaseDocId = num => {
+  let docId = '';
+  while (num > 0) {
+    docId = BASE62_CHARS[num % 62] + docId;
+    num = Math.floor(num / 62);
+  }
+  return docId.padStart(20, '0'); // Firebase document IDs are 20 characters long
+};
+
+let transactionUserId = '';
 const RegisterPatientScreen = () => {
+  const route = useRoute();
+
   const toast = useToast();
   const navigation = useNavigation();
   const [patientName, setPatientName] = useState('');
@@ -40,6 +82,9 @@ const RegisterPatientScreen = () => {
   const [emailError, setEmailError] = useState(false);
   const [price, setPrice] = useState('');
   const [loading, setLoading] = useState(false);
+  const [transactionUid, setTransactionUid] = useState(
+    route.params?.transactionUid,
+  );
 
   const [selectedButton, setSelectedButton] = useState(null);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -58,8 +103,8 @@ const RegisterPatientScreen = () => {
   };
 
   useEffect(() => {
-    console.log({route});
-  }, []);
+    if (!userID) navigation.navigate('Login');
+  }, [route.name]);
 
   const userID = useSelector(state => state.user.userID);
   const trans = useSelector(state => state.transaction);
@@ -69,6 +114,15 @@ const RegisterPatientScreen = () => {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      // const uid = await AsyncStorage.getItem('userId');
+      const uid = 'SHOULD BE UID';
+      console.log({uid});
+      // setUid(uid);
+    })();
+  }, []);
 
   const styles = StyleSheet.create({
     scrollContainer: {
@@ -113,6 +167,41 @@ const RegisterPatientScreen = () => {
     console.log({userID});
   }, [userID]);
 
+  const initializePayment = async () => {
+    setLoading(true);
+    try {
+      const response = await createPayment({
+        userId: (() => {
+          let result = '';
+          for (let i = 0; i < 9; i++) {
+            // Generate a random number between 0 and 9 and append it to the result
+            result += Math.floor(Math.random() * 10).toString();
+          }
+          console.log({result});
+          transactionUserId = result;
+          return result;
+        })(),
+        amount: price,
+        clientLName: patientName,
+        clientName: patientName,
+        email: patientEmail,
+      });
+      const paymentUrl = response.paymentUrl;
+
+      console.log({transactionUserId});
+
+      if (paymentUrl)
+        navigation.navigate('Payment', {
+          paymentUrl,
+          transactionUid: transactionUserId,
+        });
+    } catch {
+      console.error('initializePayment', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -150,12 +239,14 @@ const RegisterPatientScreen = () => {
           },
         });
       } else {
+        console.log('HANDLE_SUB: ', transactionUid);
         const transactionDatas = {
           donorID: userID,
           date: timestamp,
           doneeName: patientName,
           doneeMotherName: patientMotherName,
           doneeEmail: patientEmail,
+          transactionUid,
           transactionAmount: parseFloat(price),
         };
         const res = await firestore()
@@ -168,32 +259,22 @@ const RegisterPatientScreen = () => {
             doneeEmail: patientEmail,
             transactionAmount: parseFloat(price),
           });
-        dispatch(setTransaction(transactionDatas));
+
+        console.log('handleSubmit: ', res);
         console.log('transactionInfo', trans);
+
+        dispatch(setTransaction(transactionDatas));
         setPatientName('');
         setPatientMotherName('');
         setPatientEmail('');
         setPrice('');
       }
-
-      const response = await createPayment({
-        userId: userID,
-        amount: price,
-        clientLName: patientName,
-        clientName: patientName,
-        email: patientEmail,
-      });
-      const paymentUrl = response.paymentUrl;
-      // const paymentUrl=`https://icom.yaad.net/p/?action=APISign&What=VERIFY&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Id=12788352&CCode=0&Amount=10&ACode=0012345&Order=12345678910&Fild1=Israel%20Isareli&Fild2=test%40yaad.net&Fild3=&Sign=f7c8f8e89a0463cf0a5b258033af4c662236b601361c7c44e4d3e98f8ddb8e7d&Bank=6&Payments=1&UserId=203269535&Brand=2&Issuer=2&L4digit=0000&street=levanon%203&city=netanya&zip=42361&cell=098610338&Coin=1&Tmonth=03&Tyear=2020&errMsg=%20(0)&Hesh=32`
-
-      if (paymentUrl) navigation.navigate('Payment', {paymentUrl});
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
-  const route = useRoute();
 
   useEffect(() => {
     if (route.params) {
@@ -221,16 +302,40 @@ const RegisterPatientScreen = () => {
   }, [route.params, setPatientName, setPatientMotherName, setPatientEmail]);
 
   useEffect(() => {
-    if (route.params?.paymentStatus === 'success')
+    console.log({paymentStatus: route.params?.paymentStatus});
+    if (route.params?.paymentStatus === 'success') {
+      (async () => {
+        try {
+          await handleSubmit();
+          toast.show({
+            render: () => {
+              return (
+                <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+                  <Text color={'white'}>Payment Successful!</Text>
+                </Box>
+              );
+            },
+          });
+        } catch (error) {
+          console.error('handleSubmit', error);
+        } finally {
+          route.params.paymentStatus = null;
+        }
+      })();
+    }
+
+    if (route.params?.paymentStatus === 'fail') {
       toast.show({
         render: () => {
           return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              <Text color={'white'}>Payment Successful!</Text>
+            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+              <Text color={'white'}>Payment Unsuccessful!</Text>
             </Box>
           );
         },
       });
+      route.params.paymentStatus = null;
+    }
   }, [route.params?.paymentStatus]);
 
   return (
@@ -366,7 +471,7 @@ const RegisterPatientScreen = () => {
                   height={(screenHeight * 5.6) / 100}
                   _text={{fontSize: (screenWidth * 4) / 100}}
                   onPress={() =>
-                    submitClicked ? handleSubmit() : setSubmitClicked(true)
+                    submitClicked ? initializePayment() : setSubmitClicked(true)
                   }>
                   <HStack space="2" alignItems="center">
                     {!loading ? (

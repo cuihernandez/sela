@@ -15,8 +15,10 @@ const screenHeight = Dimensions.get('window').height;
 
 const PaymentScreen = () => {
   const webViewRef = useRef();
-  jsCode =
-    "window.waitForBridge = function(fn) { return (window.postMessage.length === 1) ? fn() : setTimeout(function() { window.waitForBridge(fn) }, 5) }; window.waitForBridge(function() { window.postMessage(document.querySelector('body').textContent) });";
+  // jsCode =
+  //   "window.waitForBridge = function(fn) { return (window.postMessage.length === 1) ? fn() : setTimeout(function() { window.waitForBridge(fn) }, 5) }; window.waitForBridge(function() { window.postMessage(document.querySelector('body').textContent) });";
+
+  jsCode = '';
 
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,9 +27,13 @@ const PaymentScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
+  const userID = useSelector(state => state.user.userID);
+
+  useEffect(() => {
+    if (!userID) navigation.navigate('Login');
+  }, [route.name]);
+
   const paymentUrl = route.params.paymentUrl;
-  // const paymentUrl =
-  //   'https://icom.yaad.net/p/?Amount=10&ClientLName=Isareli&ClientName=Israel&Coin=1&FixTash=False&Info=test-api&J5=False&Masof=0010131918&MoreData=True&Order=12345678910&PageLang=HEB&Postpone=False&Pritim=True&SendHesh=True&ShowEngTashText=False&Sign=True&Tash=2&UTF8=True&UTF8out=True&UserId=203269535&action=pay&cell=050555555555&city=netanya&email=test%40yaad.net&heshDesc=%5B0~Item%201~1~8%5D%5B0~Item%202~2~1%5D&phone=098610338&sendemail=True&street=levanon%203&tmp=1&zip=42361&signature=908f05b9905e64bed97f3fbdb800151cb175069b5053bfda55d48d716db441c8';
 
   useEffect(() => {
     console.log({paymentUrl});
@@ -78,7 +84,10 @@ const PaymentScreen = () => {
           <Button
             backgroundColor="#560FC9"
             onPress={() => {
-              navigation.navigate('RegPatient', {paymentStatus: 'success'});
+              navigation.navigate('RegPatient', {
+                paymentStatus: 'success',
+                transactionUid: route.params?.transactionUid,
+              });
             }}
             style={{
               paddingHorizontal: 40,

@@ -194,6 +194,12 @@ const RegisterScreen = () => {
                   המשך
                 </Button>
               </HStack>
+              <Button
+                onPress={() => navigation.navigate('Students')}
+                variant={'link'}
+                style={{paddingVertical: 10}}>
+                <Text color={'#560FC9'}>Sponsor a Student</Text>
+              </Button>
             </View>
           </View>
         </ScrollView>

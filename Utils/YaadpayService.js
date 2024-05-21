@@ -2,35 +2,11 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api.yaadpay.co.il'; // Replace with the actual YaadPay API base URL
-
-export const createPayment = async ({
-  clientName,
-  clientLName,
-  userId,
-  email,
-  phone,
-  amount,
-}) => {
+export const createPayment = async ({userId, amount}) => {
   try {
-    // const response = await axios.post(`${API_BASE_URL}/payments`, paymentData, {
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: `Bearer YOUR_API_KEY`, // Replace with your YaadPay API key
-    //   },
-    // });
-
-    const url = `https://icom.yaad.net/p/?action=APISign&What=SIGN&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Order=12345678910&Info=test-api&Amount=10&UTF8=True&UTF8out=True&UserId=203269535&ClientName=Israel&ClientLName=Isareli&street=levanon+3&city=netanya&zip=42361&phone=098610338&cell=050555555555&email=test@yaad.net&Tash=2&FixTash=False&ShowEngTashText=False&Coin=1&Postpone=False&J5=False&Sign=True&MoreData=True&sendemail=True&SendHesh=True&heshDesc=[0~Item 1~1~8][0~Item 2~2~1]&Pritim=True&PageLang=HEB&tmp=1`;
+    const url = `https://icom.yaad.net/p/?action=APISign&What=SIGN&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Order=12345678910&Info=test-api&Amount=${amount}&UTF8=True&UTF8out=True&UserId=000000000&Tash=2&FixTash=False&ShowEngTashText=False&Coin=1&Postpone=False&J5=False&Sign=True&MoreData=True&sendemail=True&SendHesh=True&PageLang=HEB&tmp=1`;
 
     const response = await axios.get(url);
-
-    // const response = await axios.get(
-    //   `https://icom.yaad.net/p/?action=APISign&What=SIGN&KEY=7110eda4d09e062aa5e4a390b0a572ac0d2c0220&PassP=yaad&Masof=0010131918&Order=12345678910&Info=test-api&Amount=${amount}&UTF8=True&UTF8out=True&UserId=${203269535}&street=levanon+3&city=netanya&zip=42361&phone=${
-    //     phone || '098610338'
-    //   }&cell=050555555555&Tash=2&FixTash=False&ShowEngTashText=False&Coin=1&Postpone=False&J5=False&Sign=True&MoreData=True&sendemail=True&Pritim=True&PageLang=HEB&tmp=1`,
-    // );
-
-    // &SendHesh=True&heshDesc=[0~Item 1~1~8][0~Item 2~2~1]
 
     const data = response.data;
     console.log('PAYMENT_DATA: ', data);
@@ -40,3 +16,5 @@ export const createPayment = async ({
     throw error;
   }
 };
+
+const test = `https://icom.yaad.net/p/?action=soft&Masof=0010131918&PassP=yaad&Amount=10&CC=1315872608557940000&Tmonth=4&Tyear=2020&Coin=1&Info=test-api&Order=12345678910&Tash=2&UserId=203269535&ClientLName=Israeli&ClientName=Israel&cell=050555555555&phone=098610338&city=netanya&email=testsoft@yaad.net&street=levanon+3&zip=42361&J5=False&MoreData=True&Postpone=False&SendHesh=True&sendemail=True&UTF8=True&UTF8out=True&Fild1=freepram&Fild2=freepram&Fild3=freepram&Token=True`;

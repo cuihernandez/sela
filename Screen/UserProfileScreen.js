@@ -14,7 +14,7 @@ import {
 import {Dimensions, TouchableOpacity} from 'react-native';
 import Header from './Components/Header.js';
 import DataComponent from './Components/DataComponent.js';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import Const from '../Utils/Const.js';
@@ -31,6 +31,13 @@ const UserProfileScreen = () => {
   const handleNavigateToFrame1Screen = () => {
     navigation.navigate('Frame1');
   };
+
+  const route = useRoute();
+
+  useEffect(() => {
+    if (!userID) navigation.navigate('Login');
+  }, [route.name]);
+
   useEffect(() => {
     const getTotalTransactionAmount = async () => {
       // console.log('User ID is:', userID, donorID);

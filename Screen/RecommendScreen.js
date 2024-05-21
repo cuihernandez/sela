@@ -21,6 +21,7 @@ import avatar_instagram from '../Image/logos_instagram.png';
 import avatar_gmail from '../Image/logos_gmail.png';
 import dot from '../Image/dot.png';
 import icon_copy from '../Image/icon_copy.png';
+
 const RecommendScreen = () => {
   const screenHeight = Dimensions.get('window').height;
   const navigation = useNavigation();

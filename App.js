@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {NativeBaseProvider} from 'native-base';
+import {NativeBaseProvider, View} from 'native-base';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from './Screen/SplashScreen';
 import RegisterScreen from './Screen/RegisterScreen';
@@ -20,6 +20,7 @@ import store from './redux/store';
 import SuccessScreen from './Screen/SuccessScreen';
 import PaymentScreen from './Screen/PaymentScreen';
 import StudentsScreen from './Screen/StudentsScreen';
+import RequiresAuth from './Utils/RequiresAuth';
 // import ReduxProvider from './store';
 const Stack = createNativeStackNavigator();
 
@@ -101,11 +102,6 @@ const App = () => {
             <Stack.Screen
               name="Payment"
               component={PaymentScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="Success"
-              component={SuccessScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen

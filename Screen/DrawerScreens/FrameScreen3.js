@@ -15,7 +15,7 @@ import {
 } from 'native-base';
 import {useSelector, useDispatch} from 'react-redux';
 import {setPearls} from '../../redux/actions/pearlsActions';
-import {TouchableOpacity} from 'react-native';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import Header from '../Components/Header';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
@@ -27,6 +27,7 @@ const FrameScreen1 = () => {
   const handleNavigateToFrameScreen = () => {
     navigation.navigate('Frame1'); // Navigate to the 'FrameScreen' page
   };
+  const [loading, setLoading] = useState(false);
 
   const handleNextName = () => {
     console.log('texts value is :--', texts[1]?._data);
@@ -40,12 +41,15 @@ const FrameScreen1 = () => {
   useEffect(() => {
     const getText = async () => {
       try {
+        setLoading(true);
         const snapshot = await firestore().collection('pearls').get();
         const res = snapshot.docs;
         console.log('TEXTS: ', res);
         setTexts(res);
       } catch (error) {
         console.error('This is error:', error);
+      } finally {
+        setLoading(false);
       }
     };
     getText();
@@ -93,11 +97,15 @@ const FrameScreen1 = () => {
               margin="2"
               padding="5"
               width="4/5">
-              <Text color="#8F80A7">
-                {texts.length > 0 &&
-                  array.currentIndex >= 0 &&
-                  texts[array.currentIndex]?._data.text}
-              </Text>
+              {loading ? (
+                <ActivityIndicator color={'#560FC9'} />
+              ) : (
+                <Text color="#8F80A7" fontSize={24}>
+                  {texts.length > 0 &&
+                    array.currentIndex >= 0 &&
+                    texts[array.currentIndex]?._data.text}
+                </Text>
+              )}
             </View>
           </Center>
         </ScrollView>
