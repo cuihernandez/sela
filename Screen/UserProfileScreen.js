@@ -14,13 +14,13 @@ import {
 import {Dimensions, TouchableOpacity} from 'react-native';
 import Header from './Components/Header.js';
 import DataComponent from './Components/DataComponent.js';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import Const from '../Utils/Const.js';
 
+const screenHeight = Dimensions.get('window').height;
 const UserProfileScreen = () => {
-  const screenHeight = Dimensions.get('window').height;
   const {donorID} = Const();
   const [amount, setAmount] = useState(0);
   const navigation = useNavigation();
@@ -30,6 +30,13 @@ const UserProfileScreen = () => {
   const handleNavigateToFrame1Screen = () => {
     navigation.navigate('Frame1');
   };
+
+  const route = useRoute();
+
+  useEffect(() => {
+    if (!userID) navigation.navigate('Login');
+  }, [route.name]);
+
   useEffect(() => {
     const getTotalTransactionAmount = async () => {
       // console.log('User ID is:', userID, donorID);
@@ -37,6 +44,7 @@ const UserProfileScreen = () => {
         const snapshot = await firestore()
           .collection('transaction')
           .where('donorID', '==', donorID)
+          // .where('donorID', '==', 'tn3uuh1D6L7dTnYGlvPi')
           .get();
         let totalAmount = 0;
         snapshot.forEach(doc => {
@@ -53,6 +61,7 @@ const UserProfileScreen = () => {
       const donorData = await firestore()
         .collection('userData')
         .where('userID', '==', donorID)
+        // .where('userID', '==', 'tn3uuh1D6L7dTnYGlvPi')
         .get();
       const res = donorData.docs;
       const completeCount = res.map(snap => snap._data.completeCount);
@@ -65,6 +74,7 @@ const UserProfileScreen = () => {
       const res = await firestore()
         .collection('transaction')
         .where('donorID', '==', userID)
+        // .where('donorID', '==', 'tn3uuh1D6L7dTnYGlvPi')
         .get();
       const data = res.docs;
 
@@ -120,7 +130,7 @@ const UserProfileScreen = () => {
               {value}
             </Text>
             <Text color="#560FC9" fontWeight="bold" fontSize="lg">
-              ${amount}
+              {amount}
             </Text>
           </View>
           <View flexDirection="row" justifyContent="space-between">

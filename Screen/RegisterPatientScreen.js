@@ -26,9 +26,50 @@ import firestore from '@react-native-firebase/firestore';
 import {useRoute} from '@react-navigation/native';
 import {setTransaction} from '../redux/actions/transactionAction';
 import Header from './Components/Header';
-import ScreenCaptureButton from '../Utils/ScreenCaptureButton';
+import {createPayment} from '../Utils/YaadpayService';
+import {loadUser} from '../redux/reducers/auth';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const RegisterPatientScreen = ({navigation, route}) => {
+const BASE62_CHARS =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+const base62Encode = num => {
+  let encoded = '';
+  while (num > 0) {
+    encoded = BASE62_CHARS[num % 62] + encoded;
+    num = Math.floor(num / 62);
+  }
+  return encoded.padStart(9, '0'); // Ensure it is 9 characters long
+};
+
+const base62Decode = str => {
+  let decoded = 0;
+  for (let i = 0; i < str.length; i++) {
+    decoded = decoded * 62 + BASE62_CHARS.indexOf(str[i]);
+  }
+  return decoded;
+};
+
+const firebaseDocIdToNumber = docId => {
+  let num = 0;
+  for (let i = 0; i < docId.length; i++) {
+    num = num * 62 + BASE62_CHARS.indexOf(docId[i]);
+  }
+  return num;
+};
+
+const numberToFirebaseDocId = num => {
+  let docId = '';
+  while (num > 0) {
+    docId = BASE62_CHARS[num % 62] + docId;
+    num = Math.floor(num / 62);
+  }
+  return docId.padStart(20, '0'); // Firebase document IDs are 20 characters long
+};
+
+let transactionUserId = '';
+const RegisterPatientScreen = () => {
+  const route = useRoute();
   const toast = useToast();
   const navigation = useNavigation();
   const [patientName, setPatientName] = useState('');
@@ -38,6 +79,31 @@ const RegisterPatientScreen = ({navigation, route}) => {
   const [motherNameError, setMotherNameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [price, setPrice] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [transactionUid, setTransactionUid] = useState(
+    route.params?.transactionUid,
+  );
+
+  const [selectedButton, setSelectedButton] = useState(null);
+  const [submitClicked, setSubmitClicked] = useState(false);
+
+  const handleSubmitClick = () => {
+    setSubmitClicked(true);
+    setPatientName('');
+    setPatientMotherName('');
+    setPrice('');
+    setPatientEmail('');
+    setSelectedButton(null);
+  };
+
+  const handleButtonSelect = buttonNumber => {
+    setSelectedButton(buttonNumber);
+  };
+
+  useEffect(() => {
+    if (!userID) navigation.navigate('Login');
+  }, [route.name]);
+
   const userID = useSelector(state => state.user.userID);
   const trans = useSelector(state => state.transaction);
   const handleNavigateToFrame1Screen = () => {
@@ -46,6 +112,15 @@ const RegisterPatientScreen = ({navigation, route}) => {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      // const uid = await AsyncStorage.getItem('userId');
+      const uid = 'SHOULD BE UID';
+      console.log({uid});
+      // setUid(uid);
+    })();
+  }, []);
 
   const styles = StyleSheet.create({
     scrollContainer: {
@@ -86,71 +161,120 @@ const RegisterPatientScreen = ({navigation, route}) => {
     },
   });
 
-  const handleSubmit = async () => {
-    if (patientName.trim() === '') {
-      setNameError(true);
-    } else {
-      setNameError(false);
-    }
-    if (patientMotherName.trim() === '') {
-      setMotherNameError(true);
-    } else {
-      setMotherNameError(false);
-    }
-    if (patientEmail.trim() === '') {
-      setEmailError(true);
-    } else {
-      setEmailError(false);
-    }
-    const timestamp = Date(Date.now());
-    if (price === '') {
-      console.log('okay');
-      toast.show({
-        render: () => {
-          return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              Please Enter the Donate Price!
-            </Box>
-          );
-        },
+  useEffect(() => {
+    console.log({userID});
+  }, [userID]);
+
+  const initializePayment = async () => {
+    setLoading(true);
+    try {
+      const response = await createPayment({
+        userId: (() => {
+          let result = '';
+          for (let i = 0; i < 9; i++) {
+            // Generate a random number between 0 and 9 and append it to the result
+            result += Math.floor(Math.random() * 10).toString();
+          }
+          console.log({result});
+          transactionUserId = result;
+          return result;
+        })(),
+        amount: price,
+        clientLName: patientName,
+        clientName: patientName,
+        email: patientEmail,
       });
-    } else {
-      const transactionDatas = {
-        donorID: userID,
-        date: timestamp,
-        doneeName: patientName,
-        doneeMotherName: patientMotherName,
-        doneeEmail: patientEmail,
-        transactionAmount: parseFloat(price),
-      };
-      const res = await firestore()
-        .collection('transaction')
-        .add({
+      const paymentUrl = response.paymentUrl;
+
+      console.log({transactionUserId});
+
+      if (paymentUrl)
+        navigation.navigate('Payment', {
+          paymentUrl,
+          transactionUid: transactionUserId,
+        });
+    } catch {
+      console.error('initializePayment', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      if (patientName.trim() === '') {
+        setNameError(true);
+      } else {
+        setNameError(false);
+      }
+      if (patientMotherName.trim() === '') {
+        setMotherNameError(true);
+      } else {
+        setMotherNameError(false);
+      }
+      if (patientEmail.trim() === '') {
+        setEmailError(true);
+      } else {
+        setEmailError(false);
+      }
+      const timestamp = Date(Date.now());
+      if (price === '') {
+        console.log('okay');
+        return toast.show({
+          render: () => {
+            return (
+              <Box
+                bg="red.500"
+                color={'white'}
+                px="2"
+                py="1"
+                rounded="sm"
+                mb={5}>
+                <Text color={'white'}>Please Enter the Donate Price!</Text>
+              </Box>
+            );
+          },
+        });
+      } else {
+        console.log('HANDLE_SUB: ', transactionUid);
+        const transactionDatas = {
+
           donorID: userID,
           date: timestamp,
           doneeName: patientName,
           doneeMotherName: patientMotherName,
           doneeEmail: patientEmail,
+          transactionUid,
           transactionAmount: parseFloat(price),
-        });
-      dispatch(setTransaction(transactionDatas));
-      console.log('transactionInfo', trans);
-      toast.show({
-        render: () => {
-          return (
-            <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-              Payment Successfully!
-            </Box>
-          );
-        },
-      });
-      setPatientName('');
-      setPatientMotherName('');
-      setPatientEmail('');
-      setPrice('');
+        };
+        const res = await firestore()
+          .collection('transaction')
+          .add({
+            donorID: userID,
+            date: timestamp,
+            doneeName: patientName,
+            doneeMotherName: patientMotherName,
+            doneeEmail: patientEmail,
+            transactionAmount: parseFloat(price),
+          });
+
+        console.log('handleSubmit: ', res);
+        console.log('transactionInfo', trans);
+
+        dispatch(setTransaction(transactionDatas));
+        setPatientName('');
+        setPatientMotherName('');
+        setPatientEmail('');
+        setPrice('');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+
     }
   };
-  const route = useRoute();
 
   useEffect(() => {
     if (route.params) {
@@ -161,7 +285,6 @@ const RegisterPatientScreen = ({navigation, route}) => {
       } else {
         setPatientName(doneeName);
       }
-
       if (typeof doneeMotherName === 'undefined') {
         setPatientMotherName('');
       } else {
@@ -177,6 +300,43 @@ const RegisterPatientScreen = ({navigation, route}) => {
       console.log('Route params are undefined');
     }
   }, [route.params, setPatientName, setPatientMotherName, setPatientEmail]);
+
+  useEffect(() => {
+    console.log({paymentStatus: route.params?.paymentStatus});
+    if (route.params?.paymentStatus === 'success') {
+      (async () => {
+        try {
+          await handleSubmit();
+          toast.show({
+            render: () => {
+              return (
+                <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+                  <Text color={'white'}>Payment Successful!</Text>
+                </Box>
+              );
+            },
+          });
+        } catch (error) {
+          console.error('handleSubmit', error);
+        } finally {
+          route.params.paymentStatus = null;
+        }
+      })();
+    }
+
+    if (route.params?.paymentStatus === 'fail') {
+      toast.show({
+        render: () => {
+          return (
+            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+              <Text color={'white'}>Payment Unsuccessful!</Text>
+            </Box>
+          );
+        },
+      });
+      route.params.paymentStatus = null;
+    }
+  }, [route.params?.paymentStatus]);
 
   return (
     <>
@@ -301,19 +461,25 @@ const RegisterPatientScreen = ({navigation, route}) => {
                   keyboardType="numeric"
                   onChangeText={setPrice}
                 />
-                {/* Screen Capture Button */}
-                <ScreenCaptureButton text=" שמור צילום מסך" />
               </Box>
               <Center padding={(screenWidth * 2) / 100}>
                 <Button
                   style={styles.button}
+                  disabled={loading}
                   backgroundColor="#560FC9"
                   width="50%"
                   height={(screenHeight * 5.6) / 100}
                   _text={{fontSize: (screenWidth * 4) / 100}}
-                  onPress={handleSubmit}>
+                  onPress={() =>
+                    submitClicked ? initializePayment() : setSubmitClicked(true)
+                  }>
                   <HStack space="2" alignItems="center">
-                    <Text color="white">המשך</Text>
+                    {!loading ? (
+                      <Text color="white">המשך</Text>
+                    ) : (
+                      <Spinner color={'white'} />
+                    )}
+
                     <Image
                       source={require('../Image/bit.png')}
                       alt="bit"

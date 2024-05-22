@@ -43,6 +43,9 @@ function MenuIcon() {
   const handleNavigateToRecommendProfileScreen = () => {
     navigation.navigate('RecommendProfile');
   };
+  const handleNavigateToStudentsScreen = () => {
+    navigation.navigate('Students');
+  };
 
   return (
     <Box h="80%">
@@ -83,6 +86,9 @@ function MenuIcon() {
         </Menu.Item>
         <Menu.Item onPress={handleNavigateToRecommendProfileScreen}>
           המלץ לחברים
+        </Menu.Item>
+        <Menu.Item onPress={handleNavigateToStudentsScreen}>
+          עזרו לתלמידים
         </Menu.Item>
         {/** Add more items as needed */}
       </Menu>

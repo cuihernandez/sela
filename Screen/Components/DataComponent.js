@@ -2,7 +2,6 @@
 import React from 'react';
 import {Button, Checkbox, View, Text} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
-
 function DataComponent({name, onNavigate}) {
   return (
     <View

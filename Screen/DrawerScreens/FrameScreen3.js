@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { React, useState, useEffect } from 'react';
+import {React, useState, useEffect} from 'react';
 import {
   ArrowForwardIcon,
   ArrowBackIcon,
@@ -11,13 +11,13 @@ import {
   View,
   Text,
   ScrollView,
-  Center
+  Center,
 } from 'native-base';
-import { useSelector, useDispatch } from 'react-redux';
-import { setPearls } from '../../redux/actions/pearlsActions';
-import { TouchableOpacity } from 'react-native';
+import {useSelector, useDispatch} from 'react-redux';
+import {setPearls} from '../../redux/actions/pearlsActions';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import Header from '../Components/Header';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 const FrameScreen1 = () => {
   const dispatch = useDispatch();
@@ -27,31 +27,33 @@ const FrameScreen1 = () => {
   const handleNavigateToFrameScreen = () => {
     navigation.navigate('Frame1'); // Navigate to the 'FrameScreen' page
   };
+  const [loading, setLoading] = useState(false);
 
   const handleNextName = () => {
-    console.log('texts value is :--', texts[1]._data)
+    console.log('texts value is :--', texts[1]?._data);
     let nextIndex = array.currentIndex;
-    nextIndex = array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
-    dispatch(setPearls({ pearlsData: texts, currentIndex: nextIndex }))
+    nextIndex =
+      array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
+    dispatch(setPearls({pearlsData: texts, currentIndex: nextIndex}));
     handleNavigateToFrameScreen();
   };
 
   useEffect(() => {
     const getText = async () => {
       try {
-        const snapshot = await firestore()
-          .collection('pearls')
-          .get();
+        setLoading(true);
+        const snapshot = await firestore().collection('pearls').get();
         const res = snapshot.docs;
+        console.log('TEXTS: ', res);
         setTexts(res);
+      } catch (error) {
+        console.error('This is error:', error);
+      } finally {
+        setLoading(false);
       }
-      catch (error) {
-        console.error('This is error:', error)
-      }
-    }
+    };
     getText();
-  }
-    , [texts])
+  }, []);
   return (
     <>
       <Header />
@@ -88,22 +90,25 @@ const FrameScreen1 = () => {
           alt="configration"
         />
         <ScrollView width={'80%'}>
-          <Center >
+          <Center>
             <View
               borderRadius="15"
               backgroundColor="#F1E6FF"
               margin="2"
               padding="5"
-              width='4/5'
-            >
-              <Text color="#8F80A7">
-                {texts.length > 0 && array.currentIndex >= 0 && texts[array.currentIndex]?._data.text}
-              </Text>
+              width="4/5">
+              {loading ? (
+                <ActivityIndicator color={'#560FC9'} />
+              ) : (
+                <Text color="#8F80A7" fontSize={24}>
+                  {texts.length > 0 &&
+                    array.currentIndex >= 0 &&
+                    texts[array.currentIndex]?._data.text}
+                </Text>
+              )}
             </View>
           </Center>
         </ScrollView>
-
-
       </Box>
       <HStack alignItems={'center'} marginBottom="20" justifyContent="flex-end">
         <Button
