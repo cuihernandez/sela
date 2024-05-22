@@ -77,19 +77,21 @@ export default function StudentsScreen() {
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}
         height={(screenHeight * 14) / 100}>
-        <Box>
+        <Box position={'absolute'} top={5}>
           <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
             <ArrowBackIcon color="white" size={4} marginLeft="2" />
           </TouchableOpacity>
         </Box>
-        <Center width="100" height="100">
+        <Center width="100%" height="100">
           {/* <Image source={require('../Image/edit.png')} alt="edit image" /> */}
           <Text
             style={{
               color: 'white',
               fontSize: 26,
-            }}>
-            תלמידים
+              textAlign: 'center',
+            }}
+            numberOfLines={1}>
+            תלמידי חסות
           </Text>
         </Center>
         <Box />
@@ -254,7 +256,7 @@ export default function StudentsScreen() {
           bottom: 20,
           right: 10,
         }}>
-        <Text color={'white'}>Next</Text>
+        <Text color={'white'}>הַבָּא</Text>
       </Button>
     </>
   );

@@ -87,7 +87,7 @@ const UserProfileScreen = () => {
       const uniqueNames = Array.from(
         new Map(all.map(item => [item['name'], item])).values(),
       );
-      setUniqueDoneeNames(uniqueNames);
+      setUniqueDoneeNames(Array(20).fill(...uniqueNames));
       // console.log('The data is :', all);
     };
     getTotalName();
@@ -146,15 +146,11 @@ const UserProfileScreen = () => {
         <Center>
           <Text> יש להעביר כסף ולהעלות צילום מסך</Text>
         </Center>
-        <View
-          backgroundColor="#F1E6FF"
-          margin="3"
-          borderRadius="20"
-          height={(screenHeight * 55) / 100}>
+        <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" flex={1}>
           <Text marginTop="3" marginRight="6" color="#8F80A7">
             חולה רשום
           </Text>
-          <ScrollView h="80" margin="3">
+          <ScrollView h="50" margin="3">
             {/* {uniqueDoneeNames && Array.isArray(uniqueDoneeNames) && uniqueDoneeNames.map((names, index) => (
               <DataComponent key={index} name={names} onNavigate={() => navigation.navigate('RegPatient', { doneeName: names })} />
             ))} */}
