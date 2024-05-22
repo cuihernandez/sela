@@ -10,6 +10,7 @@ function DataComponent({name, onNavigate}) {
       backgroundColor="white"
       flexDirection="row"
       padding="2"
+      borderRadius={8}
       justifyContent="space-between">
       <Button
         backgroundColor="#560FC9"
