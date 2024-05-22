@@ -19,7 +19,6 @@ import {
   FormControl,
   WarningOutlineIcon,
   ScrollView,
-  Spinner,
 } from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -71,7 +70,6 @@ const numberToFirebaseDocId = num => {
 let transactionUserId = '';
 const RegisterPatientScreen = () => {
   const route = useRoute();
-
   const toast = useToast();
   const navigation = useNavigation();
   const [patientName, setPatientName] = useState('');
@@ -241,6 +239,7 @@ const RegisterPatientScreen = () => {
       } else {
         console.log('HANDLE_SUB: ', transactionUid);
         const transactionDatas = {
+
           donorID: userID,
           date: timestamp,
           doneeName: patientName,
@@ -273,6 +272,7 @@ const RegisterPatientScreen = () => {
       console.error(error);
     } finally {
       setLoading(false);
+
     }
   };
 
@@ -479,6 +479,7 @@ const RegisterPatientScreen = () => {
                     ) : (
                       <Spinner color={'white'} />
                     )}
+
                     <Image
                       source={require('../Image/bit.png')}
                       alt="bit"

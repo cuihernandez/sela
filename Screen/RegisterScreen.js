@@ -41,7 +41,6 @@ const RegisterScreen = () => {
   const toast = useToast();
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user);
   const handleRegister = async () => {
     console.log('Handle Register Button');
     try {
@@ -181,7 +180,6 @@ const RegisterScreen = () => {
                   תנאי שירות (Terms & Conditions)
                 </Checkbox>
               </HStack>
-
               <HStack justifyContent="center">
                 <Button
                   titel="register"
