@@ -88,7 +88,7 @@ const UserProfileScreen = () => {
         new Map(all.map(item => [item['name'], item])).values(),
       );
       setUniqueDoneeNames(Array(20).fill(...uniqueNames));
-      // console.log('The data is :', all);
+      // console.log('The data is :'  , all);
     };
     getTotalName();
   }, [userID]);

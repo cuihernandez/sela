@@ -75,7 +75,6 @@ const LoginScreen = () => {
         const uid = doc.id;
 
         console.log('NOT EMPTY', querySnapshot);
-        handleNavigateToFrameScreen();
         const payload = {
           userID: uid,
           name: formData.name,
@@ -84,6 +83,8 @@ const LoginScreen = () => {
         };
         dispatch(setUserData(payload));
         console.log('USER_ID: ', uid);
+        handleNavigateToFrameScreen();
+
         // await AsyncStorage.setItem('userId', user.userID);
       } else {
         toast.show({

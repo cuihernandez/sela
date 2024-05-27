@@ -15,7 +15,7 @@ import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import {setPsalms} from '../../redux/actions/psalmsAction.js';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../Components/Header';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 
 const FrameScreen2 = () => {
@@ -24,16 +24,19 @@ const FrameScreen2 = () => {
   const [texts, setTexts] = useState([]);
   const array = useSelector(state => state.psalms);
   const userID = useSelector(state => state.user.userID);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [_, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const route = useRoute();
+  const currentIndex = route.params.currentIndex;
+
   const handleNavigateToFrame1Screen = () => {
-    navigation.navigate('Frame1');
+    navigation.navigate('Frame1', {currentIndex});
   };
 
   const handleNavigateToFrameScreen = async () => {
     try {
-      navigation.navigate('Frame3');
+      navigation.navigate('Frame3', {currentIndex});
       const snapshot = await firestore()
         .collection('userData')
         .where('userID', '==', userID)
@@ -77,6 +80,11 @@ const FrameScreen2 = () => {
       console.error('Error:', error);
     }
   };
+
+  useEffect(() => {
+    console.info('-----------ROUTE----------------->', {route: route.params});
+  }, []);
+
   const handleNextName = () => {
     let nextIndex = array.currentIndex;
     nextIndex =
@@ -107,13 +115,6 @@ const FrameScreen2 = () => {
     };
     getText();
   }, []);
-
-  useEffect(() => {
-    console.log('texts[array.currentIndex]: ', texts[array.currentIndex], {
-      texts,
-      array,
-    });
-  });
 
   return (
     <>
