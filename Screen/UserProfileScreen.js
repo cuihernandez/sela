@@ -86,8 +86,8 @@ const UserProfileScreen = () => {
       const uniqueNames = Array.from(
         new Map(all.map(item => [item['name'], item])).values(),
       );
-      setUniqueDoneeNames(Array(20).fill(...uniqueNames));
-      // console.log('The data is :', all);
+      setUniqueDoneeNames(uniqueNames);
+      // console.log('The data is :'  , all);
     };
     getTotalName();
   }, [userID]);
@@ -122,7 +122,7 @@ const UserProfileScreen = () => {
         <View padding="5">
           <Center marginBottom="4">
             <Text color="#560FC9" fontSize="lg" fontWeight="bold">
-              תרומות
+              נתוני תרומות ותפילות
             </Text>
           </Center>
           <View flexDirection="row" justifyContent="space-between">
@@ -143,7 +143,7 @@ const UserProfileScreen = () => {
           </View>
         </View>
         <Center>
-          <Text> יש להעביר כסף ולהעלות צילום מסך</Text>
+          <Text>100% מהכסף שנתרם מועבר לצדקה</Text>
         </Center>
         <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" flex={1}>
           <Text marginTop="3" marginRight="6" color="#8F80A7">

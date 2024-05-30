@@ -76,7 +76,7 @@ function MenuIcon() {
           נתוני תפילותיי ותרומותיי
         </Menu.Item>
         <Menu.Item onPress={handleNavigateToTestimonialsScreen}>
-          עדויות של מחלימים
+          המלצות משתמשים
         </Menu.Item>
         <Menu.Item onPress={handleNavigateToAboutScreen}>
           מי אנחנו? צור קשר
@@ -88,7 +88,7 @@ function MenuIcon() {
           המלץ לחברים
         </Menu.Item>
         <Menu.Item onPress={handleNavigateToStudentsScreen}>
-          עזרו לתלמידים
+          תמיכה באברך
         </Menu.Item>
         {/** Add more items as needed */}
       </Menu>

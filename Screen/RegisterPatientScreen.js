@@ -347,6 +347,17 @@ const RegisterPatientScreen = () => {
           resizeMode="cover"
           alt="background"
         />
+        <View
+          style={{
+            position: 'absolute',
+            top: 150,
+            zIndex: 10,
+            alignSelf: 'center',
+          }}>
+          <Text fontSize={20} textAlign={'center'} color={'white'}>
+            100% מהכסף שנתרם יינתן לתרומה
+          </Text>
+        </View>
         <ScrollView
           style={styles.scrollContainer}
           contentContainerStyle={{
@@ -395,7 +406,7 @@ const RegisterPatientScreen = () => {
                   />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}>
-                    Please Enter Name
+                    נא להזין שם
                   </FormControl.ErrorMessage>
                 </FormControl>
               </Center>
@@ -417,7 +428,7 @@ const RegisterPatientScreen = () => {
                   />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}>
-                    Please Enter Mother Name
+                    נא להזין את שם האם
                   </FormControl.ErrorMessage>
                 </FormControl>
               </Center>
@@ -428,7 +439,7 @@ const RegisterPatientScreen = () => {
                     marginTop={(screenHeight * 2) / 100}
                     marginBottom={(screenHeight * 1) / 100}
                     color="#1E0050">
-                    אימייל
+                    אמייל של התורם
                   </Text>
                   <Input
                     style={styles.input}
@@ -439,7 +450,7 @@ const RegisterPatientScreen = () => {
                   />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}>
-                    Pleae Enter Email
+                    נא להזין אימייל
                   </FormControl.ErrorMessage>
                 </FormControl>
               </Center>
@@ -455,7 +466,7 @@ const RegisterPatientScreen = () => {
                 <Input
                   variant="unstyled"
                   style={styles.input}
-                  placeholder="ןזהוכסם"
+                  placeholder="הכנס סכום"
                   width="50%"
                   value={price}
                   keyboardType="numeric"
@@ -475,17 +486,10 @@ const RegisterPatientScreen = () => {
                   }>
                   <HStack space="2" alignItems="center">
                     {!loading ? (
-                      <Text color="white">המשך</Text>
+                      <Text color="white">המשך לתשלום</Text>
                     ) : (
                       <Spinner color={'white'} />
                     )}
-
-                    <Image
-                      source={require('../Image/bit.png')}
-                      alt="bit"
-                      size={8} // Adjust the size as needed
-                      ml={2} // Add margin to separate text and image
-                    />
                   </HStack>
                 </Button>
               </Center>
