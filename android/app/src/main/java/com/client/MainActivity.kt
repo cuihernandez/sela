@@ -1,4 +1,4 @@
-package com.client
+package com.usesela
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

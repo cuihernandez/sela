@@ -122,7 +122,7 @@ const RegisterScreen = () => {
                   placeholder="שם פרטי"
                   value={name}
                   onChangeText={setName}
-                  color="#D6B7FF"
+                  color="black"
                   borderRadius={20}
                   backgroundColor="#F1E6FF"
                   variant="unstyled"
@@ -139,7 +139,7 @@ const RegisterScreen = () => {
                 <Input
                   placeholder="שם האם"
                   value={mothername}
-                  color="#D6B7FF"
+                  color="black"
                   onChangeText={setMotherName}
                   borderRadius={20}
                   backgroundColor="#F1E6FF"
@@ -158,7 +158,7 @@ const RegisterScreen = () => {
                 <Input
                   placeholder="אמייל"
                   value={email}
-                  color="#D6B7FF"
+                  color="black"
                   onChangeText={setEmail}
                   borderRadius={20}
                   backgroundColor="#F1E6FF"
@@ -194,12 +194,12 @@ const RegisterScreen = () => {
                   המשך
                 </Button>
               </HStack>
-              <Button
+              {/* <Button
                 onPress={() => navigation.navigate('Students')}
                 variant={'link'}
                 style={{paddingVertical: 10}}>
                 <Text color={'#560FC9'}>Sponsor a Student</Text>
-              </Button>
+              </Button> */}
             </View>
           </View>
         </ScrollView>

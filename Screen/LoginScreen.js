@@ -182,12 +182,12 @@ const LoginScreen = () => {
                     sign up
                   </Link>
                 </HStack>
-                <Button
+                {/* <Button
                   onPress={() => navigation.navigate('Students')}
                   variant={'link'}
                   style={{paddingVertical: 10}}>
                   <Text color={'#560FC9'}>Sponsor a Student</Text>
-                </Button>
+                </Button> */}
               </ScrollView>
             </View>
           </View>
@@ -225,7 +225,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 27,
     backgroundColor: '#F1E6FF',
-    color: '#D6B7FF',
+    // color: '#D6B7FF',
+    color: 'black',
     paddingHorizontal: 10,
   },
   text: {

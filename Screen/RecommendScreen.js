@@ -43,10 +43,11 @@ const RecommendScreen = () => {
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}
         height={(screenHeight * 12) / 100}>
-        <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-          <ArrowBackIcon color="white" size={4} marginLeft="1" />
-        </TouchableOpacity>
-
+        <Box position={'absolute'} right={6}>
+          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
+            <ArrowBackIcon color="white" size={4} marginLeft="2" />
+          </TouchableOpacity>
+        </Box>
         <Center>
           <Text
             color="white"

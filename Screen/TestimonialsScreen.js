@@ -95,7 +95,7 @@ const TestimonialsScreens = () => {
           fontSize={'lg'}
           px="3"
           marginTop={'5'}>
-          תודה
+          המלצות משתמשים
         </Text>
         <Box />
       </HStack>
