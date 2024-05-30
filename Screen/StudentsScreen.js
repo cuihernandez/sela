@@ -306,7 +306,7 @@ export default function StudentsScreen() {
           )}
         </View>
       )}
-      {student && !loading && (
+      {student && !loading && student?.sponsor !== userID && (
         <Button
           disabled={!student}
           onPress={() => {
