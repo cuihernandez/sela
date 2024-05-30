@@ -18,13 +18,10 @@ import {
   HStack,
   useToast,
 } from 'native-base';
-
-import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserData} from '../redux/actions/userAction';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -99,6 +96,7 @@ const LoginScreen = () => {
       }
     } catch (error) {
       console.error('LOGIN: ', error);
+
       toast.show({
         render: () => {
           return (
@@ -140,7 +138,6 @@ const LoginScreen = () => {
                   value={formData.mothername}
                   placeholder="שם האם"
                 />
-
                 <Text style={styles.text}>אמייל (אופציונלי)</Text>
                 <Input
                   style={styles.input}
