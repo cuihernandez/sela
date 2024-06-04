@@ -65,6 +65,7 @@ const LoginScreen = () => {
         .collection('users')
         .where('mothername', '==', formData.mothername)
         .where('name', '==', formData.name)
+        .where('deleted', '!=', true)
         .get();
       console.log({querySnapshotEMPTY: querySnapshot.empty});
 
@@ -84,14 +85,12 @@ const LoginScreen = () => {
         dispatch(setUserData(payload));
         console.log('USER_ID: ', uid);
         handleNavigateToFrameScreen();
-
-        // await AsyncStorage.setItem('userId', user.userID);
       } else {
         toast.show({
           render: () => {
             return (
               <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-                This user does not exit!
+                This user does not exist!
               </Box>
             );
           },

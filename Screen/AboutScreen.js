@@ -43,24 +43,25 @@ const AboutScreen = () => {
             textAlign={'center'}
             px="3"
             marginTop={'5'}>
-            נילעו
+            עלינו
           </Text>
         </Box>
       </HStack>
       <Box flex={1} alignItems="center">
-        <View width="50" height="70">
+        <View>
           <Image
             source={require('../Image/logo.png')}
             marginTop={3}
-            marginBottom={7}
-            alt="log"
+            alt="logo"
+            width={100}
+            height={100}
           />
         </View>
 
         <View flex={1}>
           <ScrollView>
             <View margin="3" padding="5">
-              <Text color="#8F80A7" marginTop={4}>
+              <Text color="#8F80A7">
                 סלה הוקמה על מנת לאחד את השורות בעם ישראל ולקרב לבבות בין יהודים
                 יקרים, כמו שנאמר כל ישראל ערבים זה בזה וזה לזה.
               </Text>

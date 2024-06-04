@@ -14,7 +14,7 @@ import {
   useToast,
   WarningOutlineIcon,
 } from 'native-base';
-import {Dimensions, TouchableOpacity} from 'react-native';
+import {Alert, Dimensions, TouchableOpacity} from 'react-native';
 import Header from './Components/Header.js';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -99,11 +99,43 @@ const EditProfileScreen = () => {
     }
   };
   const user = useSelector(state => state.user);
+
   useEffect(() => {
     setName(user.name);
     setMotherName(user.mothername);
     setEmail(user.email);
   }, [user.name, user.mothername, user.email]);
+
+  const deleteAccount = async () => {
+    try {
+      await firestore().collection('users').doc(userID).update({
+        deleted: true,
+      });
+
+      console.log(`USer ${userID} updated`);
+
+      await new Promise((resolve, reject) => {
+        resolve(
+          toast.show({
+            render: () => {
+              return (
+                <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+                  Account successfully deleted!
+                </Box>
+              );
+            },
+          }),
+        );
+      });
+
+      setTimeout(() => {
+        navigation.navigate('Login');
+      }, 1000);
+    } catch (e) {
+      console.error('Error updating student document: ', e);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -183,6 +215,36 @@ const EditProfileScreen = () => {
           height={(screenHeight * 5.7) / 100}
           onPress={handleUpdateProfile}>
           שמירה
+        </Button>
+        <Button
+          backgroundColor="#F5DCDC"
+          borderRadius="2xl"
+          borderWidth={1}
+          borderColor={'red.400'}
+          margin="2"
+          width={(screenWidth * 90) / 100}
+          height={(screenHeight * 5.7) / 100}
+          onPress={() => {
+            Alert.alert(
+              'מחק חשבון',
+              'מחק חשבון',
+              [
+                {
+                  text: 'Confirm',
+                  onPress: deleteAccount,
+                  style: 'default',
+                },
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+              ],
+              {
+                cancelable: true,
+              },
+            );
+          }}>
+          <Text color={'red.400'}>מחק חשבון</Text>
         </Button>
       </View>
     </>
