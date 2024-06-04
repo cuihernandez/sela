@@ -11,13 +11,10 @@ import {
   Share,
 } from 'react-native';
 // import Share from 'react-native-share';
-
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
-
 const CaptureScreen = () => {
   const [imageUri, setImageUri] = useState('');
-
   useEffect(() => {
     console.log('REACHED');
     const checkPermission = async () => {
@@ -151,6 +148,7 @@ const requestStoragePermission = async () => {
     return true;
   }
 
+
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -178,5 +176,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#560FC9',
     alignItems: 'center',
     flexDirection: 'row',
+
   },
 });
