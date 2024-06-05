@@ -19,7 +19,6 @@ import store from './redux/store';
 import SuccessScreen from './Screen/SuccessScreen';
 import PaymentScreen from './Screen/PaymentScreen';
 import StudentsScreen from './Screen/StudentsScreen';
-import RequiresAuth from './Utils/RequiresAuth';
 // import ReduxProvider from './store';
 const Stack = createNativeStackNavigator();
 

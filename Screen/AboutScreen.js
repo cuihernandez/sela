@@ -39,7 +39,9 @@ const AboutScreen = () => {
         <Box width={'100%'}>
           <Text
             color="white"
-            fontSize={'lg'}
+            style={{
+              fontSize: 24,
+            }}
             textAlign={'center'}
             px="3"
             marginTop={'5'}>

@@ -129,21 +129,21 @@ const FrameScreen2 = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-          <ArrowBackIcon color="white" size={4} />
-        </TouchableOpacity>
-        <Text
-          color="white"
-          alignItems={'center'}
-          fontSize="20"
-          width="2/3"
-          px="3"
-          marginTop={'5'}>
-          מומלץ לקרוא בדיבור:
-        </Text>
-        <Box />
-        <Box />
-        <Box />
+        <Box position={'absolute'} right={6}>
+          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
+            <ArrowBackIcon color="white" size={4} />
+          </TouchableOpacity>
+        </Box>
+        <Box width={'100%'}>
+          <Text
+            color="white"
+            textAlign={'center'}
+            fontSize="24"
+            px="3"
+            marginTop={'5'}>
+            מומלץ לקרוא בדיבור:
+          </Text>
+        </Box>
       </HStack>
       <Box flex={1} alignItems="center">
         {/* <Text color="black" fontSize={20} marginTop={3}>

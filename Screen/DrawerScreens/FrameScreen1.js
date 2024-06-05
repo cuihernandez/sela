@@ -139,7 +139,7 @@ const FrameScreen1 = () => {
           color="white"
           alignItems="center"
           justifyContent="center"
-          fontSize="20"
+          fontSize="24"
           px="3"
           marginTop={'5'}>
           מומלץ לקרוא בדיבור:

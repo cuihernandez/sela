@@ -82,22 +82,29 @@ const TestimonialsScreens = () => {
         w="100%"
         alignItems="center"
         p={4}
-        direction="row"
-        justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-          <ArrowBackIcon color="white" size={4} />
-        </TouchableOpacity>
-        <Text
-          color="white"
-          alignItems={'center'}
-          fontSize={'lg'}
-          px="3"
-          marginTop={'5'}>
-          המלצות משתמשים
-        </Text>
-        <Box />
+        <Box position={'absolute'} right={6}>
+          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
+            <ArrowBackIcon color="white" size={4} />
+          </TouchableOpacity>
+        </Box>
+        <Box
+          style={{
+            marginHorizontal: 'auto',
+            width: '100%',
+          }}>
+          <Text
+            textAlign={'center'}
+            color="white"
+            style={{
+              fontSize: 24,
+            }}
+            px="3"
+            marginTop={'5'}>
+            המלצות משתמשים
+          </Text>
+        </Box>
       </HStack>
       <Box flex={1} alignItems="center">
         <ScrollView width="100%">

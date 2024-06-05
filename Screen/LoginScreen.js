@@ -21,6 +21,7 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserData} from '../redux/actions/userAction';
+import {useNavigation} from '@react-navigation/native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
