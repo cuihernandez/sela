@@ -56,6 +56,7 @@ const RegisterScreen = () => {
           name: name,
           mothername: mothername,
           email: email,
+          deleted: false,
           registertime: timestamp,
         });
         auth().signInAnonymously();
