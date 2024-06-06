@@ -55,6 +55,7 @@ const RecommendScreen = () => {
             color="white"
             style={{
               fontSize: 24,
+              lineHeight: 30,
             }}
             px="3"
             marginTop={'5'}>

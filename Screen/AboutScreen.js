@@ -43,8 +43,7 @@ const AboutScreen = () => {
               fontSize: 24,
             }}
             textAlign={'center'}
-            px="3"
-            marginTop={'5'}>
+            lineHeight={30}>
             עלינו
           </Text>
         </Box>
