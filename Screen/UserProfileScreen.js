@@ -11,7 +11,7 @@ import {
   Text,
   ScrollView,
 } from 'native-base';
-import {Dimensions, TouchableOpacity} from 'react-native';
+import {ActivityIndicator, Dimensions, TouchableOpacity} from 'react-native';
 import Header from './Components/Header.js';
 import DataComponent from './Components/DataComponent.js';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -26,6 +26,7 @@ const UserProfileScreen = () => {
   const navigation = useNavigation();
   const [value, setValue] = useState(0);
   const [uniqueDoneeNames, setUniqueDoneeNames] = useState([]);
+  const [loading, setLoading] = useState(false);
   const userID = useSelector(state => state.user.userID);
   const handleNavigateToFrame1Screen = () => {
     navigation.navigate('Frame1');
@@ -89,7 +90,16 @@ const UserProfileScreen = () => {
       setUniqueDoneeNames(uniqueNames);
       // console.log('The data is :'  , all);
     };
-    getTotalName();
+
+    (async () => {
+      setLoading(true);
+      try {
+        await getTotalName();
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [userID]);
   return (
     <>
@@ -100,20 +110,19 @@ const UserProfileScreen = () => {
         w="100%"
         p={4}
         direction="row"
-        justifyContent="space-between"
-        alignItems="flex-start"
+        justifyContent="center"
+        alignItems="center"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}
         height={(screenHeight * 14) / 100}>
-        <Box>
+        <Box position={'absolute'} top={5} right={6}>
           <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
             <ArrowBackIcon color="white" size={4} marginLeft="2" />
           </TouchableOpacity>
         </Box>
-        <Center width="100" height="100">
+        <Center width="100" height="100" alignSelf={'center'}>
           <Image source={require('../Image/edit.png')} alt="edit image" />
         </Center>
-        <Box />
       </HStack>
       <Box
         flex={1}
@@ -153,19 +162,28 @@ const UserProfileScreen = () => {
             {/* {uniqueDoneeNames && Array.isArray(uniqueDoneeNames) && uniqueDoneeNames.map((names, index) => (
               <DataComponent key={index} name={names} onNavigate={() => navigation.navigate('RegPatient', { doneeName: names })} />
             ))} */}
-            {uniqueDoneeNames.map((donee, index) => (
-              <DataComponent
-                key={index}
-                name={donee.name}
-                onNavigate={() =>
-                  navigation.navigate('RegPatient', {
-                    doneeName: donee.name,
-                    doneeMotherName: donee.motherName,
-                    doneeEmail: donee.email,
-                  })
-                }
-              />
-            ))}
+            {loading ? (
+              <Box marginTop={5}>
+                <ActivityIndicator color={'#560FC9'} size={50} />
+              </Box>
+            ) : (
+              uniqueDoneeNames.map((donee, index) => (
+                <DataComponent
+                  key={index}
+                  name={donee.name}
+                  motherName={donee.motherName}
+                  email={donee.email}
+                  action={() => {
+                    console.log('ACTION');
+                    navigation.navigate('RegPatient', {
+                      doneeName: donee.name,
+                      doneeMotherName: donee.motherName,
+                      doneeEmail: donee.email,
+                    });
+                  }}
+                />
+              ))
+            )}
           </ScrollView>
         </View>
       </Box>

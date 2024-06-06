@@ -21,6 +21,7 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserData} from '../redux/actions/userAction';
+import {useNavigation} from '@react-navigation/native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -62,6 +63,7 @@ const LoginScreen = () => {
         .collection('users')
         .where('mothername', '==', formData.mothername)
         .where('name', '==', formData.name)
+        .where('deleted', '!=', true)
         .get();
       console.log({querySnapshotEMPTY: querySnapshot.empty});
 
@@ -81,14 +83,12 @@ const LoginScreen = () => {
         dispatch(setUserData(payload));
         console.log('USER_ID: ', uid);
         handleNavigateToFrameScreen();
-
-        // await AsyncStorage.setItem('userId', user.userID);
       } else {
         toast.show({
           render: () => {
             return (
               <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-                This user does not exit!
+                This user does not exist!
               </Box>
             );
           },

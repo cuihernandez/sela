@@ -19,6 +19,7 @@ import {
   FormControl,
   WarningOutlineIcon,
   ScrollView,
+  Spinner,
 } from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -70,6 +71,7 @@ const numberToFirebaseDocId = num => {
 let transactionUserId = '';
 const RegisterPatientScreen = () => {
   const route = useRoute();
+
   const toast = useToast();
   const navigation = useNavigation();
   const [patientName, setPatientName] = useState('');
@@ -239,7 +241,6 @@ const RegisterPatientScreen = () => {
       } else {
         console.log('HANDLE_SUB: ', transactionUid);
         const transactionDatas = {
-
           donorID: userID,
           date: timestamp,
           doneeName: patientName,
@@ -272,7 +273,6 @@ const RegisterPatientScreen = () => {
       console.error(error);
     } finally {
       setLoading(false);
-
     }
   };
 
@@ -347,17 +347,7 @@ const RegisterPatientScreen = () => {
           resizeMode="cover"
           alt="background"
         />
-        <View
-          style={{
-            position: 'absolute',
-            top: 150,
-            zIndex: 10,
-            alignSelf: 'center',
-          }}>
-          <Text fontSize={20} textAlign={'center'} color={'white'}>
-            100% מהכסף שנתרם יינתן לתרומה
-          </Text>
-        </View>
+
         <ScrollView
           style={styles.scrollContainer}
           contentContainerStyle={{
@@ -370,20 +360,30 @@ const RegisterPatientScreen = () => {
               position="relative"
               bg="#560FC9"
               marginBottom={(screenWidth * 4) / 100}>
-              <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-                <ArrowBackIcon
+              <Box position={'absolute'} top={5} right={6}>
+                <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
+                  <ArrowBackIcon color="white" size={4} marginLeft="2" />
+                </TouchableOpacity>
+              </Box>
+
+              <Box
+                style={{
+                  position: 'absolute',
+                  top: 50,
+                  zIndex: 10,
+                  alignSelf: 'center',
+                }}>
+                <Text
+                  textAlign="center"
+                  fontSize={(screenWidth * 9.5) / 100}
                   color="#ffffff"
-                  marginTop={(screenWidth * 4) / 100}
-                  marginLeft={(screenWidth * 6) / 100}
-                />
-              </TouchableOpacity>
-              <Text
-                textAlign="center"
-                fontSize={(screenWidth * 9.5) / 100}
-                color="#ffffff"
-                fontWeight="bold">
-                רישום חולה לתפילה
-              </Text>
+                  fontWeight="bold">
+                  רישום חולה לתפילה
+                </Text>
+                <Text fontSize={20} textAlign={'center'} color={'white'}>
+                  100% מהכסף שנתרם יינתן לתרומה
+                </Text>
+              </Box>
             </Box>
           </Box>
 
@@ -481,9 +481,7 @@ const RegisterPatientScreen = () => {
                   width="50%"
                   height={(screenHeight * 5.6) / 100}
                   _text={{fontSize: (screenWidth * 4) / 100}}
-                  onPress={() =>
-                    submitClicked ? initializePayment() : setSubmitClicked(true)
-                  }>
+                  onPress={() => initializePayment()}>
                   <HStack space="2" alignItems="center">
                     {!loading ? (
                       <Text color="white">המשך לתשלום</Text>

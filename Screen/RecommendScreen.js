@@ -36,30 +36,33 @@ const RecommendScreen = () => {
         px="3"
         py="3"
         w="100%"
-        alignItems="flex-start"
+        alignItems="center"
         p={4}
-        direction="row"
-        justifyContent="space-between"
         backgroundColor={'#560FC9'}
-        borderBottomRadius={'40'}
-        height={(screenHeight * 12) / 100}>
+        borderBottomRadius={'40'}>
         <Box position={'absolute'} right={6}>
           <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} marginLeft="2" />
+            <ArrowBackIcon color="white" size={4} />
           </TouchableOpacity>
         </Box>
-        <Center>
+        <Box
+          style={{
+            marginHorizontal: 'auto',
+            width: '100%',
+          }}>
           <Text
+            textAlign={'center'}
             color="white"
-            alignItems={'center'}
-            fontSize={'lg'}
+            style={{
+              fontSize: 24,
+            }}
             px="3"
             marginTop={'5'}>
             המלץ לחברים
           </Text>
-        </Center>
-        <Box />
+        </Box>
       </HStack>
+
       <Box flex={1} alignItems="center">
         <View margin="10" padding="5">
           <Link
