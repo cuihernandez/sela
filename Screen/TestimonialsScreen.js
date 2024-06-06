@@ -93,6 +93,7 @@ const TestimonialsScreens = () => {
           style={{
             marginHorizontal: 'auto',
             width: '100%',
+            marginTop: 20,
           }}>
           <Text
             textAlign={'center'}
@@ -100,8 +101,7 @@ const TestimonialsScreens = () => {
             style={{
               fontSize: 24,
             }}
-            px="3"
-            marginTop={'5'}>
+            lineHeight={30}>
             המלצות משתמשים
           </Text>
         </Box>

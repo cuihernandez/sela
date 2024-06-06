@@ -479,8 +479,6 @@ const RegisterPatientScreen = () => {
                   disabled={loading}
                   backgroundColor="#560FC9"
                   width="50%"
-                  height={(screenHeight * 5.6) / 100}
-                  _text={{fontSize: (screenWidth * 4) / 100}}
                   onPress={() => initializePayment()}>
                   <HStack space="2" alignItems="center">
                     {!loading ? (
