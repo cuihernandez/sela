@@ -156,7 +156,7 @@ const UserProfileScreen = () => {
         </Center>
         <View backgroundColor="#F1E6FF" margin="3" borderRadius="20" flex={1}>
           <Text marginTop="3" marginRight="6" color="#8F80A7">
-            חולה רשום
+            אנשים שרשמתי לתפילה
           </Text>
           <ScrollView h="50" margin="3">
             {/* {uniqueDoneeNames && Array.isArray(uniqueDoneeNames) && uniqueDoneeNames.map((names, index) => (
@@ -166,6 +166,12 @@ const UserProfileScreen = () => {
               <Box marginTop={5}>
                 <ActivityIndicator color={'#560FC9'} size={50} />
               </Box>
+            ) : !uniqueDoneeNames.length ? (
+              <View style={{marginTop: 20}}>
+                <Text style={{fontSize: 16, textAlign: 'center'}}>
+                  אין נתונים זמינים של בוצע
+                </Text>
+              </View>
             ) : (
               uniqueDoneeNames.map((donee, index) => (
                 <DataComponent

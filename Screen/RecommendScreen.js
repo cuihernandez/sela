@@ -11,6 +11,7 @@ import {
   Link,
   View,
   Text,
+  Button,
 } from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import Header from './Components/Header.js';
@@ -21,6 +22,31 @@ import avatar_instagram from '../Image/logos_instagram.png';
 import avatar_gmail from '../Image/logos_gmail.png';
 import dot from '../Image/dot.png';
 import icon_copy from '../Image/icon_copy.png';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Share from 'react-native-share';
+
+const shareOptions = (url, message) => {
+  const options = {
+    title: 'Share via',
+    message: message,
+    url: url,
+    failOnCancel: false,
+  };
+
+  Share.open(options)
+    .then(res => console.log(res))
+    .catch(err => {
+      if (err) console.log(err);
+    });
+};
+
+const copyToClipboard = url => {
+  Clipboard.setString(url);
+  Alert.alert(
+    'Copied to clipboard',
+    'The URL has been copied to your clipboard.',
+  );
+};
 
 const RecommendScreen = () => {
   const screenHeight = Dimensions.get('window').height;
@@ -66,7 +92,7 @@ const RecommendScreen = () => {
 
       <Box flex={1} alignItems="center">
         <View margin="10" padding="5">
-          <Link
+          {/* <Link
             href="#"
             alignItems="center"
             justifyContent="space-around"
@@ -75,7 +101,22 @@ const RecommendScreen = () => {
               www.hebrewsparys.co
             </Text>
             <Image source={icon_copy} alt="copy" />
-          </Link>
+          </Link> */}
+          <Button
+            onPress={() =>
+              shareOptions(
+                'https://sela-admin.vercel.app',
+                'אפליקציית סלה מאפשרת לקרוא תהילים בעבור מי שצריך ולתמוך באברך',
+              )
+            }
+            style={{backgroundColor: '#1E005032', borderRadius: 20}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text color="#1E0050" marginRight="4" marginLeft="4">
+                www.hebrewsparys.co
+              </Text>
+              <Image source={icon_copy} alt="copy" />
+            </View>
+          </Button>
         </View>
         <HStack justifyContent="center" space={2}>
           <Link href="https://mail.google.com/">

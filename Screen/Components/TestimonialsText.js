@@ -2,7 +2,7 @@
 import React from 'react';
 import {View, Text, Image} from 'native-base';
 
-function TestimonalsText(props) {
+function TestimonialsText(props) {
   return (
     <View
       borderRadius="30"
@@ -37,4 +37,4 @@ function TestimonalsText(props) {
   );
 }
 
-export default TestimonalsText;
+export default TestimonialsText;

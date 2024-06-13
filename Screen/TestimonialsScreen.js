@@ -15,12 +15,12 @@ import {
   FormControl,
   Modal,
 } from 'native-base';
-import {TouchableOpacity} from 'react-native';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {useSelector} from 'react-redux';
 import Header from './Components/Header.js';
-import TestimonalsText from './Components/TestimonalsText.js';
+import TestimonialsText from './Components/TestimonialsText.js';
 
 const TestimonialsScreens = () => {
   const navigation = useNavigation();
@@ -44,6 +44,7 @@ const TestimonialsScreens = () => {
     setInputValue(text);
   };
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const saveTestimonialToFirestore = async () => {
     const res = await firestore().collection('testimonials').add({
@@ -59,19 +60,24 @@ const TestimonialsScreens = () => {
 
   useEffect(() => {
     const getText = async () => {
+      setLoading(true);
       try {
         const snapshot = await firestore().collection('testimonials').get();
         const res = snapshot.docs;
+        console.log('TESTIMONIALS: ', res);
+        setLoading(false);
         setContent(res);
       } catch (error) {
         console.error('This is error:', error);
+      } finally {
+        setLoading(false);
       }
     };
     getText();
     // Logic to handle array content change
     // For example, you can map over arrayContent here
     // and render Text components for each item
-  }, [content]);
+  }, []);
 
   return (
     <>
@@ -84,7 +90,7 @@ const TestimonialsScreens = () => {
         p={4}
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} right={6}>
+        <Box position={'absolute'} zIndex={20} right={6}>
           <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
             <ArrowBackIcon color="white" size={4} />
           </TouchableOpacity>
@@ -108,14 +114,25 @@ const TestimonialsScreens = () => {
       </HStack>
       <Box flex={1} alignItems="center">
         <ScrollView width="100%">
-          {/* Render array content */}
-          {content.map((item, index) => (
-            <TestimonalsText
-              key={index}
-              text={item._data.text}
-              name={item._data.name}
-            />
-          ))}
+          {loading ? (
+            <View style={{marginTop: 50}}>
+              <ActivityIndicator color={'#560FC9'} size={50} />
+            </View>
+          ) : !content.length ? (
+            <View>
+              <Text style={{fontSize: 16, textAlign: 'center'}}>
+                אין המלצות זמינות כרגע
+              </Text>
+            </View>
+          ) : (
+            content.map((item, index) => (
+              <TestimonialsText
+                key={index}
+                text={item._data.text}
+                name={item._data.name}
+              />
+            ))
+          )}
         </ScrollView>
         <View>
           {/* Plus Button */}
@@ -132,7 +149,7 @@ const TestimonialsScreens = () => {
             <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
               <Modal.Content maxWidth="400px">
                 <Modal.CloseButton />
-                <Modal.Header>Add Testimonals</Modal.Header>
+                <Modal.Header>Add Testimonials</Modal.Header>
                 <Modal.Body>
                   <FormControl mt="3">
                     <FormControl.Label>Name</FormControl.Label>

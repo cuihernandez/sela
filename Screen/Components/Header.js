@@ -69,7 +69,7 @@ function MenuIcon() {
         }}>
         {/** Menu Items */}
         <Menu.Item onPress={handleNavigateToRegisterPatientScreen}>
-          רישום חולה לתפילה
+          רישום אדם לתפילה
         </Menu.Item>
         {/* Nativate to the Register Patient Page */}
         <Menu.Item onPress={handleNavigateToUserProfileScreen}>
