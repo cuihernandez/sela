@@ -156,10 +156,8 @@ const RegisterPatientScreen = () => {
       borderRadius: (screenWidth * 5) / 100, // 1.5% of screen width
     },
     button: {
-      height: (screenHeight * 5) / 100,
       borderRadius: (screenWidth * 4) / 100, // 1.5% of screen width
       margin: (screenWidth * 0.75) / 100, // 0.75% of screen width
-      padding: (screenWidth * 0.75) / 100, // 0.75% of screen width
     },
   });
 

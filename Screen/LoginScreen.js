@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {
   Dimensions,
@@ -29,11 +28,13 @@ const screenHeight = Dimensions.get('window').height;
 const LoginScreen = () => {
   const navigation = useNavigation();
   const user = useSelector(state => state.user);
+  const [emailIsValid, setEmailIsValid] = useState(true);
   const [formData, setFormData] = useState({
     name: user.name,
     mothername: user.mothername,
     email: user.email,
   });
+
   useEffect(() => {
     setFormData({
       name: user.name,
@@ -58,13 +59,27 @@ const LoginScreen = () => {
     navigation.navigate('Register');
   };
   const handleSubmit = async () => {
+    if (!validateEmail(formData.email)) {
+      return toast.show({
+        render: () => {
+          return (
+            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+              <Text color={'white'}>Invalid email address</Text>
+            </Box>
+          );
+        },
+      });
+    }
     try {
       const querySnapshot = await firestore()
         .collection('users')
-        .where('mothername', '==', formData.mothername)
         .where('name', '==', formData.name)
+        .where('mothername', '==', formData.mothername)
         .where('deleted', '!=', true)
         .get();
+
+      console.log('===>>>DOCS: ', querySnapshot.docs);
+
       console.log({querySnapshotEMPTY: querySnapshot.empty});
 
       if (!querySnapshot.empty) {
@@ -76,9 +91,9 @@ const LoginScreen = () => {
         console.log('NOT EMPTY', querySnapshot);
         const payload = {
           userID: uid,
-          name: formData.name,
-          mothername: formData.mothername,
-          email: formData.email,
+          name: formData.name.trim(),
+          mothername: formData.mothername.trim(),
+          email: formData.email.trim(),
         };
         dispatch(setUserData(payload));
         console.log('USER_ID: ', uid);
@@ -109,6 +124,17 @@ const LoginScreen = () => {
     }
   };
 
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       await updateAllDocuments('users', 'deleted', false);
+  //       console.log('=============>DOCS_UPDATED<==========');
+  //     } catch (error) {
+  //       console.log('BATCH_ERROR: ', error);
+  //     }
+  //   })();
+  // }, []);
+
   return (
     <NativeBaseProvider isSSR={false}>
       <SafeAreaView>
@@ -125,26 +151,34 @@ const LoginScreen = () => {
                 <Text style={styles.text}>שם פרטי</Text>
                 <Input
                   style={styles.input}
-                  onChangeText={text => handleInputChange('name', text)}
+                  onChangeText={text => handleInputChange('name', text.trim())}
                   variant="unstyled"
-                  value={formData.name}
+                  value={formData.name.trim()}
                   placeholder="שם פרטי"
                 />
                 <Text style={styles.text}>שם האם</Text>
                 <Input
                   style={styles.input}
-                  onChangeText={text => handleInputChange('mothername', text)}
+                  onChangeText={text =>
+                    handleInputChange('mothername', text.trim())
+                  }
                   variant="unstyled"
-                  value={formData.mothername}
+                  value={formData.mothername.trim()}
                   placeholder="שם האם"
                 />
-                <Text style={styles.text}>אמייל (אופציונלי)</Text>
+                <Text style={styles.text}>אימייל</Text>
                 <Input
                   style={styles.input}
                   variant="unstyled"
+                  inputMode="email"
+                  isRequired
+                  keyboardType="email-address"
                   placeholder="אמייל (אופציונלי)"
-                  onChangeText={text => handleInputChange('email', text)}
-                  value={formData.email}
+                  // onChangeText={text => handleInputChange('email', text.trim())}
+                  onChangeText={text => {
+                    handleInputChange('email', text.trim());
+                  }}
+                  value={formData.email.trim()}
                 />
 
                 <HStack justifyContent="center" marginTop="10">
@@ -241,3 +275,32 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export function validateEmail(email) {
+  // Basic email regex pattern
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(email);
+}
+
+const updateAllDocuments = async (
+  collectionName,
+  propertyName,
+  propertyValue,
+) => {
+  const batch = firestore().batch();
+  const collectionRef = firestore().collection(collectionName);
+
+  try {
+    const snapshot = await collectionRef.get();
+
+    snapshot.forEach(doc => {
+      const docRef = collectionRef.doc(doc.id);
+      batch.update(docRef, {[propertyName]: propertyValue});
+    });
+
+    await batch.commit();
+    console.log('All documents updated successfully');
+  } catch (error) {
+    console.error('Error updating documents: ', error);
+  }
+};

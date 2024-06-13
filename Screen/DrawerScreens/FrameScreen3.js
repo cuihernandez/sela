@@ -90,7 +90,7 @@ const FrameScreen3 = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} right={6}>
+        <Box position={'absolute'} zIndex={10} right={6}>
           <TouchableOpacity onPress={navigation.goBack}>
             <ArrowBackIcon color="white" size={4} />
           </TouchableOpacity>

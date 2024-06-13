@@ -28,6 +28,7 @@ import {useDispatch, useSelector} from 'react-redux';
 // import { setUser } from '../store/userSlice';
 import {setUserData} from '../redux/actions/userAction';
 import {connect} from 'react-redux';
+import {validateEmail} from './LoginScreen';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -41,8 +42,20 @@ const RegisterScreen = () => {
   const toast = useToast();
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
+
   const handleRegister = async () => {
     console.log('Handle Register Button');
+    if (!validateEmail(email)) {
+      return toast.show({
+        render: () => {
+          return (
+            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+              <Text color={'white'}>Invalid email address</Text>
+            </Box>
+          );
+        },
+      });
+    }
     try {
       const querySnapshot = await firestore()
         .collection('users')
@@ -121,7 +134,7 @@ const RegisterScreen = () => {
                 <Input
                   placeholder="שם פרטי"
                   value={name}
-                  onChangeText={setName}
+                  onChangeText={e => setName(e.trim())}
                   color="black"
                   borderRadius={20}
                   backgroundColor="#F1E6FF"
@@ -140,7 +153,7 @@ const RegisterScreen = () => {
                   placeholder="שם האם"
                   value={mothername}
                   color="black"
-                  onChangeText={setMotherName}
+                  onChangeText={e => setMotherName(e.trim())}
                   borderRadius={20}
                   backgroundColor="#F1E6FF"
                   variant="unstyled"
@@ -159,7 +172,10 @@ const RegisterScreen = () => {
                   placeholder="אמייל"
                   value={email}
                   color="black"
-                  onChangeText={setEmail}
+                  type="text"
+                  keyboardType="email-address"
+                  textContentType="emailAddress"
+                  onChangeText={e => setEmail(e.trim())}
                   borderRadius={20}
                   backgroundColor="#F1E6FF"
                   variant="unstyled"

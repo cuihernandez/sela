@@ -20,7 +20,7 @@ const FrameScreen1 = () => {
   const navigation = useNavigation();
   const [nameArray, setNameArray] = useState([]);
   const [motherNameArray, setMotherNameArray] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const userID = useSelector(state => state.user.userID);
@@ -35,7 +35,7 @@ const FrameScreen1 = () => {
 
   const handleNextName = () => {
     const nextIndex =
-      currentIndex + 1 >= nameArray.length ? 0 : currentIndex + 1;
+      currentIndex + 1 >= patients.length ? 0 : currentIndex + 1;
     setCurrentIndex(nextIndex);
     navigation.navigate('Frame2', {currentIndex});
   };
@@ -48,22 +48,25 @@ const FrameScreen1 = () => {
       try {
         const snapshot = await firestore().collection('notice').get();
         const snapshot1 = await firestore().collection('transaction').get();
+        console.log('>>>>>>>COUNT: ', snapshot1.size);
         const res = snapshot.docs;
         const res1 = snapshot1.docs;
         let array_name = [];
         let array_mothername = [];
         let patientsArray = [];
         res1.map(doc => {
-          array_name.push(doc.data().doneeName);
-          array_mothername.push(doc.data().doneeMotherName);
+          array_name?.push(doc.data().doneeName);
+          array_mothername?.push(doc.data().doneeMotherName);
         });
 
         res1.map(doc => {
-          patientsArray.push({
+          patientsArray?.push({
             doneeName: doc.data().doneeName,
             doneeMotherName: doc.data().doneeMotherName,
           });
         });
+
+        const flatPatientsArray = mergeDuplicates(patientsArray);
 
         // console.log('RESPONSE: ', res1);
         setNameArray(array_name);
@@ -73,12 +76,12 @@ const FrameScreen1 = () => {
         console.log('SECOND_TEXT: ', res[1].data());
         dispatch(
           setPatients({
-            patients: patientsArray,
+            patients: flatPatientsArray,
             patientsCount: patientsArray.length,
           }),
         );
-        patientsCount: patientsArray.length,
-          console.log('[[[[[[COUNT]]]]]]: ', patientsArray.length);
+        patientsCount: flatPatientsArray.length,
+          console.log('[[[[[[COUNT]]]]]]: ', flatPatientsArray.length);
       } catch (error) {
         console.error('This is error:', error);
       }
@@ -93,7 +96,7 @@ const FrameScreen1 = () => {
           .get();
         console.log('LAST_VIEWED_RUNNING: ');
         if (doc.exists) {
-          setCurrentIndex(doc.data().index);
+          setCurrentIndex(doc.data().index + 1);
           console.log('LAST_VIEWED_INDEX: ', doc.data().index);
         }
       } catch (error) {
@@ -122,6 +125,10 @@ const FrameScreen1 = () => {
   useEffect(() => {
     console.log('--------CURRENT_INDEX------>', currentIndex);
   }, [currentIndex]);
+
+  useEffect(() => {
+    console.log('>>>>>>>>>>>PATIENTS: ', patients);
+  }, [patients]);
 
   return (
     <>
@@ -184,3 +191,26 @@ const FrameScreen1 = () => {
 
 // export default FrameScreen1;
 export default connect(null, {setPatients})(FrameScreen1);
+
+const mergeDuplicates = data => {
+  const mergedData = {};
+
+  data.forEach(item => {
+    const key = `${item.doneeEmail}-${item.doneeMotherName}-${item.doneeName}`;
+
+    if (!mergedData[key]) {
+      mergedData[key] = {
+        // doneeEmail: item.doneeEmail,
+        doneeMotherName: item.doneeMotherName,
+        doneeName: item.doneeName,
+        // donorIDs: [item.donorID],
+        // transactionAmount: item.transactionAmount,
+      };
+    } else {
+      mergedData[key].donorIDs?.push(item.donorID);
+      mergedData[key].transactionAmount += item.transactionAmount;
+    }
+  });
+
+  return Object.values(mergedData);
+};

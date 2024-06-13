@@ -13,13 +13,17 @@ import {
   Text,
   useToast,
   WarningOutlineIcon,
+  Row,
+  Icon,
+  DeleteIcon,
 } from 'native-base';
 import {Alert, Dimensions, TouchableOpacity} from 'react-native';
 import Header from './Components/Header.js';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import {updateUserData} from '../redux/actions/userAction.js';
+import {setUserData, updateUserData} from '../redux/actions/userAction.js';
 import firestore from '@react-native-firebase/firestore';
+
 const EditProfileScreen = () => {
   const [name, setName] = useState('');
   const [mothername, setMotherName] = useState('');
@@ -79,7 +83,7 @@ const EditProfileScreen = () => {
             render: () => {
               return (
                 <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-                  Profile successfully updated!
+                  הפרופיל עודכן בהצלחה
                 </Box>
               );
             },
@@ -120,7 +124,7 @@ const EditProfileScreen = () => {
             render: () => {
               return (
                 <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-                  Account successfully deleted!
+                  החשבון נמחק בהצלחה
                 </Box>
               );
             },
@@ -155,6 +159,7 @@ const EditProfileScreen = () => {
             <ArrowBackIcon color="white" size={4} marginLeft="2" />
           </TouchableOpacity>
         </Box>
+
         <Center width="100%" height="100%">
           <Image source={require('../Image/edit.png')} alt="edit image" />
         </Center>
@@ -173,7 +178,7 @@ const EditProfileScreen = () => {
             value={name}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please Enter Name
+            נא להזין שם
           </FormControl.ErrorMessage>
         </FormControl>
         <FormControl isInvalid={motherNameError} w="100%">
@@ -187,7 +192,7 @@ const EditProfileScreen = () => {
             value={mothername}
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please Enter Mother Name
+            נא להזין את שם האם
           </FormControl.ErrorMessage>
         </FormControl>
         <Text marginRight="4" color="#560FC9">
@@ -202,7 +207,7 @@ const EditProfileScreen = () => {
             color="#1E0050"
           />
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-            Please Enter Email
+            נא להזין אימייל
           </FormControl.ErrorMessage>
         </FormControl>
       </View>
@@ -216,36 +221,62 @@ const EditProfileScreen = () => {
           onPress={handleUpdateProfile}>
           שמירה
         </Button>
-        <Button
-          backgroundColor="#F5DCDC"
-          borderRadius="2xl"
-          borderWidth={1}
-          borderColor={'red.400'}
-          margin="2"
-          width={(screenWidth * 90) / 100}
-          height={(screenHeight * 5.7) / 100}
-          onPress={() => {
-            Alert.alert(
-              'מחק חשבון',
-              'מחק חשבון',
-              [
-                {
-                  text: 'Confirm',
-                  onPress: deleteAccount,
-                  style: 'default',
-                },
-                {
-                  text: 'Cancel',
-                  style: 'cancel',
-                },
-              ],
-              {
-                cancelable: true,
-              },
-            );
+        <Row
+          style={{
+            marginHorizontal: 20,
+            borderColor: 'red',
+            borderWidth: 1,
+            borderRadius: 15,
+            overflow: 'hidden',
           }}>
-          <Text color={'red.400'}>מחק חשבון</Text>
-        </Button>
+          <TouchableOpacity
+            style={{
+              alignItems: 'flex-start',
+              paddingLeft: 8,
+              justifyContent: 'center',
+              width: 50,
+              borderTopLeftRadius: 15,
+              borderBottomLeftRadius: 15,
+            }}
+            onPress={() => {
+              Alert.alert(
+                'מחק חשבון',
+                'מחק חשבון',
+                [
+                  {
+                    text: 'Confirm',
+                    onPress: deleteAccount,
+                    style: 'default',
+                  },
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                ],
+                {
+                  cancelable: true,
+                },
+              );
+            }}>
+            <DeleteIcon color="red.500" size={4} marginLeft="2" />
+          </TouchableOpacity>
+          <Box w={1} />
+          <Button
+            backgroundColor="#F5DCDC"
+            borderTopLeftRadius="xl"
+            borderBottomLeftRadius="xl"
+            // borderWidth={1}
+            borderColor={'red.400'}
+            flex={1}
+            // width={(screenWidth * 90) / 100}
+            height={(screenHeight * 5.7) / 100}
+            onPress={() => {
+              dispatch(setUserData(null));
+              navigation.navigate('Login');
+            }}>
+            <Text color={'red.400'}>להתנתק</Text>
+          </Button>
+        </Row>
       </View>
     </>
   );

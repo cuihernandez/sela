@@ -122,6 +122,7 @@ export default function StudentsScreen() {
         sponsor: userID,
       });
       console.log(`Student ${studentId} updated with sponsor ${userID}`);
+      setStudent(prev => ({...prev, sponsor: userID}));
       Alert.alert(`Student ${student?.name} updated with sponsor`);
     } catch (e) {
       console.error('Error updating student document: ', e);
@@ -254,7 +255,7 @@ export default function StudentsScreen() {
         ) : (
           <View style={{marginTop: 40}}>
             <Text style={{textAlign: 'center', fontSize: 20}}>
-              No student data Available
+              אין נתוני תלמידים זמינים
             </Text>
           </View>
         )}

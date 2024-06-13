@@ -37,45 +37,45 @@ const FrameScreen2 = () => {
   const handleNavigateToFrameScreen = async () => {
     try {
       navigation.navigate('Frame3', {currentIndex});
-      const snapshot = await firestore()
-        .collection('userData')
-        .where('userID', '==', userID)
-        .get();
-      snapshot.forEach(doc => {
-        doc.data().completeCount;
-      });
-      if (snapshot.empty) {
-        await firestore().collection('userData').add({
-          userID: userID,
-          completeCount: 1,
-        });
-      } else {
-        const snapshots = await firestore()
-          .collection('userData')
-          .where('userID', '==', userID)
-          .get();
-        //retrieve the value of documentID that the userID is userID
-        const snapshotData = snapshots.docs;
-        const completeCount = snapshotData.map(
-          snap => snap._data.completeCount,
-        );
-        snapshots.forEach(doc => {
-          docID = doc.id;
-        });
+      // const snapshot = await firestore()
+      //   .collection('userData')
+      //   .where('userID', '==', userID)
+      //   .get();
+      // snapshot.forEach(doc => {
+      //   doc.data().completeCount;
+      // });
+      // if (snapshot.empty) {
+      //   await firestore().collection('userData').add({
+      //     userID: userID,
+      //     completeCount: 1,
+      //   });
+      // } else {
+      //   const snapshots = await firestore()
+      //     .collection('userData')
+      //     .where('userID', '==', userID)
+      //     .get();
+      //   //retrieve the value of documentID that the userID is userID
+      //   const snapshotData = snapshots.docs;
+      //   const completeCount = snapshotData.map(
+      //     snap => snap._data.completeCount,
+      //   );
+      //   snapshots.forEach(doc => {
+      //     docID = doc.id;
+      //   });
 
-        //increase the value of the complete count
-        count = completeCount[0] + 1;
-        // update the value of the complete count
-        await firestore()
-          .collection('userData')
-          .doc(docID)
-          .update({
-            completeCount: count,
-          })
-          .then(() => {
-            console.log('User updated!', docID);
-          });
-      }
+      //   //increase the value of the complete count
+      //   count = completeCount[0] + 1;
+      //   // update the value of the complete count
+      //   await firestore()
+      //     .collection('userData')
+      //     .doc(docID)
+      //     .update({
+      //       completeCount: count,
+      //     })
+      //     .then(() => {
+      //       console.log('User updated!', docID);
+      //     });
+      // }
     } catch (error) {
       console.error('Error:', error);
     }
@@ -129,7 +129,7 @@ const FrameScreen2 = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} right={6}>
+        <Box position={'absolute'} zIndex={10} right={6}>
           <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
             <ArrowBackIcon color="white" size={4} />
           </TouchableOpacity>
@@ -149,8 +149,8 @@ const FrameScreen2 = () => {
         {/* <Text color="black" fontSize={20} marginTop={3}>
           פרק ב
         </Text> */}
-        <ScrollView width={'80%'}>
-          <View margin="10" marginBottom="2" marginTop="2" padding="5">
+        <ScrollView width={'100%'}>
+          <View marginTop="2" marginBottom={20} padding="5">
             {loading ? (
               <ActivityIndicator color={'#560FC9'} />
             ) : (
@@ -161,17 +161,20 @@ const FrameScreen2 = () => {
           </View>
         </ScrollView>
       </Box>
-      <HStack alignItems={'center'} marginBottom="20" justifyContent="flex-end">
+      <HStack
+        alignItems={'center'}
+        bottom={'20'}
+        right={'5'}
+        justifyContent="flex-end"
+        position={'absolute'}>
         <Button
           space={2}
           backgroundColor="#560FC9"
           borderRadius={15}
-          marginRight="10"
           padding="2"
           onPress={handleNextName}>
           <Flex direction="row" alignItems="center" justifyContent="center">
             <Text color="white" fontSize="16">
-              {'  '}
               השלמתי תפילתי
             </Text>
             <ArrowForwardIcon size="4" color="white" />
