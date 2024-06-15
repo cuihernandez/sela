@@ -23,6 +23,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserData, updateUserData} from '../redux/actions/userAction.js';
 import firestore from '@react-native-firebase/firestore';
+import BackButton from './Components/BackButton.js';
 
 const EditProfileScreen = () => {
   const [name, setName] = useState('');
@@ -154,11 +155,7 @@ const EditProfileScreen = () => {
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}
         height={(screenHeight * 14) / 100}>
-        <Box position={'absolute'} right={6}>
-          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} marginLeft="2" />
-          </TouchableOpacity>
-        </Box>
+        <BackButton marginTop={5} />
 
         <Center width="100%" height="100%">
           <Image source={require('../Image/edit.png')} alt="edit image" />

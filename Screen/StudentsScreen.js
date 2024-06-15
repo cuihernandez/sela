@@ -24,6 +24,7 @@ import firestore from '@react-native-firebase/firestore';
 import Header from './Components/Header';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
+import BackButton from './Components/BackButton';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -143,11 +144,7 @@ export default function StudentsScreen() {
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}
         height={(screenHeight * 14) / 100}>
-        <Box position={'absolute'} top={5} right={6}>
-          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} marginLeft="2" />
-          </TouchableOpacity>
-        </Box>
+        <BackButton marginTop={5} left={4} />
         <Center width="100%" height="100">
           <Text
             style={{

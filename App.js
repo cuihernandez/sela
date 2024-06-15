@@ -19,9 +19,15 @@ import store from './redux/store';
 import SuccessScreen from './Screen/SuccessScreen';
 import PaymentScreen from './Screen/PaymentScreen';
 import StudentsScreen from './Screen/StudentsScreen';
+import {CardStyleInterpolators} from '@react-navigation/stack';
 // import ReduxProvider from './store';
 const Stack = createNativeStackNavigator();
 
+const forFade = ({current}) => ({
+  cardStyle: {
+    opacity: current.progress,
+  },
+});
 const linking = {
   prefixes: ['your-app://'], // Your app scheme
   config: {
@@ -31,12 +37,64 @@ const linking = {
   },
 };
 
+const config = {
+  animation: 'timing',
+  config: {
+    duration: 500,
+  },
+};
+
 const App = () => {
   return (
     <Provider store={store}>
       <NativeBaseProvider isSSR={false}>
         <NavigationContainer linking={linking}>
-          <Stack.Navigator>
+          <Stack.Navigator
+            screenOptions={{
+              // cardStyleInterpolator: ({current, next, layouts}) => {
+              //   const opacity = current.progress.interpolate({
+              //     inputRange: [0, 1],
+              //     outputRange: [0, 1],
+              //   });
+
+              //   const translateX = current.progress.interpolate({
+              //     inputRange: [0, 1],
+              //     outputRange: [layouts.screen.width, 0],
+              //   });
+
+              //   return {
+              //     cardStyle: {
+              //       opacity,
+              //       transform: [
+              //         {
+              //           translateX,
+              //         },
+              //       ],
+              //     },
+              //   };
+              // },
+              gestureEnabled: true,
+              gestureDirection: 'horizontal',
+              transitionSpec: {
+                open: config,
+                close: config,
+              },
+              cardStyleInterpolator: ({current, next, layouts}) => {
+                return {
+                  cardStyle: {
+                    opacity: current.progress,
+                    transform: [
+                      {
+                        translateX: current.progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [layouts.screen.width, 0],
+                        }),
+                      },
+                    ],
+                  },
+                };
+              },
+            }}>
             <Stack.Screen
               name="Splash"
               component={SplashScreen}

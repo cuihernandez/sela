@@ -29,6 +29,7 @@ import {setTransaction} from '../redux/actions/transactionAction';
 import Header from './Components/Header';
 import {createPayment} from '../Utils/YaadpayService';
 import {loadUser} from '../redux/reducers/auth';
+import BackButton from './Components/BackButton';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BASE62_CHARS =
@@ -358,11 +359,7 @@ const RegisterPatientScreen = () => {
               position="relative"
               bg="#560FC9"
               marginBottom={(screenWidth * 4) / 100}>
-              <Box position={'absolute'} top={5} right={6}>
-                <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-                  <ArrowBackIcon color="white" size={4} marginLeft="2" />
-                </TouchableOpacity>
-              </Box>
+              <BackButton left={4} />
 
               <Box
                 style={{

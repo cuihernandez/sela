@@ -24,6 +24,7 @@ import dot from '../Image/dot.png';
 import icon_copy from '../Image/icon_copy.png';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
+import BackButton from './Components/BackButton.js';
 
 const shareOptions = (url, message) => {
   const options = {
@@ -66,11 +67,7 @@ const RecommendScreen = () => {
         p={4}
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} right={6}>
-          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} />
-          </TouchableOpacity>
-        </Box>
+        <BackButton />
         <Box
           style={{
             marginHorizontal: 'auto',
@@ -92,20 +89,10 @@ const RecommendScreen = () => {
 
       <Box flex={1} alignItems="center">
         <View margin="10" padding="5">
-          {/* <Link
-            href="#"
-            alignItems="center"
-            justifyContent="space-around"
-            backgroundColor="#F1E6FF">
-            <Text color="#1E0050" marginRight="4" marginLeft="4">
-              www.hebrewsparys.co
-            </Text>
-            <Image source={icon_copy} alt="copy" />
-          </Link> */}
           <Button
             onPress={() =>
               shareOptions(
-                'https://sela-admin.vercel.app',
+                'https://play.google.com/store/apps/details?id=com.usesela',
                 'אפליקציית סלה מאפשרת לקרוא תהילים בעבור מי שצריך ולתמוך באברך',
               )
             }

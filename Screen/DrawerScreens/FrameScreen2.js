@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {
   ArrowForwardIcon,
@@ -17,14 +16,15 @@ import firestore from '@react-native-firebase/firestore';
 import Header from '../Components/Header';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
+import BackButton from '../Components/BackButton.js';
 
 const FrameScreen2 = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [texts, setTexts] = useState([]);
-  const array = useSelector(state => state.psalms);
+  const {psalms} = useSelector(state => state.psalms);
   const userID = useSelector(state => state.user.userID);
   const [_, setCurrentIndex] = useState(0);
+  const [lastPsalmIndex, setCurrentPsalmIndex] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const route = useRoute();
@@ -37,83 +37,76 @@ const FrameScreen2 = () => {
   const handleNavigateToFrameScreen = async () => {
     try {
       navigation.navigate('Frame3', {currentIndex});
-      // const snapshot = await firestore()
-      //   .collection('userData')
-      //   .where('userID', '==', userID)
-      //   .get();
-      // snapshot.forEach(doc => {
-      //   doc.data().completeCount;
-      // });
-      // if (snapshot.empty) {
-      //   await firestore().collection('userData').add({
-      //     userID: userID,
-      //     completeCount: 1,
-      //   });
-      // } else {
-      //   const snapshots = await firestore()
-      //     .collection('userData')
-      //     .where('userID', '==', userID)
-      //     .get();
-      //   //retrieve the value of documentID that the userID is userID
-      //   const snapshotData = snapshots.docs;
-      //   const completeCount = snapshotData.map(
-      //     snap => snap._data.completeCount,
-      //   );
-      //   snapshots.forEach(doc => {
-      //     docID = doc.id;
-      //   });
-
-      //   //increase the value of the complete count
-      //   count = completeCount[0] + 1;
-      //   // update the value of the complete count
-      //   await firestore()
-      //     .collection('userData')
-      //     .doc(docID)
-      //     .update({
-      //       completeCount: count,
-      //     })
-      //     .then(() => {
-      //       console.log('User updated!', docID);
-      //     });
-      // }
+      console.log('updateLastPsalmIndex:', lastPsalmIndex);
+      updateLastPsalmIndex(lastPsalmIndex + 1);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  useEffect(() => {
-    console.info('-----------ROUTE----------------->', {route: route.params});
-  }, []);
-
-  const handleNextName = () => {
-    let nextIndex = array.currentIndex;
-    nextIndex =
-      array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
-    setCurrentIndex(nextIndex);
-    dispatch(setPsalms({arrayData: texts, currentIndex: nextIndex}));
-    handleNavigateToFrameScreen();
+  const updateLastPsalmIndex = async index => {
+    try {
+      await firestore()
+        .collection('LastViewedUserIndex')
+        .doc('lastPsalmIndex')
+        .set({
+          index,
+        });
+    } catch (error) {
+      console.error('Failed to update last psalm index:', error);
+    }
   };
 
-  let docID = '';
-  let count = 0;
+  const getLastPsalmIndex = async () => {
+    console.log('GET_LAST_INDEX');
+    try {
+      const doc = await firestore()
+        .collection('LastViewedUserIndex')
+        .doc('lastPsalmIndex')
+        .get();
+      if (doc.exists) {
+        console.log('LAST_VIEWED_PSALM_RUNNING: ', doc.data().index);
+        setCurrentPsalmIndex(doc.data().index);
+        console.log('LAST_VIEWED_INDEX: ', doc.data().index);
+      }
+    } catch (error) {
+      console.error('Failed to fetch last viewed index:', error);
+    }
+  };
+
+  const getPsalms = async () => {
+    try {
+      if (psalms && psalms.length > 0) {
+        console.log('PSALMS_EXIST', psalms);
+        return;
+      }
+      console.log("PSALMS_DON'T_EXIST");
+
+      const snapshot = await firestore().collection('psalms').get();
+      let array = [];
+      const res = snapshot.docs;
+      res.map(doc => {
+        array.push(doc._data.text);
+      });
+      dispatch(setPsalms({psalms: array, psalmsCount: array.length}));
+    } catch (error) {
+      console.error('This is error:', error);
+    } finally {
+    }
+  };
+
   useEffect(() => {
-    const getText = async () => {
+    (async () => {
       try {
         setLoading(true);
-        const snapshot = await firestore().collection('psalms').get();
-        let array = [];
-        const res = snapshot.docs;
-        res.map(doc => {
-          array.push(doc._data.text);
-        });
-        setTexts(array);
+        await getLastPsalmIndex();
+        await getPsalms();
       } catch (error) {
-        console.error('This is error:', error);
+        console.error('ERror Fetching Stuff: ', error);
       } finally {
         setLoading(false);
       }
-    };
-    getText();
+    })();
   }, []);
 
   return (
@@ -129,11 +122,7 @@ const FrameScreen2 = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} zIndex={10} right={6}>
-          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} />
-          </TouchableOpacity>
-        </Box>
+        <BackButton />
         <Box width={'100%'}>
           <Text
             color="white"
@@ -154,8 +143,10 @@ const FrameScreen2 = () => {
             {loading ? (
               <ActivityIndicator color={'#560FC9'} />
             ) : (
-              <Text color="#8F80A7" fontSize={24}>
-                {texts[array.currentIndex]}
+              <Text color="#8F80A7" fontSize={18}>
+                {lastPsalmIndex !== null &&
+                  lastPsalmIndex !== undefined &&
+                  psalms[lastPsalmIndex]}
               </Text>
             )}
           </View>
@@ -172,12 +163,12 @@ const FrameScreen2 = () => {
           backgroundColor="#560FC9"
           borderRadius={15}
           padding="2"
-          onPress={handleNextName}>
+          onPress={handleNavigateToFrameScreen}>
           <Flex direction="row" alignItems="center" justifyContent="center">
             <Text color="white" fontSize="16">
               השלמתי תפילתי
             </Text>
-            <ArrowForwardIcon size="4" color="white" />
+            <ArrowBackIcon size="4" color="white" />
           </Flex>
         </Button>
       </HStack>

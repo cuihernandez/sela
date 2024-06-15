@@ -18,6 +18,7 @@ import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import Header from '../Components/Header';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import BackButton from '../Components/BackButton';
 
 const FrameScreen3 = () => {
   const dispatch = useDispatch();
@@ -90,11 +91,7 @@ const FrameScreen3 = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} zIndex={10} right={6}>
-          <TouchableOpacity onPress={navigation.goBack}>
-            <ArrowBackIcon color="white" size={4} />
-          </TouchableOpacity>
-        </Box>
+        <BackButton />
         <Box width={'100%'}>
           <Text
             color="white"
@@ -149,7 +146,7 @@ const FrameScreen3 = () => {
               {'  '}
               המשך
             </Text>
-            <ArrowForwardIcon size="4" color="white" />
+            <ArrowBackIcon size="4" color="white" />
           </Flex>
         </Button>
       </HStack>

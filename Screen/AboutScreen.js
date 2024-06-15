@@ -12,6 +12,7 @@ import {
 import {TouchableOpacity} from 'react-native';
 import Header from './Components/Header.js';
 import {useNavigation} from '@react-navigation/native';
+import BackButton from './Components/BackButton.js';
 
 const AboutScreen = () => {
   const navigation = useNavigation();
@@ -31,11 +32,7 @@ const AboutScreen = () => {
         justifyContent="space-between"
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} right={6}>
-          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} marginLeft="2" />
-          </TouchableOpacity>
-        </Box>
+        <BackButton />
         <Box width={'100%'}>
           <Text
             color="white"

@@ -21,6 +21,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useSelector} from 'react-redux';
 import Header from './Components/Header.js';
 import TestimonialsText from './Components/TestimonialsText.js';
+import BackButton from './Components/BackButton.js';
 
 const TestimonialsScreens = () => {
   const navigation = useNavigation();
@@ -90,11 +91,7 @@ const TestimonialsScreens = () => {
         p={4}
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}>
-        <Box position={'absolute'} zIndex={20} right={6}>
-          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} />
-          </TouchableOpacity>
-        </Box>
+        <BackButton />
         <Box
           style={{
             marginHorizontal: 'auto',
