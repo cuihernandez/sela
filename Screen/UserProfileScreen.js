@@ -18,6 +18,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import Const from '../Utils/Const.js';
+import BackButton from './Components/BackButton.js';
 
 const screenHeight = Dimensions.get('window').height;
 const UserProfileScreen = () => {
@@ -115,11 +116,7 @@ const UserProfileScreen = () => {
         backgroundColor={'#560FC9'}
         borderBottomRadius={'40'}
         height={(screenHeight * 14) / 100}>
-        <Box position={'absolute'} top={5} right={6}>
-          <TouchableOpacity onPress={handleNavigateToFrame1Screen}>
-            <ArrowBackIcon color="white" size={4} marginLeft="2" />
-          </TouchableOpacity>
-        </Box>
+        <BackButton top={5} left={4} />
         <Center width="100" height="100" alignSelf={'center'}>
           <Image source={require('../Image/edit.png')} alt="edit image" />
         </Center>

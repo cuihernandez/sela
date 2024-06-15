@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
 import {React, useEffect, useState} from 'react';
 import {
-  ArrowForwardIcon,
   Box,
   Button,
   Flex,
   HStack,
   View,
   Text,
+  ArrowBackIcon,
 } from 'native-base';
 import Header from '../Components/Header';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -181,7 +181,7 @@ const FrameScreen1 = () => {
               {'  '}
               המשך
             </Text>
-            <ArrowForwardIcon size="4" color="white" />
+            <ArrowBackIcon size="4" color="white" />
           </Flex>
         </Button>
       </HStack>

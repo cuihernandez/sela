@@ -8,13 +8,16 @@ import {
   Menu,
   HamburgerIcon,
   CloseIcon,
+  StatusBar,
 } from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import {useWindowDimensions} from 'react-native';
 
 function MenuIcon() {
   const [isOpen, setIsOpen] = useState(true);
   // const [totalLoggedNumber, setTotalLoggedNumber] = useState(0);
+  const {width: SCREEN_WIDTH} = useWindowDimensions();
 
   // Function to toggle the menu state
   const toggleMenu = () => {
@@ -48,10 +51,17 @@ function MenuIcon() {
   };
 
   return (
-    <Box h="80%">
+    <Box
+      h="100%"
+      width={SCREEN_WIDTH}
+      position={'absolute'}
+      top={3}
+      left={3}
+      style={{marginHorizontal: 'auto'}}>
       <Menu
+        placement="top left"
+        top={1}
         shadow={2}
-        w="190"
         onClose={handleClose}
         trigger={triggerProps => {
           return (
@@ -112,14 +122,14 @@ export default () => {
   }, []);
   return (
     <Box>
-      {/* <StatusBar bg="#3700B3" barStyle="light-content" />
-            <Box safeAreaTop bg="violet.600" /> */}
+      <Box safeAreaTop bg="violet.600" />
       <HStack
         backgroundColor={'#560FC9'}
         px="3"
         py="3"
         justifyContent="space-between"
-        alignItems="center"
+        flexDirection={'row'}
+        position={'relative'}
         w="100%">
         <MenuIcon />
         <Text color="white" fontSize={14}>
