@@ -166,7 +166,7 @@ const LoginScreen = () => {
                   value={formData.mothername.trim()}
                   placeholder="שם האם"
                 />
-                <Text style={styles.text}>אימייל</Text>
+                <Text style={styles.text}>אימייל (אופציונלי)</Text>
                 <Input
                   style={styles.input}
                   variant="unstyled"
@@ -174,7 +174,6 @@ const LoginScreen = () => {
                   isRequired
                   keyboardType="email-address"
                   placeholder="אמייל (אופציונלי)"
-                  // onChangeText={text => handleInputChange('email', text.trim())}
                   onChangeText={text => {
                     handleInputChange('email', text.trim());
                   }}
