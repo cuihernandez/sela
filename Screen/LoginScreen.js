@@ -59,17 +59,17 @@ const LoginScreen = () => {
     navigation.navigate('Register');
   };
   const handleSubmit = async () => {
-    if (!validateEmail(formData.email)) {
-      return toast.show({
-        render: () => {
-          return (
-            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
-              <Text color={'white'}>Invalid email address</Text>
-            </Box>
-          );
-        },
-      });
-    }
+    // if ( !validateEmail(formData.email)) {
+    //   return toast.show({
+    //     render: () => {
+    //       return (
+    //         <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+    //           <Text color={'white'}>Invalid email address</Text>
+    //         </Box>
+    //       );
+    //     },
+    //   });
+    // }
     try {
       const querySnapshot = await firestore()
         .collection('users')
@@ -166,7 +166,7 @@ const LoginScreen = () => {
                   value={formData.mothername.trim()}
                   placeholder="שם האם"
                 />
-                <Text style={styles.text}>אימייל</Text>
+                <Text style={styles.text}>אימייל (אופציונלי)</Text>
                 <Input
                   style={styles.input}
                   variant="unstyled"
@@ -174,7 +174,6 @@ const LoginScreen = () => {
                   isRequired
                   keyboardType="email-address"
                   placeholder="אמייל (אופציונלי)"
-                  // onChangeText={text => handleInputChange('email', text.trim())}
                   onChangeText={text => {
                     handleInputChange('email', text.trim());
                   }}

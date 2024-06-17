@@ -21,7 +21,7 @@ import BackButton from '../Components/BackButton.js';
 const FrameScreen2 = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const {psalms} = useSelector(state => state.psalms);
+  const {psalms, psalmsCount} = useSelector(state => state.psalms);
   const userID = useSelector(state => state.user.userID);
   const [_, setCurrentIndex] = useState(0);
   const [lastPsalmIndex, setCurrentPsalmIndex] = useState(null);
@@ -46,11 +46,12 @@ const FrameScreen2 = () => {
 
   const updateLastPsalmIndex = async index => {
     try {
+      console.log('INDEX:================>', {index, psalmsCount});
       await firestore()
         .collection('LastViewedUserIndex')
         .doc('lastPsalmIndex')
         .set({
-          index,
+          index: index < psalmsCount ? index : 0,
         });
     } catch (error) {
       console.error('Failed to update last psalm index:', error);
@@ -77,7 +78,7 @@ const FrameScreen2 = () => {
   const getPsalms = async () => {
     try {
       if (psalms && psalms.length > 0) {
-        console.log('PSALMS_EXIST', psalms);
+        console.log('PSALMS_EXIST');
         return;
       }
       console.log("PSALMS_DON'T_EXIST");
@@ -86,9 +87,29 @@ const FrameScreen2 = () => {
       let array = [];
       const res = snapshot.docs;
       res.map(doc => {
-        array.push(doc._data.text);
+        const psalm = doc._data.text;
+
+        const extractedNumber = extractNumberFromText(psalm);
+
+        if (extractedNumber !== null) {
+          array.push({
+            text: psalm,
+            index: extractedNumber,
+          });
+
+          console.log(`Document added with index: ${extractedNumber}`);
+        } else {
+          console.log(`No number found in text: ${psalm}`);
+        }
       });
-      dispatch(setPsalms({psalms: array, psalmsCount: array.length}));
+      dispatch(
+        setPsalms({
+          psalms: array
+            .filter(doc => doc.index !== null)
+            .sort((a, b) => a.index - b.index),
+          psalmsCount: array.length,
+        }),
+      );
     } catch (error) {
       console.error('This is error:', error);
     } finally {
@@ -135,10 +156,7 @@ const FrameScreen2 = () => {
         </Box>
       </HStack>
       <Box flex={1} alignItems="center">
-        {/* <Text color="black" fontSize={20} marginTop={3}>
-          פרק ב
-        </Text> */}
-        <ScrollView width={'100%'}>
+        <ScrollView width={'100%'} marginBottom={100}>
           <View marginTop="2" marginBottom={20} padding="5">
             {loading ? (
               <ActivityIndicator color={'#560FC9'} />
@@ -146,7 +164,7 @@ const FrameScreen2 = () => {
               <Text color="#8F80A7" fontSize={18}>
                 {lastPsalmIndex !== null &&
                   lastPsalmIndex !== undefined &&
-                  psalms[lastPsalmIndex]}
+                  psalms[lastPsalmIndex]?.text}
               </Text>
             )}
           </View>
@@ -175,4 +193,17 @@ const FrameScreen2 = () => {
     </>
   );
 };
+
+function _extractNumberFromText(text) {
+  // Regular expression to find the first number in the text
+  const match = text.match(/\d+/);
+  return match ? parseInt(match[0], 10) : null;
+}
+
+function extractNumberFromText(text) {
+  // Regular expression to find the first decimal number in the text
+  const match = text.match(/-?\d+(\.\d+)?/);
+  return match ? parseFloat(match[0]) : null;
+}
+
 export default FrameScreen2;

@@ -11,10 +11,11 @@ import {
   Text,
   View,
 } from 'native-base';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  AppState,
   Dimensions,
   Linking,
   Pressable,
@@ -22,7 +23,7 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Header from './Components/Header';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import BackButton from './Components/BackButton';
 
@@ -34,88 +35,126 @@ export default function StudentsScreen() {
   const [student, setStudent] = useState(null);
   const [previewImage, setPreviewImage] = useState(false);
   const userID = useSelector(state => state.user.userID);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   const navigation = useNavigation();
   const handleNavigateToFrame1Screen = () => {
     navigation.navigate('Frame1');
   };
-  useEffect(() => {
-    const fetchStudentBySponsor = async () => {
-      try {
-        const colRef = firestore().collection('students');
-        const querySnapshot = await colRef.where('sponsor', '==', userID).get();
 
-        if (!querySnapshot.empty) {
-          const docs = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
+  const updateInView = async (studentId, inView) => {
+    try {
+      await firestore().collection('students').doc(studentId).update({
+        inView: inView,
+      });
+      console.log(`Student ${studentId} updated with inView: ${inView}`);
+    } catch (e) {
+      console.error('Error updating student document: ', e);
+    }
+  };
 
-          console.log('SPONSORED STUDENT: ', docs);
-          setStudent(docs[0]);
-          if (docs.length > 0) {
-            console.log('NO_DOCS');
-            updateInView(docs[0].id, true);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchStudentBySponsor = async () => {
+        try {
+          const colRef = firestore().collection('students');
+          const querySnapshot = await colRef
+            .where('sponsor', '==', userID)
+            .get();
+
+          if (!querySnapshot.empty) {
+            const docs = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+
+            console.log('SPONSORED STUDENT: ', docs);
+            setStudent(docs[0]);
+            if (docs.length > 0) {
+              console.log('NO_DOCS');
+              updateInView(docs[0].id, true);
+            }
+          } else {
+            await fetchFirstEligibleStudent();
           }
-        } else {
-          await fetchFirstEligibleStudent();
+        } catch (e) {
+          console.error('Error fetching documents: ', e);
         }
-      } catch (e) {
-        console.error('Error fetching documents: ', e);
-      }
-    };
+      };
 
-    const fetchFirstEligibleStudent = async () => {
-      try {
-        const colRef = firestore().collection('students');
-        const querySnapshot = await colRef
-          .where('inView', 'in', [false, null])
-          .where('sponsor', 'in', [null, ''])
-          .limit(1) // Limit to 10 to avoid too many documents
-          .get();
+      const fetchFirstEligibleStudent = async () => {
+        try {
+          const colRef = firestore().collection('students');
+          const querySnapshot = await colRef
+            .where('inView', 'in', [false, null])
+            .where('sponsor', 'in', [null, ''])
+            .limit(1) // Limit to 10 to avoid too many documents
+            .get();
 
-        if (querySnapshot.empty) {
-          console.log('No eligible student found');
-        } else {
-          const doc = querySnapshot.docs[0];
-          const studentData = {id: doc.id, ...doc.data()};
-          setStudent(studentData);
-          updateInView(studentData.id, true);
+          if (querySnapshot.empty) {
+            console.log('No eligible student found');
+          } else {
+            const doc = querySnapshot.docs[0];
+            console.log({studentData});
+            const studentData = {id: doc.id, ...doc.data()};
+            setStudent(studentData);
+            updateInView(studentData.id, true);
+          }
+        } catch (e) {
+          console.error('Error fetching document: ', e);
         }
-      } catch (e) {
-        console.error('Error fetching document: ', e);
-      }
-    };
+      };
 
-    const updateInView = async (studentId, inView) => {
-      try {
-        await firestore().collection('students').doc(studentId).update({
-          inView: inView,
-        });
-        console.log(`Student ${studentId} updated with inView: ${inView}`);
-      } catch (e) {
-        console.error('Error updating student document: ', e);
-      }
-    };
+      (async () => {
+        setLoading(true);
+        try {
+          await fetchStudentBySponsor();
+        } catch (error) {
+          console.error({error});
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }, [userID]),
+  );
 
-    (async () => {
-      setLoading(true);
-      try {
-        await fetchStudentBySponsor();
-      } catch (error) {
-        console.error({error});
-      } finally {
-        setLoading(false);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (student) {
+        updateInView(student.id, true);
       }
-    })();
+
+      return () => {
+        if (student) {
+          updateInView(student.id, false);
+        }
+      };
+    }, [student]),
+  );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('🔥🔥🔥🔥App has come to the foreground!');
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('🔥🔥🔥🔥AppState', appState.current);
+    });
 
     return () => {
+      console.log('🔥🔥🔥🔥REMOVE_SUBSCRIPTION');
       if (student) {
-        console.log({student});
         updateInView(student.id, false);
       }
+      subscription.remove();
     };
-  }, [userID, student?.id]);
+  }, []);
 
   const updateStudentSponsor = async studentId => {
     try {
@@ -165,6 +204,12 @@ export default function StudentsScreen() {
           flex: 1,
           padding: 3,
         }}>
+        <View style={{marginVertical: 20, width: '80%', alignSelf: 'center'}}>
+          <Text style={{textAlign: 'center'}}>
+            פרטי האברך נבדקו ואומתו, נא ליצור קשר ישירות על מנת לקבל מס חשבון
+            בנק (סכום מומלץ 700-1000 ₪ לחודש)
+          </Text>
+        </View>
         {loading ? (
           <Center style={{marginTop: 30}}>
             <ActivityIndicator color={'#560FC9'} size={50} />
@@ -180,12 +225,6 @@ export default function StudentsScreen() {
               paddingHorizontal: 10,
               paddingVertical: 20,
             }}>
-            <View style={{marginVertical: 10}}>
-              <Text style={{textAlign: 'center'}}>
-                פרטי האברך נבדקו ואומתו, נא ליצור קשר ישירות על מנת לקבל מס
-                חשבון בנק (סכום מומלץ 700-1000 ₪ לחודש)
-              </Text>
-            </View>
             <Pressable
               style={{alignSelf: 'center'}}
               onPress={() => {
@@ -252,7 +291,7 @@ export default function StudentsScreen() {
         ) : (
           <View style={{marginTop: 40}}>
             <Text style={{textAlign: 'center', fontSize: 20}}>
-              אין נתוני תלמידים זמינים
+              אין נתוני אברכים כרגע
             </Text>
           </View>
         )}

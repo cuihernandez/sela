@@ -45,17 +45,17 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     console.log('Handle Register Button');
-    if (!validateEmail(email)) {
-      return toast.show({
-        render: () => {
-          return (
-            <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
-              <Text color={'white'}>Invalid email address</Text>
-            </Box>
-          );
-        },
-      });
-    }
+    // if (!validateEmail(email)) {
+    //   return toast.show({
+    //     render: () => {
+    //       return (
+    //         <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
+    //           <Text color={'white'}>Invalid email address</Text>
+    //         </Box>
+    //       );
+    //     },
+    //   });
+    // }
     try {
       const querySnapshot = await firestore()
         .collection('users')
@@ -124,7 +124,7 @@ const RegisterScreen = () => {
         <ScrollView>
           <View style={styles.container}>
             <Image
-              source={require('../Image/bg_reg.png')}
+              source={require('../Image/register-screen.png')}
               style={styles.backgroundImage}
               resizeMode="cover"
             />
