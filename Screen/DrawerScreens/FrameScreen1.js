@@ -63,6 +63,7 @@ const FrameScreen1 = () => {
           patientsArray?.push({
             doneeName: doc.data().doneeName,
             doneeMotherName: doc.data().doneeMotherName,
+            doneeId: doc.id,
           });
         });
 
@@ -203,6 +204,7 @@ const mergeDuplicates = data => {
         // doneeEmail: item.doneeEmail,
         doneeMotherName: item.doneeMotherName,
         doneeName: item.doneeName,
+        doneeId: item.doneeId,
         // donorIDs: [item.donorID],
         // transactionAmount: item.transactionAmount,
       };
