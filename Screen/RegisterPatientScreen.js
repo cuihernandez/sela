@@ -373,7 +373,7 @@ const RegisterPatientScreen = () => {
                   fontSize={(screenWidth * 9.5) / 100}
                   color="#ffffff"
                   fontWeight="bold">
-                  רישום חולה לתפילה
+                  רישום אדם לתפילה
                 </Text>
                 <Text fontSize={20} textAlign={'center'} color={'white'}>
                   100% מהכסף שנתרם יינתן לתרומה
@@ -455,7 +455,7 @@ const RegisterPatientScreen = () => {
                 padding={(screenWidth * 2) / 100}
                 textAlign="center"
                 color="#1E0050">
-                כל שקל שתתרמו יזכה את החולה בחמש תפילות
+                כל שקל שתתרמו יזכה את האדם בחמש תפילות
               </Text>
               <Box style={styles.buttongroup}>
                 <Input

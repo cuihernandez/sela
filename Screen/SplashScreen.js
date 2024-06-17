@@ -51,8 +51,8 @@ const SplashScreen = () => {
           <Modal isOpen={showModal}>
             <Modal.Content maxWidth="350" maxH="212">
               <Modal.CloseButton />
-              <Modal.Header>Today is Holiday!</Modal.Header>
-              <Modal.Body>Our Sela Company don't work on Holiday!</Modal.Body>
+              <Modal.Header>היום שבת/יום טוב</Modal.Header>
+              <Modal.Body>האפליקציה תחזור לעבור בצאת השבת/יום טוב</Modal.Body>
               <Modal.Footer>
                 <Center>
                   <Button onPress={handleCloseApp}>Close App</Button>
