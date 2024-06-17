@@ -22,6 +22,7 @@ const FrameScreen2 = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {psalms, psalmsCount} = useSelector(state => state.psalms);
+  const {patients} = useSelector(state => state.patients);
   const userID = useSelector(state => state.user.userID);
   const [_, setCurrentIndex] = useState(0);
   const [lastPsalmIndex, setCurrentPsalmIndex] = useState(null);
@@ -34,10 +35,60 @@ const FrameScreen2 = () => {
     navigation.navigate('Frame1', {currentIndex});
   };
 
+  let docID = '';
+  let count = 0;
   const handleNavigateToFrameScreen = async () => {
     try {
       navigation.navigate('Frame3', {currentIndex});
-      console.log('updateLastPsalmIndex:', lastPsalmIndex);
+      const snapshot = await firestore()
+        .collection('userData')
+        .where('userID', '==', userID)
+        .get();
+      snapshot.forEach(doc => {
+        doc.data().completeCount;
+      });
+      if (snapshot.empty) {
+        await firestore()
+          .collection('userData')
+          .add({
+            userID: userID,
+            completeCount: 1,
+            patientsPrayedFor: [patients[currentIndex]?.doneeId],
+          });
+      } else {
+        const snapshots = await firestore()
+          .collection('userData')
+          .where('userID', '==', userID)
+          .get();
+        //retrieve the value of documentID that the userID is userID
+        const snapshotData = snapshots.docs;
+        const completeCount = snapshotData.map(
+          snap => snap._data.completeCount,
+        );
+        snapshots.forEach(doc => {
+          docID = doc.id;
+        });
+
+        const userData = snapshots.docs[0].data();
+        console.log('CURRENT_USER_DATA: ', userData);
+
+        //increase the value of the complete count
+        count = completeCount[0] + 1;
+        // update the value of the complete count
+        await firestore()
+          .collection('userData')
+          .doc(docID)
+          .update({
+            completeCount: count,
+            patientsPrayedFor: [
+              ...userData.patientsPrayedFor,
+              patients[currentIndex]?.doneeId,
+            ],
+          })
+          .then(() => {
+            console.log('User updated!', docID);
+          });
+      }
       updateLastPsalmIndex(lastPsalmIndex + 1);
     } catch (error) {
       console.error('Error:', error);

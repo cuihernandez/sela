@@ -5,6 +5,7 @@ import transactionReducer from './reducers/transactionReducer';
 import psalmsReducer from './reducers/psalmsReducer';
 import pearlsReducer from './reducers/pearlsReducers';
 import patientsReducer from './reducers/patientsReducer';
+import studentsReducer from './reducers/studentsReducer';
 // import your individual reducers here
 const rootReducer = combineReducers({
   user: userReducer,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   psalms: psalmsReducer,
   pearls: pearlsReducer,
   patients: patientsReducer,
+  students: studentsReducer,
   // add your individual reducers here
 });
 

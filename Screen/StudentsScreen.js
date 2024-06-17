@@ -24,8 +24,9 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import Header from './Components/Header';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import BackButton from './Components/BackButton';
+import {setStudents} from '../redux/actions/studentsAction';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -35,6 +36,12 @@ export default function StudentsScreen() {
   const [student, setStudent] = useState(null);
   const [previewImage, setPreviewImage] = useState(false);
   const userID = useSelector(state => state.user.userID);
+  const [currentIndex, setCurrentIndex] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const [studentsCount, setStudentsCount] = useState(null);
+
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
@@ -44,6 +51,10 @@ export default function StudentsScreen() {
   };
 
   const updateInView = async (studentId, inView) => {
+    if (!studentId) {
+      console.log('🤖🤖🤖==>', studentId);
+      return;
+    }
     try {
       await firestore().collection('students').doc(studentId).update({
         inView: inView,
@@ -51,6 +62,40 @@ export default function StudentsScreen() {
       console.log(`Student ${studentId} updated with inView: ${inView}`);
     } catch (e) {
       console.error('Error updating student document: ', e);
+    }
+  };
+
+  const getLastViewedIndex = async () => {
+    console.log('GET_LAST_INDEX');
+    try {
+      const doc = await firestore()
+        .collection('LastViewedUserIndex')
+        .doc('lastStudentIndex')
+        .get();
+      console.log('LAST_VIEWED_RUNNING: ');
+      if (doc.exists) {
+        const index = doc.data().index;
+        setCurrentIndex(index);
+        console.log('LAST_VIEWED_INDEX: ', doc.data().index);
+        return index;
+      }
+      return 0;
+    } catch (error) {
+      console.error('Failed to fetch last viewed index:', error);
+      return 0;
+    }
+  };
+
+  const updateLastViewedIndex = async index => {
+    try {
+      await firestore()
+        .collection('LastViewedUserIndex')
+        .doc('lastStudentIndex')
+        .set({
+          index,
+        });
+    } catch (error) {
+      console.error('Failed to update last viewed index:', error);
     }
   };
 
@@ -64,42 +109,61 @@ export default function StudentsScreen() {
             .get();
 
           if (!querySnapshot.empty) {
+            console.log('NOT_EMPTY: ', querySnapshot.docs);
             const docs = querySnapshot.docs.map(doc => ({
               id: doc.id,
               ...doc.data(),
             }));
 
-            console.log('SPONSORED STUDENT: ', docs);
             setStudent(docs[0]);
             if (docs.length > 0) {
               console.log('NO_DOCS');
               updateInView(docs[0].id, true);
             }
           } else {
-            await fetchFirstEligibleStudent();
+            await fetchEligibleStudents();
           }
         } catch (e) {
           console.error('Error fetching documents: ', e);
         }
       };
 
-      const fetchFirstEligibleStudent = async () => {
+      const fetchEligibleStudents = async () => {
         try {
           const colRef = firestore().collection('students');
           const querySnapshot = await colRef
             .where('inView', 'in', [false, null])
             .where('sponsor', 'in', [null, ''])
-            .limit(1) // Limit to 10 to avoid too many documents
+            .orderBy('createdAt', 'asc')
+            // .limit(1) // Limit to 10 to avoid too many documents
             .get();
 
           if (querySnapshot.empty) {
             console.log('No eligible student found');
           } else {
-            const doc = querySnapshot.docs[0];
-            console.log({studentData});
-            const studentData = {id: doc.id, ...doc.data()};
+            const lastIndex = await getLastViewedIndex();
+            const doc = querySnapshot.docs[lastIndex] || querySnapshot.docs[0];
+            console.log('LAST_STUDENT_INDEX: ', {
+              lastIndex,
+              doc,
+              snap: querySnapshot.docs[0],
+              studentData,
+            });
+            if (!doc) return console.log('🛑🛑🛑🛑');
+
+            const studentData = {id: doc?.id, ...doc?.data()};
+            console.log('LAST_STUDENT_INDEX: ', {
+              lastIndex,
+              doc,
+              snap: querySnapshot.docs[lastIndex],
+              studentData,
+            });
+            setStudentsCount(querySnapshot.docs.length);
             setStudent(studentData);
-            updateInView(studentData.id, true);
+            updateLastViewedIndex(
+              lastIndex <= studentsCount - 1 ? lastIndex + 1 : 0,
+            );
+            updateInView(studentData?.id, true);
           }
         } catch (e) {
           console.error('Error fetching document: ', e);
@@ -118,15 +182,15 @@ export default function StudentsScreen() {
       })();
     }, [userID]),
   );
-
   useFocusEffect(
     React.useCallback(() => {
       if (student) {
-        updateInView(student.id, true);
+        console.log('UPDATE_STUDENT_USE_FOCUS👀👁️👀👁️👀👁️');
       }
 
       return () => {
         if (student) {
+          console.log('👀👀👀 Current Index', {currentIndex, studentsCount});
           updateInView(student.id, false);
         }
       };
