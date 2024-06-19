@@ -117,8 +117,6 @@ const EditProfileScreen = () => {
         deleted: true,
       });
 
-      console.log(`USer ${userID} updated`);
-
       await new Promise((resolve, reject) => {
         resolve(
           toast.show({

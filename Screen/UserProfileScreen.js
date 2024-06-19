@@ -41,16 +41,14 @@ const UserProfileScreen = () => {
 
   useEffect(() => {
     const getTotalTransactionAmount = async () => {
-      // console.log('User ID is:', userID, donorID);
       try {
         const snapshot = await firestore()
           .collection('transaction')
           .where('donorID', '==', donorID)
-          // .where('donorID', '==', 'tn3uuh1D6L7dTnYGlvPi')
           .get();
         let totalAmount = 0;
         snapshot.forEach(doc => {
-          totalAmount += parseInt(doc.data().transactionAmount);
+          totalAmount += parseInt(doc.data().totalDonation);
         });
         setAmount(totalAmount);
       } catch (error) {
@@ -63,20 +61,17 @@ const UserProfileScreen = () => {
       const donorData = await firestore()
         .collection('userData')
         .where('userID', '==', donorID)
-        // .where('userID', '==', 'tn3uuh1D6L7dTnYGlvPi')
         .get();
       const res = donorData.docs;
       const completeCount = res.map(snap => snap._data.completeCount);
       const count = completeCount[0];
       setValue(count);
-      // console.log('The userID is :', donorID);
     };
     getID();
     const getTotalName = async () => {
       const res = await firestore()
         .collection('transaction')
         .where('donorID', '==', userID)
-        // .where('donorID', '==', 'tn3uuh1D6L7dTnYGlvPi')
         .get();
       const data = res.docs;
 
@@ -89,7 +84,6 @@ const UserProfileScreen = () => {
         new Map(all.map(item => [item['name'], item])).values(),
       );
       setUniqueDoneeNames(uniqueNames);
-      // console.log('The data is :'  , all);
     };
 
     (async () => {
@@ -136,7 +130,7 @@ const UserProfileScreen = () => {
               {value}
             </Text>
             <Text color="#560FC9" fontWeight="bold" fontSize="lg">
-              {amount}
+              {amount?.toFixed(2)}₪
             </Text>
           </View>
           <View flexDirection="row" justifyContent="space-between">
@@ -177,7 +171,6 @@ const UserProfileScreen = () => {
                   motherName={donee.motherName}
                   email={donee.email}
                   action={() => {
-                    console.log('ACTION');
                     navigation.navigate('RegPatient', {
                       doneeName: donee.name,
                       doneeMotherName: donee.motherName,

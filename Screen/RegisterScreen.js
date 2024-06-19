@@ -44,18 +44,6 @@ const RegisterScreen = () => {
   const dispatch = useDispatch();
 
   const handleRegister = async () => {
-    console.log('Handle Register Button');
-    // if (!validateEmail(email)) {
-    //   return toast.show({
-    //     render: () => {
-    //       return (
-    //         <Box bg="red.500" px="2" py="1" rounded="sm" mb={5}>
-    //           <Text color={'white'}>Invalid email address</Text>
-    //         </Box>
-    //       );
-    //     },
-    //   });
-    // }
     try {
       const querySnapshot = await firestore()
         .collection('users')
@@ -111,7 +99,7 @@ const RegisterScreen = () => {
         });
       }
     } catch (error) {
-      console.log('error is:', error);
+      console.error('error is:', error);
     }
   };
 

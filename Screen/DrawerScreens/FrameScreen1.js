@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import {React, useEffect, useState} from 'react';
+import {React, useCallback, useEffect, useState} from 'react';
 import {
   Box,
   Button,
@@ -10,7 +10,11 @@ import {
   ArrowBackIcon,
 } from 'native-base';
 import Header from '../Components/Header';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {ActivityIndicator} from 'react-native';
 import {connect, useDispatch, useSelector} from 'react-redux';
@@ -24,7 +28,7 @@ const FrameScreen1 = () => {
   const [loading, setLoading] = useState(false);
 
   const userID = useSelector(state => state.user.userID);
-  const {patients} = useSelector(state => state.patients);
+  const {patients, patientsCount} = useSelector(state => state.patients);
 
   const route = useRoute();
   const dispatch = useDispatch();
@@ -34,102 +38,91 @@ const FrameScreen1 = () => {
   }, [route.name]);
 
   const handleNextName = () => {
-    const nextIndex =
-      currentIndex + 1 >= patients.length ? 0 : currentIndex + 1;
-    setCurrentIndex(nextIndex);
+    // const nextIndex = currentIndex <= patientsCount - 1 ? currentIndex + 1 : 0;
     navigation.navigate('Frame2', {currentIndex});
   };
 
   const [firstText, setFirstText] = useState('');
   const [secondText, setSecondText] = useState('');
 
-  useEffect(() => {
-    const getText = async () => {
-      try {
-        const snapshot = await firestore().collection('notice').get();
-        const snapshot1 = await firestore().collection('transaction').get();
-        console.log('>>>>>>>COUNT: ', snapshot1.size);
-        const res = snapshot.docs;
-        const res1 = snapshot1.docs;
-        let array_name = [];
-        let array_mothername = [];
-        let patientsArray = [];
-        res1.map(doc => {
-          array_name?.push(doc.data().doneeName);
-          array_mothername?.push(doc.data().doneeMotherName);
-        });
+  useFocusEffect(
+    useCallback(() => {
+      const getText = async () => {
+        try {
+          const snapshot = await firestore().collection('notice').get();
+          const userDataCollectionRef = firestore().collection('userData');
+          const transactionSnapshot = await firestore()
+            .collection('transaction')
+            .get();
+          const res = snapshot.docs;
 
-        res1.map(doc => {
-          patientsArray?.push({
-            doneeName: doc.data().doneeName,
-            doneeMotherName: doc.data().doneeMotherName,
-            doneeId: doc.id,
-          });
-        });
+          let array_name = [];
+          let array_mothername = [];
+          const userDataQuerySnapshot = await userDataCollectionRef.get();
 
-        const flatPatientsArray = mergeDuplicates(patientsArray);
+          const patientsArray = await Promise.all(
+            transactionSnapshot.docs
+              .map(doc => {
+                const patientWithCredit = getPatientWithCredit(
+                  doc,
+                  userDataQuerySnapshot,
+                );
 
-        // console.log('RESPONSE: ', res1);
-        setNameArray(array_name);
-        setMotherNameArray(array_mothername);
-        setFirstText(res[0].data().text);
-        setSecondText(res[1].data().text);
-        console.log('SECOND_TEXT: ', res[1].data());
-        dispatch(
-          setPatients({
-            patients: flatPatientsArray,
-            patientsCount: patientsArray.length,
-          }),
-        );
-        patientsCount: flatPatientsArray.length,
-          console.log('[[[[[[COUNT]]]]]]: ', flatPatientsArray.length);
-      } catch (error) {
-        console.error('This is error:', error);
-      }
-    };
+                return patientWithCredit;
+              })
+              .filter(patient => {
+                return parseFloat(patient.credit.toFixed(2)) >= 0.2;
+              }),
+          );
 
-    const getLastViewedIndex = async () => {
-      console.log('GET_LAST_INDEX');
-      try {
-        const doc = await firestore()
-          .collection('LastViewedUserIndex')
-          .doc('currentIndex')
-          .get();
-        console.log('LAST_VIEWED_RUNNING: ');
-        if (doc.exists) {
-          setCurrentIndex(doc.data().index + 1);
-          console.log('LAST_VIEWED_INDEX: ', doc.data().index);
+          // console.log('PATIENTS_ARRAY: ', patientsArray);
+
+          const flatPatientsArray = mergeDuplicates(patientsArray);
+
+          setNameArray(array_name);
+          setMotherNameArray(array_mothername);
+          setFirstText(res[0].data().text);
+          setSecondText(res[1].data().text);
+          dispatch(
+            setPatients({
+              patients: flatPatientsArray,
+              patientsCount: flatPatientsArray.length,
+            }),
+          );
+        } catch (error) {
+          console.error('This is error:', error);
         }
-      } catch (error) {
-        console.error('Failed to fetch last viewed index:', error);
-      }
-    };
+      };
 
-    (async () => {
-      console.log('[[[[[[COUNT]]]]]]: ', patients.length);
-      try {
-        setLoading(true);
-        await getLastViewedIndex();
+      const getLastViewedIndex = async () => {
+        try {
+          const doc = await firestore()
+            .collection('LastViewedUserIndex')
+            .doc('currentIndex')
+            .get();
+          if (doc.exists) {
+            setCurrentIndex(doc.data().index);
+          }
+        } catch (error) {
+          console.error('Failed to fetch last viewed index:', error);
+        }
+      };
 
-        if (!patients.length) {
-          console.log('LENGTH===>', patients.length);
+      (async () => {
+        try {
+          setLoading(true);
+          await getLastViewedIndex();
           await getText();
+          // if (!patients.length) {
+          // }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    console.log('--------CURRENT_INDEX------>', currentIndex);
-  }, [currentIndex]);
-
-  useEffect(() => {
-    console.log('>>>>>>>>>>>PATIENTS: ', patients);
-  }, [patients]);
+      })();
+    }, []),
+  );
 
   return (
     <>
@@ -161,31 +154,39 @@ const FrameScreen1 = () => {
           padding="5">
           {loading ? (
             <ActivityIndicator color={'#560FC9'} />
-          ) : (
+          ) : patients?.length ? (
             <Text color="#8F80A7">
-              {firstText} {patients[currentIndex]?.doneeName} בן{' '}
+              {firstText} {patients[currentIndex]?.doneeName} בן/ת{' '}
               {patients[currentIndex]?.doneeMotherName} {secondText}
             </Text>
+          ) : (
+            <Text>אין מטופלים זמינים</Text>
           )}
         </View>
       </Box>
-      <HStack alignItems={'center'} marginBottom="20" justifyContent="flex-end">
-        <Button
-          space={2}
-          backgroundColor="#560FC9"
-          borderRadius={15}
-          marginRight="10"
-          padding="2"
-          onPress={handleNextName}>
-          <Flex direction="row" alignItems="center" justifyContent="center">
-            <Text color="white" fontSize="16">
-              {'  '}
-              המשך
-            </Text>
-            <ArrowBackIcon size="4" color="white" />
-          </Flex>
-        </Button>
-      </HStack>
+      {patients?.length ? (
+        <HStack
+          alignItems={'center'}
+          marginBottom="20"
+          justifyContent="flex-end">
+          <Button
+            space={2}
+            backgroundColor="#560FC9"
+            borderRadius={15}
+            marginRight="10"
+            padding="2"
+            onPress={handleNextName}>
+            <Flex direction="row" alignItems="center" justifyContent="center">
+              <Text color="white" fontSize="16">
+                המשך
+              </Text>
+              <ArrowBackIcon size="4" color="white" />
+            </Flex>
+          </Button>
+        </HStack>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
@@ -215,4 +216,71 @@ const mergeDuplicates = data => {
   });
 
   return Object.values(mergedData);
+};
+
+/**
+ * Retrieves or creates a patient transaction group with calculated credit.
+ *
+ * @param {Object} doc - The document containing transaction data.
+ * @param {Object} querySnapshot - The snapshot of queried documents.
+ * @returns {Object} The patient transaction group with updated credit.
+ */
+const getPatientWithCredit = (doc, querySnapshot) => {
+  let groupedTransactions = [];
+  const transaction = doc.data();
+  const key = `${transaction.doneeName}_${transaction.doneeEmail}_${transaction.donorID}`;
+
+  /**
+   * Counts the number of times the patient has been prayed for in the given snapshot.
+   *
+   * @param {Object} snapshot - The snapshot of queried documents.
+   * @param {string} docId - The ID of the document representing the patient.
+   * @returns {number} The total count of prayers for the patient.
+   */
+  const countPrayersForPatient = (snapshot, docId) => {
+    let totalCount = 0;
+
+    snapshot.forEach(document => {
+      const userDocData = document.data();
+      if (Array.isArray(userDocData.patientsPrayedFor)) {
+        const itemCount = userDocData.patientsPrayedFor.filter(
+          id => id === docId,
+        ).length;
+        totalCount += itemCount;
+      }
+    });
+
+    return totalCount;
+  };
+
+  const totalPrayers = countPrayersForPatient(querySnapshot, doc.id);
+
+  // Find the existing group in the array or create a new one
+  let group = groupedTransactions.find(
+    g => g.docId === doc.id && g.key === key,
+  );
+
+  if (!group) {
+    group = {
+      docId: doc.id,
+      id: groupedTransactions.length,
+      doneeName: transaction.doneeName,
+      doneeMotherName: transaction.doneeMotherName,
+      email: transaction.doneeEmail,
+      donorID: transaction.donorID,
+      doneeId: doc.id,
+      totalDonation: transaction.totalDonation,
+      credit: transaction.credit,
+      totalPrayers: totalPrayers,
+      key: key,
+    };
+
+    groupedTransactions.push(group);
+  }
+
+  // // Update the group's total donation and credit
+  // group.totalDonation += transaction.transactionAmount;
+  // group.credit = group.totalDonation - group.totalPrayers * 0.2;
+
+  return group;
 };

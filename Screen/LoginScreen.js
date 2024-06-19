@@ -78,17 +78,11 @@ const LoginScreen = () => {
         .where('deleted', '!=', true)
         .get();
 
-      console.log('===>>>DOCS: ', querySnapshot.docs);
-
-      console.log({querySnapshotEMPTY: querySnapshot.empty});
-
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
-        console.log('Document data:', doc.data());
 
         const uid = doc.id;
 
-        console.log('NOT EMPTY', querySnapshot);
         const payload = {
           userID: uid,
           name: formData.name.trim(),
@@ -96,7 +90,6 @@ const LoginScreen = () => {
           email: formData.email.trim(),
         };
         dispatch(setUserData(payload));
-        console.log('USER_ID: ', uid);
         handleNavigateToFrameScreen();
       } else {
         toast.show({
@@ -128,9 +121,7 @@ const LoginScreen = () => {
   //   (async () => {
   //     try {
   //       await updateAllDocuments('users', 'deleted', false);
-  //       console.log('=============>DOCS_UPDATED<==========');
   //     } catch (error) {
-  //       console.log('BATCH_ERROR: ', error);
   //     }
   //   })();
   // }, []);
@@ -298,7 +289,6 @@ const updateAllDocuments = async (
     });
 
     await batch.commit();
-    console.log('All documents updated successfully');
   } catch (error) {
     console.error('Error updating documents: ', error);
   }

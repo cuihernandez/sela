@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   ArrowForwardIcon,
   ArrowBackIcon,
@@ -14,7 +14,11 @@ import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import {setPsalms} from '../../redux/actions/psalmsAction.js';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../Components/Header';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import BackButton from '../Components/BackButton.js';
 
@@ -22,7 +26,7 @@ const FrameScreen2 = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {psalms, psalmsCount} = useSelector(state => state.psalms);
-  const {patients} = useSelector(state => state.patients);
+  const {patients, patientsCount} = useSelector(state => state.patients);
   const userID = useSelector(state => state.user.userID);
   const [_, setCurrentIndex] = useState(0);
   const [lastPsalmIndex, setCurrentPsalmIndex] = useState(null);
@@ -47,6 +51,18 @@ const FrameScreen2 = () => {
       snapshot.forEach(doc => {
         doc.data().completeCount;
       });
+
+      const transactionRef = firestore().collection('transaction');
+
+      const transactionDocument = await transactionRef
+        .doc(patients[currentIndex]?.doneeId)
+        .get();
+
+      transactionRef.doc(patients[currentIndex]?.doneeId).update({
+        credit: parseFloat(transactionDocument?.data().credit) - 0.2,
+        updatedAt: firestore.FieldValue.serverTimestamp(),
+      });
+
       if (snapshot.empty) {
         await firestore()
           .collection('userData')
@@ -70,7 +86,6 @@ const FrameScreen2 = () => {
         });
 
         const userData = snapshots.docs[0].data();
-        console.log('CURRENT_USER_DATA: ', userData);
 
         //increase the value of the complete count
         count = completeCount[0] + 1;
@@ -97,7 +112,6 @@ const FrameScreen2 = () => {
 
   const updateLastPsalmIndex = async index => {
     try {
-      console.log('INDEX:================>', {index, psalmsCount});
       await firestore()
         .collection('LastViewedUserIndex')
         .doc('lastPsalmIndex')
@@ -110,16 +124,13 @@ const FrameScreen2 = () => {
   };
 
   const getLastPsalmIndex = async () => {
-    console.log('GET_LAST_INDEX');
     try {
       const doc = await firestore()
         .collection('LastViewedUserIndex')
         .doc('lastPsalmIndex')
         .get();
       if (doc.exists) {
-        console.log('LAST_VIEWED_PSALM_RUNNING: ', doc.data().index);
         setCurrentPsalmIndex(doc.data().index);
-        console.log('LAST_VIEWED_INDEX: ', doc.data().index);
       }
     } catch (error) {
       console.error('Failed to fetch last viewed index:', error);
@@ -129,10 +140,8 @@ const FrameScreen2 = () => {
   const getPsalms = async () => {
     try {
       if (psalms && psalms.length > 0) {
-        console.log('PSALMS_EXIST');
         return;
       }
-      console.log("PSALMS_DON'T_EXIST");
 
       const snapshot = await firestore().collection('psalms').get();
       let array = [];
@@ -147,8 +156,6 @@ const FrameScreen2 = () => {
             text: psalm,
             index: extractedNumber,
           });
-
-          console.log(`Document added with index: ${extractedNumber}`);
         } else {
           console.log(`No number found in text: ${psalm}`);
         }
@@ -167,19 +174,21 @@ const FrameScreen2 = () => {
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        await getLastPsalmIndex();
-        await getPsalms();
-      } catch (error) {
-        console.error('ERror Fetching Stuff: ', error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        try {
+          setLoading(true);
+          await getLastPsalmIndex();
+          await getPsalms();
+        } catch (error) {
+          console.error('ERror Fetching Stuff: ', error);
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }, []),
+  );
 
   return (
     <>

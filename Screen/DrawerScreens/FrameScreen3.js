@@ -26,16 +26,19 @@ const FrameScreen3 = () => {
   const array = useSelector(state => state.pearls);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const {patients, patientsCount} = useSelector(state => state.patients);
 
   const route = useRoute();
   const currentIndex = route.params?.currentIndex;
 
   const handleNavigateToFrameScreen = () => {
+    updateLastViewedIndex(
+      currentIndex < patientsCount - 1 ? currentIndex + 1 : 0,
+    );
     navigation.navigate('Frame1'); // Navigate to the 'FrameScreen' page
   };
 
   const handleNextName = () => {
-    console.log('texts value is :--', texts[1]?._data);
     let nextIndex = array.currentIndex;
     nextIndex =
       array.currentIndex + 1 >= texts.length ? 0 : array.currentIndex + 1;
@@ -71,11 +74,6 @@ const FrameScreen3 = () => {
     };
 
     getText();
-
-    return () => {
-      console.log('updateLastViewedIndex:', array.currentIndex);
-      updateLastViewedIndex(currentIndex);
-    };
   }, [array.currentIndex]);
 
   return (
