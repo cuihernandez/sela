@@ -66,3 +66,5 @@ yarn-error.log
 /coverage
 .vscode
 *.css
+
+/icon-assets

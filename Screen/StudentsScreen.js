@@ -125,7 +125,7 @@ export default function StudentsScreen() {
         try {
           const colRef = firestore().collection('students');
           const querySnapshot = await colRef
-            .where('inView', 'in', [false, null])
+            // .where('inView', 'in', [false, null])
             .where('sponsor', 'in', [null, ''])
             .orderBy('createdAt', 'asc')
             // .limit(1) // Limit to 10 to avoid too many documents
