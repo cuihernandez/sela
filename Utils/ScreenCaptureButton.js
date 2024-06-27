@@ -16,15 +16,12 @@ const screenWidth = Dimensions.get('window').width;
 const CaptureScreen = () => {
   const [imageUri, setImageUri] = useState('');
   useEffect(() => {
-    console.log('REACHED');
     const checkPermission = async () => {
       try {
-        console.log('REACHED_ASYNC');
         const hasPermission = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
         );
         if (!hasPermission) {
-          console.log('NOT_HAS_PERMISSION');
           await requestStoragePermission();
         }
       } catch (err) {
@@ -69,7 +66,6 @@ const CaptureScreen = () => {
       }).then(
         uri => {
           setImageUri(uri);
-          console.log('Screenshot captured', uri);
           saveImage(uri, filePath);
           Share.share({url: uri});
         },
@@ -82,10 +78,8 @@ const CaptureScreen = () => {
 
   const saveImage = async (uri, filePath) => {
     try {
-      console.log({uri, filePath});
       await RNFS.copyFile(uri, filePath);
 
-      console.log('Screenshot saved to', filePath);
       toast.show({
         render: () => {
           return (
@@ -148,7 +142,6 @@ const requestStoragePermission = async () => {
     return true;
   }
 
-
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -157,7 +150,6 @@ const requestStoragePermission = async () => {
         message: 'App needs access to your storage to save the screenshot',
       },
     );
-    console.log('GRANTED: ', granted);
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   } catch (err) {
     console.warn(err);
@@ -176,6 +168,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#560FC9',
     alignItems: 'center',
     flexDirection: 'row',
-
   },
 });

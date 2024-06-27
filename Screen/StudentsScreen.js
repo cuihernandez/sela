@@ -52,31 +52,26 @@ export default function StudentsScreen() {
 
   const updateInView = async (studentId, inView) => {
     if (!studentId) {
-      console.log('🤖🤖🤖==>', studentId);
       return;
     }
     try {
       await firestore().collection('students').doc(studentId).update({
         inView: inView,
       });
-      console.log(`Student ${studentId} updated with inView: ${inView}`);
     } catch (e) {
       console.error('Error updating student document: ', e);
     }
   };
 
   const getLastViewedIndex = async () => {
-    console.log('GET_LAST_INDEX');
     try {
       const doc = await firestore()
         .collection('LastViewedUserIndex')
         .doc('lastStudentIndex')
         .get();
-      console.log('LAST_VIEWED_RUNNING: ');
       if (doc.exists) {
         const index = doc.data().index;
         setCurrentIndex(index);
-        console.log('LAST_VIEWED_INDEX: ', doc.data().index);
         return index;
       }
       return 0;
@@ -109,7 +104,6 @@ export default function StudentsScreen() {
             .get();
 
           if (!querySnapshot.empty) {
-            console.log('NOT_EMPTY: ', querySnapshot.docs);
             const docs = querySnapshot.docs.map(doc => ({
               id: doc.id,
               ...doc.data(),
@@ -117,7 +111,6 @@ export default function StudentsScreen() {
 
             setStudent(docs[0]);
             if (docs.length > 0) {
-              console.log('NO_DOCS');
               updateInView(docs[0].id, true);
             }
           } else {
@@ -132,32 +125,21 @@ export default function StudentsScreen() {
         try {
           const colRef = firestore().collection('students');
           const querySnapshot = await colRef
-            .where('inView', 'in', [false, null])
+            // .where('inView', 'in', [false, null])
             .where('sponsor', 'in', [null, ''])
             .orderBy('createdAt', 'asc')
             // .limit(1) // Limit to 10 to avoid too many documents
             .get();
 
           if (querySnapshot.empty) {
-            console.log('No eligible student found');
           } else {
             const lastIndex = await getLastViewedIndex();
             const doc = querySnapshot.docs[lastIndex] || querySnapshot.docs[0];
-            console.log('LAST_STUDENT_INDEX: ', {
-              lastIndex,
-              doc,
-              snap: querySnapshot.docs[0],
-              studentData,
-            });
-            if (!doc) return console.log('🛑🛑🛑🛑');
+
+            if (!doc) return;
 
             const studentData = {id: doc?.id, ...doc?.data()};
-            console.log('LAST_STUDENT_INDEX: ', {
-              lastIndex,
-              doc,
-              snap: querySnapshot.docs[lastIndex],
-              studentData,
-            });
+
             setStudentsCount(querySnapshot.docs.length);
             setStudent(studentData);
             updateLastViewedIndex(
@@ -184,13 +166,8 @@ export default function StudentsScreen() {
   );
   useFocusEffect(
     React.useCallback(() => {
-      if (student) {
-        console.log('UPDATE_STUDENT_USE_FOCUS👀👁️👀👁️👀👁️');
-      }
-
       return () => {
         if (student) {
-          console.log('👀👀👀 Current Index', {currentIndex, studentsCount});
           updateInView(student.id, false);
         }
       };
@@ -225,7 +202,6 @@ export default function StudentsScreen() {
       await firestore().collection('students').doc(studentId).update({
         sponsor: userID,
       });
-      console.log(`Student ${studentId} updated with sponsor ${userID}`);
       setStudent(prev => ({...prev, sponsor: userID}));
       Alert.alert(`Student ${student?.name} updated with sponsor`);
     } catch (e) {

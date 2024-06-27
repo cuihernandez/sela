@@ -120,7 +120,6 @@ const RegisterPatientScreen = () => {
     (async () => {
       // const uid = await AsyncStorage.getItem('userId');
       const uid = 'SHOULD BE UID';
-      console.log({uid});
       // setUid(uid);
     })();
   }, []);
@@ -162,10 +161,6 @@ const RegisterPatientScreen = () => {
     },
   });
 
-  useEffect(() => {
-    console.log({userID});
-  }, [userID]);
-
   const initializePayment = async () => {
     setLoading(true);
     try {
@@ -176,7 +171,6 @@ const RegisterPatientScreen = () => {
             // Generate a random number between 0 and 9 and append it to the result
             result += Math.floor(Math.random() * 10).toString();
           }
-          console.log({result});
           transactionUserId = result;
           return result;
         })(),
@@ -186,8 +180,6 @@ const RegisterPatientScreen = () => {
         email: patientEmail,
       });
       const paymentUrl = response.paymentUrl;
-
-      console.log({transactionUserId});
 
       if (paymentUrl)
         navigation.navigate('Payment', {
@@ -221,7 +213,6 @@ const RegisterPatientScreen = () => {
       }
       const timestamp = Date(Date.now());
       if (price === '') {
-        console.log('okay');
         return toast.show({
           render: () => {
             return (
@@ -238,31 +229,47 @@ const RegisterPatientScreen = () => {
           },
         });
       } else {
-        console.log('HANDLE_SUB: ', transactionUid);
-        const transactionDatas = {
+        const transactionData = {
           donorID: userID,
           date: timestamp,
           doneeName: patientName,
           doneeMotherName: patientMotherName,
           doneeEmail: patientEmail,
           transactionUid,
-          transactionAmount: parseFloat(price),
+          totalDonation: parseFloat(price),
         };
-        const res = await firestore()
-          .collection('transaction')
-          .add({
+        const transactionRef = firestore().collection('transaction');
+        const querySnapshot = await transactionRef
+          .where('doneeName', '==', patientName)
+          .where('doneeMotherName', '==', patientMotherName)
+          .get();
+        const transactionDocument = querySnapshot.docs[0];
+
+        if (querySnapshot.empty) {
+          transactionRef.add({
             donorID: userID,
             date: timestamp,
             doneeName: patientName,
             doneeMotherName: patientMotherName,
             doneeEmail: patientEmail,
-            transactionAmount: parseFloat(price),
+            totalDonation: parseFloat(price),
+            credit: parseFloat(price),
+            createdAt: firestore.FieldValue.serverTimestamp(),
+            updatedAt: firestore.FieldValue.serverTimestamp(),
           });
+        } else {
+          transactionRef.doc(transactionDocument?.id).update({
+            totalDonation:
+              parseFloat(transactionDocument?.data().totalDonation) +
+              parseFloat(price),
+            credit:
+              parseFloat(transactionDocument?.data().credit) +
+              parseFloat(price),
+            updatedAt: firestore.FieldValue.serverTimestamp(),
+          });
+        }
 
-        console.log('handleSubmit: ', res);
-        console.log('transactionInfo', trans);
-
-        dispatch(setTransaction(transactionDatas));
+        dispatch(setTransaction(transactionData));
         setPatientName('');
         setPatientMotherName('');
         setPatientEmail('');
@@ -296,12 +303,10 @@ const RegisterPatientScreen = () => {
         setPatientEmail(doneeEmail);
       }
     } else {
-      console.log('Route params are undefined');
     }
   }, [route.params, setPatientName, setPatientMotherName, setPatientEmail]);
 
   useEffect(() => {
-    console.log({paymentStatus: route.params?.paymentStatus});
     if (route.params?.paymentStatus === 'success') {
       (async () => {
         try {

@@ -8,17 +8,11 @@ import {Button, Spinner, Text} from 'native-base';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 
-// 4557430402053712
-// 06/26
-// 887
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const PaymentScreen = () => {
   const webViewRef = useRef();
-  // jsCode =
-  //   "window.waitForBridge = function(fn) { return (window.postMessage.length === 1) ? fn() : setTimeout(function() { window.waitForBridge(fn) }, 5) }; window.waitForBridge(function() { window.postMessage(document.querySelector('body').textContent) });";
-
   jsCode = '';
 
   const [amount, setAmount] = useState('');
@@ -35,10 +29,6 @@ const PaymentScreen = () => {
   }, [route.name]);
 
   const paymentUrl = route.params.paymentUrl;
-
-  useEffect(() => {
-    console.log({paymentUrl});
-  }, [paymentUrl]);
 
   useEffect(() => {
     if (currentUrl.includes('thankYouPage'))

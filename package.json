@@ -28,6 +28,7 @@
     "react-native-animated-pagination-dots": "^0.1.73",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.15.0",
+    "react-native-keychain": "^8.2.0",
     "react-native-mail": "^6.1.1",
     "react-native-mmkv": "^2.12.1",
     "react-native-reanimated": "^3.7.0",

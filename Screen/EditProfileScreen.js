@@ -113,31 +113,23 @@ const EditProfileScreen = () => {
 
   const deleteAccount = async () => {
     try {
-      await firestore().collection('users').doc(userID).update({
-        deleted: true,
+      const docRef = firestore().collection('users').doc(ID);
+
+      await docRef.delete();
+      toast.show({
+        render: () => (
+          <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+            החשבון נמחק בהצלחה
+          </Box>
+        ),
       });
 
-      console.log(`USer ${userID} updated`);
-
-      await new Promise((resolve, reject) => {
-        resolve(
-          toast.show({
-            render: () => {
-              return (
-                <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-                  החשבון נמחק בהצלחה
-                </Box>
-              );
-            },
-          }),
-        );
-      });
-
+      // Navigate to the login screen after 2 seconds
       setTimeout(() => {
         navigation.navigate('Login');
-      }, 1000);
+      }, 2000);
     } catch (e) {
-      console.error('Error updating student document: ', e);
+      console.error('Error deleting document: ', e);
     }
   };
 

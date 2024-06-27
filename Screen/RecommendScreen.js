@@ -25,6 +25,11 @@ import icon_copy from '../Image/icon_copy.png';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
 import BackButton from './Components/BackButton.js';
+import {
+  saveSecretKey,
+  saveMasofNumber,
+  clearAllData,
+} from '../Utils/storage.js';
 
 const shareOptions = (url, message) => {
   const options = {

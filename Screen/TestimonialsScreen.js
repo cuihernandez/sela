@@ -65,7 +65,6 @@ const TestimonialsScreens = () => {
       try {
         const snapshot = await firestore().collection('testimonials').get();
         const res = snapshot.docs;
-        console.log('TESTIMONIALS: ', res);
         setLoading(false);
         setContent(res);
       } catch (error) {
@@ -75,9 +74,6 @@ const TestimonialsScreens = () => {
       }
     };
     getText();
-    // Logic to handle array content change
-    // For example, you can map over arrayContent here
-    // and render Text components for each item
   }, []);
 
   return (

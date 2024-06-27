@@ -15,20 +15,13 @@ const SplashScreen = () => {
         const res = snapshot.docs;
         let array = [];
         const snapShot = res.map(doc => {
-          console.log(doc.data().time);
           array.push(doc.data().time);
         });
-        // console.log("------", array[0])
         const currentTime = Math.floor(Date.now() / 1000);
-        console.log('current time----:', currentTime);
-        console.log('end time is:', array[0].seconds);
-        console.log('start time is:', array[1].seconds);
         if (array[0].seconds > currentTime && currentTime > array[1].seconds) {
           setShowModal(true);
-          console.log('true');
         } else {
           navigation.navigate('Login');
-          console.log('false');
         }
       } catch (error) {
         console.error('This is error:', error);
