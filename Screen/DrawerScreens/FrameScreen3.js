@@ -97,7 +97,7 @@ const FrameScreen3 = () => {
             fontSize="24"
             px="3"
             marginTop={'5'}>
-            תודה
+            תודה - תינתן תרומה בשמך
           </Text>
         </Box>
       </HStack>
