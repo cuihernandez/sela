@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Sela",
+    "slug": "Sela",
+    "version": "1.0.6",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#560FC9"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.alephpay.sela",
+      "buildNumber": "7",
+      "entitlements": {
+        "aps-environment": "production"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#560FC9"
+      },
+      "package": "com.alephpay.sela",
+      "buildNumber": "7"
+    },
+    "plugins": [],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "fd9126f9-cb62-47d4-859e-4dd6f830cf5e"
+      }
+    }
+  }
+}
